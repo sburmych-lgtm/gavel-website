@@ -79,3 +79,34 @@ Newest last. One entry per checkpoint.
 **Added where every prior package was silent** — a full SEO, local SEO and
 AI-search architecture (`13`), including a crawler policy that separates search
 visibility from model-training permission.
+
+---
+
+## CP-02 … CP-09 — frontend built, browser QA passed · 2026-08-15
+
+Astro 7 static, plain CSS tokens, three small islands, thirteen sections, no
+framework runtime. Full build passes both guards. `scripts/qa.mjs` runs 36
+checks against the production build at six widths: 0 fail, 0 warn.
+
+Seven defects found by looking at the render, not by the checklist — hero
+eyebrow at 2.75:1 over water, logo rendering as a gold smudge, the unregistered
+before/after pair, the wrong Coach poster moment, two competing portraits in
+the Coach section, letterboxed proof cards, and a sub-44px header target. All
+fixed and re-verified. Full detail in `docs/quality/QA_REPORT.md`.
+
+Also recorded there: two harness bugs that produced confident wrong readings.
+The contrast probe was mis-parsing Chrome's `oklab()` serialisation of
+`color-mix`, and `scroll-behavior: smooth` was cancelling the programmatic
+scroll walk, which made it look as though IntersectionObserver was leaving 42
+of 53 blocks hidden. It was not — the harness was. The IO replacement written
+on that false premise was reverted.
+
+**Media decisions changed by rendered evidence**
+
+- Coach clip moved from 13.5–25.5s to **0–12s**, keeping the burnt-in captions.
+  They introduce him by name and name the venue, and they make muted autoplay
+  comprehensible. The old window had no face-to-camera frame at all.
+- `On_Beach.JPG` promoted from a buried position under the Coach copy to the
+  lead image of the Athlete section.
+- `Canoe1.JPG` dropped — the weakest of the three water photographs.
+- `logo-mark.png` added: the full lockup is unreadable at header size.

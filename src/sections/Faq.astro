@@ -1,0 +1,45 @@
+---
+import { faq } from "../content";
+---
+<section class="section section--deep" id="faq" aria-labelledby="faq-h">
+  <div class="shell">
+    <div class="head" data-reveal>
+      <span class="eyebrow">{faq.eyebrow}</span>
+      <h2 id="faq-h">{faq.h2}</h2>
+    </div>
+    <div class="q-list">
+      {faq.items.map((it) => (
+        <details class="q" data-reveal>
+          <summary class="q-s"><h3 class="q-h">{it.q}</h3></summary>
+          <div class="q-a"><p>{it.a}</p></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .q-list { max-width: 62rem; }
+  .q { border-top: 1px solid var(--line-soft); }
+  .q:last-child { border-bottom: 1px solid var(--line-soft); }
+  .q-s {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem; padding: 1.25rem 0; min-height: 44px;
+    cursor: pointer; list-style: none;
+  }
+  .q-s::-webkit-details-marker { display: none; }
+  .q-h { margin: 0; font-size: var(--fs-h3); font-weight: 600; }
+  /* a plus that becomes a minus — drawn, not an icon set */
+  .q-s::after {
+    content: ""; flex: none; width: 14px; height: 14px;
+    background:
+      linear-gradient(var(--caustic), var(--caustic)) center / 14px 1.5px no-repeat,
+      linear-gradient(var(--caustic), var(--caustic)) center / 1.5px 14px no-repeat;
+    transition: transform var(--t-base) var(--ease);
+  }
+  .q[open] .q-s::after {
+    background: linear-gradient(var(--caustic), var(--caustic)) center / 14px 1.5px no-repeat;
+    transform: rotate(180deg);
+  }
+  .q-a { padding-bottom: 1.5rem; }
+  .q-a p { color: var(--mute); max-width: 62ch; }
+</style>

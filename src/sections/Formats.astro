@@ -1,0 +1,80 @@
+---
+import { formats } from "../content";
+import { photos } from "../content/media";
+import { Image } from "astro:assets";
+---
+<section class="section" id="formats" aria-labelledby="formats-h">
+  <div class="shell">
+    <div class="head" data-reveal>
+      <span class="eyebrow">{formats.eyebrow}</span>
+      <h2 id="formats-h">{formats.h2}</h2>
+    </div>
+
+    <div class="f-grid">
+      <ul class="f-rows">
+        {formats.rows.map((r) => (
+          <li class="f-row" data-reveal>
+            <div class="f-row-head">
+              <h3 class="f-row-t">{r.title}</h3>
+              <span class="f-row-w">{r.where}</span>
+            </div>
+            <p class="f-row-b">{r.body}</p>
+          </li>
+        ))}
+      </ul>
+
+      <aside class="f-aside" data-reveal>
+        <Image
+          src={photos.inGym.src}
+          alt={photos.inGym.alt}
+          widths={[400, 620, 900]}
+          sizes="(max-width: 1100px) 100vw, 380px"
+          class="f-img"
+          loading="lazy"
+        />
+        <h3 class="f-inc-h">{formats.includedH3}</h3>
+        <ul class="f-inc">
+          {formats.included.map((i) => <li>{i}</li>)}
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+<style>
+  .f-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+  /* Rows, not cards. Four services in four identical cards is the template
+     shape the brief rules out. */
+  .f-rows { list-style: none; margin: 0; padding: 0; }
+  .f-row { padding: 1.5rem 0; border-top: 1px solid var(--line-soft); }
+  .f-row:last-child { border-bottom: 1px solid var(--line-soft); }
+  .f-row-head {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 0.5rem 1rem; margin-bottom: 0.5rem;
+  }
+  .f-row-t { margin: 0; }
+  .f-row-w {
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--caustic);
+  }
+  .f-row-b { color: var(--mute); }
+  .f-img {
+    width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+    border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 1.75rem;
+  }
+  .f-inc-h { margin-bottom: 1rem; }
+  .f-inc { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+  .f-inc li {
+    padding-left: 1.25rem; position: relative;
+    font-size: var(--fs-sm); color: var(--mute); line-height: 1.5;
+  }
+  .f-inc li::before {
+    content: ""; position: absolute; left: 0; top: 0.6em;
+    width: 8px; height: 1px; background: var(--gold);
+  }
+  @media (max-width: 1100px) { .f-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+</style>

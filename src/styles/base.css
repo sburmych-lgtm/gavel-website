@@ -1,0 +1,219 @@
+/* Reset, typography, and the primitives every section shares. */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* the fixed header must not cover an anchor target */
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background: var(--abyss);
+  color: var(--foam);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  /* a horizontal scrollbar on a marketing page is always a bug, never a
+     feature — but clip rather than hidden so position:sticky still works */
+  overflow-x: clip;
+}
+
+img, video, svg { display: block; max-width: 100%; }
+img, video { height: auto; }
+
+button, input, textarea, select { font: inherit; color: inherit; }
+
+a { color: inherit; }
+
+/* ---------------------------------------------------------------- focus */
+
+:focus-visible {
+  outline: 2px solid var(--caustic);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--gold);
+  color: var(--ink);
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+}
+.skip:focus { left: 0.5rem; top: 0.5rem; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.shell {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gut);
+}
+
+.section { padding-block: var(--sec); position: relative; }
+
+.section--deep { background: var(--deep); }
+.section--petrol { background: var(--petrol); }
+
+/* The two light bands. Placed where brightness does commercial work rather
+   than on an alternating schedule — alternating every section reads as a
+   template, one band on thirteen sections reads as monotony. */
+.section--light {
+  background: var(--mist);
+  color: var(--ink);
+}
+.section--light .eyebrow { color: var(--gold-deep); }
+.section--light .lead { color: color-mix(in oklab, var(--ink) 78%, transparent); }
+.section--light .rule { background: var(--line-ink); }
+
+/* ------------------------------------------------------------ typography */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--fs-h1); }
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-h2);
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+h3, .h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: 1.25;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--caustic);
+}
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--mute);
+  max-width: 46ch;
+}
+
+p { max-width: 68ch; }
+
+/* Every numeral in the interface is mono and tabular. This is what makes
+   "measurement" a visible property of the page rather than a claim in the
+   copy — it is doing more work than it looks like. */
+.num {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.rule {
+  height: 1px;
+  background: var(--line-soft);
+  border: 0;
+}
+
+/* Section heads share one shape: eyebrow over a rule, then h2, then lead. */
+.head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+.head .eyebrow { display: block; margin-bottom: 1rem; }
+.head h2 { margin-bottom: 1.25rem; }
+
+/* -------------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.875rem 1.75rem;
+  border-radius: var(--r);
+  border: 1px solid transparent;
+  font-weight: 600;
+  font-size: var(--fs-body);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--t-fast) var(--ease),
+              border-color var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease);
+}
+
+/* Exactly one of these per screen. */
+.btn-primary {
+  background: var(--gold);
+  color: var(--ink);
+}
+.btn-primary:hover { background: var(--gold-deep); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--foam);
+  border-color: color-mix(in oklab, var(--foam) 40%, transparent);
+}
+.btn-ghost:hover { border-color: var(--foam); }
+
+.section--light .btn-ghost { color: var(--ink); border-color: var(--line-ink); }
+.section--light .btn-ghost:hover { border-color: var(--ink); }
+
+/* ---------------------------------------------------------------- reveal */
+
+/* Content is in the DOM at first byte; this only changes how it arrives.
+   Reveals may enhance, they may never gate — the SEO architecture depends
+   on it and so does anyone with JS disabled. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity var(--t-slow) var(--ease),
+              transform var(--t-slow) var(--ease);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* No JS: show everything immediately. */
+.no-js [data-reveal] { opacity: 1; transform: none; }
+
+/* -------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  [data-reveal] { opacity: 1; transform: none; }
+}

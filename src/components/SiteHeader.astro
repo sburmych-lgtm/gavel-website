@@ -1,0 +1,189 @@
+---
+import { nav, site } from "../content";
+import { logo } from "../content/media";
+---
+
+<header class="hdr" data-hdr>
+  <div class="shell hdr-in">
+    <a class="hdr-brand" href="#top" aria-label={`${site.romanised} — на початок`}>
+      <img
+        src={logo.mark.src}
+        alt={logo.mark.alt}
+        width={logo.mark.width}
+        height={logo.mark.height}
+        decoding="async"
+      />
+      <span class="hdr-word" aria-hidden="true">{site.romanised}</span>
+    </a>
+
+    <nav class="hdr-nav" aria-label="Основна навігація">
+      <ul class="hdr-list">
+        {nav.links.map((l) => (
+          <li><a class="hdr-link" href={l.href}>{l.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    {/* Ghost, not filled — the hero already owns the one gold action on
+        that screen, and two filled CTAs in one viewport is the fastest way
+        to make a page look generated. */}
+    <a class="btn btn-ghost hdr-cta" href={nav.cta.href}>{nav.cta.label}</a>
+
+    <button
+      class="hdr-burger"
+      type="button"
+      data-hdr-toggle
+      aria-expanded="false"
+      aria-controls="hdr-panel"
+    >
+      <span class="sr-only">Меню</span>
+      <span class="hdr-burger-b" aria-hidden="true"></span>
+      <span class="hdr-burger-b" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div class="hdr-panel" id="hdr-panel" data-hdr-panel hidden>
+    <ul class="hdr-panel-list">
+      {nav.links.map((l) => (
+        <li><a class="hdr-panel-link" href={l.href}>{l.label}</a></li>
+      ))}
+    </ul>
+    <a class="btn btn-primary hdr-panel-cta" href={nav.cta.href}>{nav.cta.label}</a>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--z-nav);
+    /* transparent until scrolled, so the hero opens clean */
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--t-base) var(--ease),
+                border-color var(--t-base) var(--ease);
+  }
+  .hdr.is-solid {
+    background: var(--glass);
+    backdrop-filter: blur(14px);
+    border-bottom-color: var(--line-soft);
+  }
+
+  .hdr-in {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-height: 4.5rem;
+  }
+
+  /* 44px minimum target; the monogram itself sits at 34px */
+  .hdr-brand {
+    display: inline-flex; align-items: center; gap: 0.7rem;
+    flex: none; min-height: 44px; text-decoration: none;
+  }
+  .hdr-brand img { width: auto; height: 34px; }
+  /* The lockup's own wordmark is unreadable at this size, so the name is set
+     in the site's display face instead — the same bold geometric register. */
+  .hdr-word {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    color: var(--foam);
+    white-space: nowrap;
+  }
+  @media (max-width: 420px) { .hdr-word { display: none; } }
+
+  .hdr-nav { margin-left: auto; }
+
+  .hdr-list {
+    display: flex;
+    gap: clamp(1rem, 2.2vw, 2rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .hdr-link {
+    display: inline-block;
+    padding: 0.5rem 0;
+    font-size: var(--fs-sm);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--foam);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--t-fast) var(--ease);
+  }
+  .hdr-link:hover { border-bottom-color: var(--caustic); }
+
+  .hdr-cta { flex: none; padding: 0.625rem 1.25rem; min-height: 44px; }
+
+  .hdr-burger {
+    display: none;
+    margin-left: auto;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r);
+    cursor: pointer;
+    place-items: center;
+    align-content: center;
+    justify-items: center;
+    gap: 5px;
+  }
+  .hdr-burger-b {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: var(--foam);
+    transition: transform var(--t-fast) var(--ease);
+  }
+  .hdr-burger[aria-expanded="true"] .hdr-burger-b:first-child {
+    transform: translateY(3.25px) rotate(45deg);
+  }
+  .hdr-burger[aria-expanded="true"] .hdr-burger-b:last-child {
+    transform: translateY(-3.25px) rotate(-45deg);
+  }
+
+  /* The overlay is a sibling of the bar, not a child of a filtered element:
+     a backdrop-filter creates a containing block, and nesting the panel
+     inside one is a bug this project has already hit once. */
+  .hdr-panel {
+    display: none;
+    position: fixed;
+    inset: 4.5rem 0 0 0;
+    z-index: var(--z-overlay);
+    background: var(--abyss);
+    padding: var(--gut);
+    padding-top: clamp(2rem, 6vh, 3.5rem);
+    overflow-y: auto;
+  }
+  .hdr-panel[hidden] { display: none; }
+
+  .hdr-panel-list {
+    list-style: none;
+    margin: 0 0 2rem;
+    padding: 0;
+    display: grid;
+    gap: 0.25rem;
+  }
+  .hdr-panel-link {
+    display: block;
+    padding: 1rem 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .hdr-panel-cta { width: 100%; }
+
+  @media (max-width: 1100px) {
+    .hdr-nav, .hdr-cta { display: none; }
+    .hdr-burger { display: grid; }
+    .hdr-panel:not([hidden]) { display: block; }
+  }
+</style>

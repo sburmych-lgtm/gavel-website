@@ -1,0 +1,59 @@
+---
+/**
+ * The transplanted treatment.
+ *
+ * The composition the client liked was the previous prototype's HERO: a 9:16
+ * panel capped small, right-aligned against large type, hairline border, no
+ * shadow, cool grade, two-stop vignette, no motion on the panel itself.
+ *
+ * Water owns the hero now, so the grammar moves here and MIRRORS — video
+ * left, type right — so the page does not simply repeat the hero's shape.
+ * Every load-bearing value is preserved; only the slot and direction change.
+ */
+import MediaFrame from "../components/MediaFrame.astro";
+import AutoVideo from "../components/AutoVideo.astro";
+import { coach } from "../content";
+import { videos } from "../content/media";
+---
+<section class="section" id="coach" aria-labelledby="coach-h">
+  <div class="shell c-in">
+    <div class="c-panel" data-reveal>
+      <MediaFrame ratio="9 / 16" maxWidth="340px" grade vignette="soft" caption={videos.coach.label}>
+        <AutoVideo
+          src={videos.coach.src}
+          poster={videos.coach.poster}
+          width={videos.coach.width}
+          height={videos.coach.height}
+          label={videos.coach.label}
+        />
+      </MediaFrame>
+    </div>
+
+    <div class="c-copy" data-reveal>
+      <span class="eyebrow c-eyebrow">{coach.eyebrow}</span>
+      <h2 id="coach-h" class="c-h">{coach.h2}</h2>
+      {coach.paragraphs.map((p) => <p class="c-p">{p}</p>)}
+    </div>
+  </div>
+</section>
+<style>
+  .c-in {
+    display: grid;
+    /* mirrored from the approved hero panel: media 0.85fr, copy 1.15fr */
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
+  }
+  .c-panel { justify-self: start; width: 100%; }
+  .c-eyebrow { display: block; margin-bottom: 1rem; }
+  .c-h { margin-bottom: 1.5rem; }
+  .c-p { color: var(--mute); margin-bottom: 1rem; }
+  .c-p:last-of-type { margin-bottom: 0; }
+  @media (max-width: 1100px) {
+    .c-in { grid-template-columns: 1fr; gap: 2.5rem; }
+    /* video first on mobile: a vertical frame on a vertical screen beats
+       any crop */
+    .c-panel { order: -1; max-width: 340px; }
+  }
+  @media (max-width: 560px) { .c-panel { max-width: none; } }
+</style>

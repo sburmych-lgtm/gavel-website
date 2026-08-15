@@ -1,0 +1,30 @@
+---
+import { proof } from "../content";
+---
+<section class="section section--deep proof">
+  <div class="shell">
+    <ul class="proof-list" data-reveal>
+      {proof.map((p) => (
+        <li class="proof-item">
+          <span class="num proof-v">{p.value}</span>
+          <span class="proof-l">{p.label}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .proof { padding-block: clamp(2.5rem, 5vw, 4rem); }
+  .proof-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    list-style: none; margin: 0; padding: 0;
+  }
+  .proof-item { display: flex; flex-direction: column; gap: 0.5rem; }
+  .proof-v { font-size: var(--fs-num); color: var(--foam); }
+  .proof-l { font-size: var(--fs-sm); color: var(--mute); line-height: 1.4; }
+  @media (max-width: 768px) {
+    .proof-list { grid-template-columns: repeat(2, 1fr); gap: 1.75rem 1.25rem; }
+  }
+</style>

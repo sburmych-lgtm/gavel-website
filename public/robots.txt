@@ -1,0 +1,38 @@
+# Search visibility and model-training permission are different decisions.
+# This file only settles the first one.
+
+User-agent: *
+Allow: /
+
+# --- search indexing and user-directed retrieval: allowed ---
+
+User-agent: Googlebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# --- model-training crawlers (GPTBot, ClaudeBot, CCBot) are deliberately
+#     left unlisted. Allowing or blocking model training is the site owner's
+#     call, not a default anyone else should make on their behalf.
+#     See docs/architecture/12_OPEN_HUMAN_DECISIONS.md H-04.
+
+Sitemap: https://igor-gavrileyko-final-claude.up.railway.app/sitemap-index.xml

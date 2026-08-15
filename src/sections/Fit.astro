@@ -1,0 +1,33 @@
+---
+import { fit } from "../content";
+---
+<section class="section section--light" id="fit" aria-labelledby="fit-h">
+  <div class="shell">
+    <div class="head" data-reveal>
+      <span class="eyebrow">{fit.eyebrow}</span>
+      <h2 id="fit-h">{fit.h2}</h2>
+      <p class="lead">{fit.lead}</p>
+    </div>
+    <ul class="fit-list">
+      {fit.items.map((it) => (
+        <li class="fit-item" data-reveal>
+          <span class="num fit-n">{it.n}</span>
+          <h3 class="fit-t">{it.title}</h3>
+          <p class="fit-b">{it.body}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+<style>
+  .fit-list {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1.5rem, 3vw, 3rem);
+    list-style: none; margin: 0; padding: 0;
+  }
+  .fit-item { padding-top: 1.25rem; border-top: 1px solid var(--line-ink); }
+  .fit-n { display: block; font-size: 1rem; color: var(--gold-deep); margin-bottom: 1rem; }
+  .fit-t { margin-bottom: 0.625rem; }
+  .fit-b { color: color-mix(in oklab, var(--ink) 74%, transparent); font-size: var(--fs-body); }
+  @media (max-width: 768px) { .fit-list { grid-template-columns: 1fr; gap: 2rem; } }
+</style>

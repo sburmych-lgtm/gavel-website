@@ -1,14 +1,15 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-15 · checkpoint CP-01_
+_Last updated: 2026-08-15 · checkpoint CP-09_
 
 ## Current stage
 
-CP-01 — final architecture package frozen and mirrored.
+CP-09 — coded visual prototype complete locally and passing browser QA.
+Next is the Railway preview deployment.
 
 ## Last completed checkpoint
 
-CP-01.
+CP-09.
 
 ## Latest commit SHA
 
@@ -26,11 +27,17 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 - Brand logo extracted from JPEG to transparent PNG, gold on dark verified.
 - Final architecture package written: 17 documents in `docs/architecture/`,
   mirrored to `Assets\Архітектура та пайплайн\FINAL_CLAUDE_CANDIDATE`.
+- Full frontend: thirteen sections, three islands, no framework runtime.
+- `npm run build` passes both content guards; static output is 18 MB.
+- `npm run qa` — 36 browser checks at six widths, 0 fail, 0 warn.
+- Mandatory Before/After slider works by pointer, keyboard and click.
+- Reduced motion suppresses transitions and fetches no managed video.
+- With JavaScript disabled the whole page still renders, all 53 reveal blocks
+  visible and all key strings present.
 
 ## What is incomplete
 
-Everything downstream of CP-01. No Astro config, no tokens, no components, no
-sections, no page, no deployment.
+CP-10 only — Railway preview deployment and public-URL verification.
 
 ## Blockers
 
@@ -54,4 +61,6 @@ None.
 
 ## Exact next action
 
-CP-02 — Astro scaffold, design tokens, base layer, content and media modules.
+CP-10 — deploy to the Railway project `igor-gavrileyko-final-claude`, verify
+the public URL in a real browser, write `DEPLOYMENT_URL.txt` and
+`docs/DEPLOYMENT.md`, commit and push.

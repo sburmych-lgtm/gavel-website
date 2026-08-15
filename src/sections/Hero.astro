@@ -1,0 +1,143 @@
+---
+/**
+ * The hero has no entrance animation and is present at first paint. It is the
+ * LCP region; animating it would delay the largest paint to satisfy a
+ * flourish. Reveals start at section 2.
+ *
+ * Two video elements are rendered, one per orientation, but only the visible
+ * one ever gets a src — the page script checks visibility before promoting
+ * data-src, so a phone never downloads the 1600×900 desktop loop.
+ */
+import AutoVideo from "../components/AutoVideo.astro";
+import { hero } from "../content";
+import { videos } from "../content/media";
+---
+
+<section class="hero" id="top">
+  <div class="hero-media" aria-hidden="true">
+    <div class="hero-media-d">
+      <AutoVideo
+        src={videos.heroDesktop.src}
+        poster={videos.heroDesktop.poster}
+        width={videos.heroDesktop.width}
+        height={videos.heroDesktop.height}
+        label="Ігор Гаврилейко веслує в океані"
+      />
+    </div>
+    <div class="hero-media-m">
+      <AutoVideo
+        src={videos.heroMobile.src}
+        poster={videos.heroMobile.poster}
+        width={videos.heroMobile.width}
+        height={videos.heroMobile.height}
+        label="Ігор Гаврилейко веслує в океані"
+      />
+    </div>
+    <span class="hero-scrim"></span>
+  </div>
+
+  <div class="shell hero-in">
+    <p class="eyebrow hero-eyebrow">{hero.eyebrow}</p>
+
+    <h1 class="display hero-title">
+      {hero.title.map((line) => <span>{line}</span>)}
+    </h1>
+
+    <p class="hero-lead">{hero.lead}</p>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</a>
+      <a class="btn btn-ghost" href={hero.ctaSecondary.href}>{hero.ctaSecondary.label}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 100svh;
+    padding-top: 7rem;
+    padding-bottom: clamp(3rem, 8vh, 6rem);
+    overflow: hidden;
+    background: var(--abyss);
+  }
+
+  .hero-media { position: absolute; inset: 0; z-index: var(--z-media); }
+  .hero-media-d, .hero-media-m { position: absolute; inset: 0; }
+  .hero-media-m { display: none; }
+
+  /* Two scrims, not one.
+     The vertical pass grounds the type and blends the section into the next.
+     The horizontal pass gives the copy column its own ground while leaving
+     the right side — where the paddler is — bright. A single vertical
+     gradient left the eyebrow sitting on open water at roughly 24% coverage,
+     which measured well under 4.5:1. */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(95deg,
+        color-mix(in oklab, var(--abyss) 82%, transparent) 0%,
+        color-mix(in oklab, var(--abyss) 62%, transparent) 34%,
+        color-mix(in oklab, var(--abyss) 12%, transparent) 66%,
+        transparent 100%),
+      linear-gradient(180deg,
+        color-mix(in oklab, var(--abyss) 76%, transparent) 0%,
+        color-mix(in oklab, var(--abyss) 22%, transparent) 22%,
+        color-mix(in oklab, var(--abyss) 40%, transparent) 52%,
+        color-mix(in oklab, var(--abyss) 90%, transparent) 88%,
+        var(--abyss) 100%);
+  }
+
+  .hero-in { position: relative; z-index: var(--z-content); }
+
+  /* Foam, not caustic. Teal is a mid-tone; over mid-tone water it measured
+     2.75:1 from rendered pixels and no realistic scrim fixes that without
+     killing the water. Teal stays the eyebrow colour everywhere the ground
+     is a solid token, where it measures 5.98:1. Text over photography needs
+     luminance separation, not hue. */
+  .hero-eyebrow {
+    margin-bottom: clamp(1.25rem, 3vh, 2rem);
+    color: var(--foam);
+  }
+  /* the accent survives as a rule, which does not depend on legibility */
+  .hero-eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    margin-right: 0.75rem;
+    vertical-align: 0.28em;
+    background: var(--gold);
+  }
+
+  /* The only thing at this size anywhere on the page. */
+  .hero-title { text-transform: uppercase; }
+  .hero-title span { display: block; }
+
+  .hero-lead {
+    margin-top: clamp(1.5rem, 3.5vh, 2.25rem);
+    max-width: 42ch;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    color: var(--foam);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: clamp(1.75rem, 4vh, 2.75rem);
+  }
+
+  @media (max-width: 768px) {
+    .hero-media-d { display: none; }
+    .hero-media-m { display: block; }
+    .hero { padding-top: 6rem; }
+    .hero-lead { max-width: none; font-size: 1.0625rem; }
+    .hero-actions { flex-direction: column; align-items: stretch; }
+    .hero-actions .btn { width: 100%; }
+  }
+</style>

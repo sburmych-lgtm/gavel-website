@@ -1,17 +1,27 @@
 {
-  "name": "igor_gavrileyko_final_claude",
+  "name": "igor-gavrileyko-final-claude",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "IGOR GAVRILEYKO — coded visual prototype",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "astro dev",
+    "build": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && astro build",
+    "build:fast": "astro build",
+    "preview": "astro preview --host 0.0.0.0 --port ${PORT:-4321}",
+    "start": "astro preview --host 0.0.0.0 --port ${PORT:-4321}",
+    "check": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && astro check",
+    "qa": "node scripts/qa.mjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "astro": "^7.2.2",
     "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "playwright": "^1.62.1"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
   }
 }

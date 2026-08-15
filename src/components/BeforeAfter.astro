@@ -1,0 +1,180 @@
+---
+/**
+ * The mandatory draggable Before/After slider.
+ *
+ * The two source photographs are NOT camera-registered — different rooms,
+ * different framing, subject at a different scale. They were re-cropped in
+ * scripts/build-media.sh so the shoulder line and waistband land on a common
+ * canvas Y. Without that the wipe reads as a glitch rather than a comparison,
+ * which is exactly why two prior audits recommended abandoning the slider.
+ *
+ * Three input methods, all required, none optional:
+ *   pointer   — mouse, touch and pen through one Pointer Events path
+ *   keyboard  — arrows 1%, shift+arrows 10%, Home/End to the ends
+ *   click     — anywhere on the frame jumps the handle there
+ *
+ * With JS off the "after" image renders with both labels visible, so the
+ * section still communicates.
+ */
+import { resultsMedia } from "../content/media";
+import { results } from "../content";
+
+const { featured } = resultsMedia;
+---
+
+<div class="ba" data-ba>
+  <div class="ba-stage" data-ba-stage>
+    <img
+      class="ba-img ba-img--after"
+      src={featured.after}
+      alt={featured.altAfter}
+      width={featured.width}
+      height={featured.height}
+      loading="lazy"
+      decoding="async"
+    />
+
+    <div class="ba-clip" data-ba-clip>
+      <img
+        class="ba-img ba-img--before"
+        src={featured.before}
+        alt={featured.altBefore}
+        width={featured.width}
+        height={featured.height}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    <span class="ba-tag ba-tag--l" aria-hidden="true">{results.labelBefore}</span>
+    <span class="ba-tag ba-tag--r" aria-hidden="true">{results.labelAfter}</span>
+
+    <div
+      class="ba-handle"
+      data-ba-handle
+      role="slider"
+      tabindex="0"
+      aria-label="Порівняння до і після"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="50"
+      aria-valuetext="50% — половина кадру «до»"
+    >
+      <span class="ba-line" aria-hidden="true"></span>
+      <span class="ba-grip" aria-hidden="true"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ba { width: 100%; }
+
+  .ba-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 900 / 1200;
+    max-height: min(78vh, 760px);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--deep);
+    /* the pointer path handles horizontal drags; without this a swipe on a
+       phone scrolls the page instead of moving the handle */
+    touch-action: pan-y;
+    user-select: none;
+    cursor: ew-resize;
+  }
+
+  .ba-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .ba-clip {
+    position: absolute;
+    inset: 0;
+    /* --pos is written by the script; 50% is the no-JS / initial state */
+    clip-path: inset(0 calc(100% - var(--pos, 50%)) 0 0);
+  }
+
+  .ba-tag {
+    position: absolute;
+    top: 0.875rem;
+    z-index: 3;
+    padding: 0.3rem 0.6rem;
+    background: color-mix(in oklab, var(--abyss) 76%, transparent);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--foam);
+    pointer-events: none;
+  }
+  .ba-tag--l { left: 0.875rem; }
+  .ba-tag--r { right: 0.875rem; }
+
+  .ba-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos, 50%);
+    z-index: 4;
+    width: 44px;                 /* the touch target, not the visual */
+    margin-left: -22px;
+    display: grid;
+    place-items: center;
+    cursor: ew-resize;
+    touch-action: none;
+  }
+
+  .ba-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--foam);
+    opacity: 0.9;
+  }
+
+  .ba-grip {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--foam);
+    border: 2px solid var(--foam);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--abyss) 40%, transparent);
+  }
+  /* two chevrons drawn in CSS rather than an icon set */
+  .ba-grip::before,
+  .ba-grip::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-top: 2px solid var(--ink);
+    border-right: 2px solid var(--ink);
+  }
+  .ba-grip::before { left: 11px;  transform: translateY(-50%) rotate(-135deg); }
+  .ba-grip::after  { right: 11px; transform: translateY(-50%) rotate(45deg); }
+
+  .ba-handle:focus-visible { outline: none; }
+  .ba-handle:focus-visible .ba-grip {
+    outline: 2px solid var(--caustic);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 560px) {
+    .ba-stage { aspect-ratio: 4 / 5; }
+  }
+</style>

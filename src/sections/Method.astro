@@ -1,0 +1,53 @@
+---
+import { method } from "../content";
+---
+<section class="section" id="method" aria-labelledby="method-h">
+  <div class="shell">
+    <div class="head" data-reveal>
+      <span class="eyebrow">{method.eyebrow}</span>
+      <h2 id="method-h">{method.h2}</h2>
+      <p class="lead">{method.lead}</p>
+    </div>
+
+    <ol class="m-list">
+      {method.phases.map((p) => (
+        <li class="m-item" data-reveal>
+          <span class="num m-n">{p.n}</span>
+          <h3 class="m-ua">{p.ua}</h3>
+          <span class="m-en">{p.en}</span>
+          <p class="m-b">{p.body}</p>
+        </li>
+      ))}
+    </ol>
+
+    <p class="m-close" data-reveal>{method.close}</p>
+  </div>
+</section>
+<style>
+  .m-list {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1.5rem, 2.5vw, 2.5rem);
+    list-style: none; margin: 0; padding: 0;
+  }
+  .m-item { padding-top: 1.25rem; border-top: 1px solid var(--line); }
+  .m-n { display: block; font-size: 1rem; color: var(--gold); margin-bottom: 1.25rem; }
+  .m-ua { margin-bottom: 0.25rem; }
+  /* The English stroke name is what makes the metaphor legible as a real
+     technical sequence rather than decoration. */
+  .m-en {
+    display: block; margin-bottom: 0.875rem;
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--caustic);
+  }
+  .m-b { color: var(--mute); font-size: var(--fs-body); }
+  .m-close {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line-soft);
+    font-family: var(--font-display); font-weight: 800;
+    font-size: var(--fs-h3); letter-spacing: -0.01em;
+    color: var(--foam); max-width: 34ch;
+  }
+  @media (max-width: 1100px) { .m-list { grid-template-columns: repeat(2, 1fr); gap: 2rem; } }
+  @media (max-width: 560px) { .m-list { grid-template-columns: 1fr; } }
+</style>

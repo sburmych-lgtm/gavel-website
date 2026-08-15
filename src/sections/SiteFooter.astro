@@ -1,0 +1,72 @@
+---
+import { site, nav } from "../content";
+import { logo, videos } from "../content/media";
+---
+<footer class="ft">
+  <div class="shell ft-in">
+    <div class="ft-brand">
+      <img src={logo.full.src} alt={logo.full.alt} width={logo.full.width}
+           height={logo.full.height} class="ft-logo" loading="lazy" decoding="async" />
+      <p class="ft-who">{site.name} · {site.role}</p>
+      <p class="ft-where">{site.city}, {site.venue}</p>
+    </div>
+
+    <nav class="ft-nav" aria-label="Навігація у підвалі">
+      <ul>
+        {nav.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="ft-side">
+      <a class="ft-ig" href={site.instagram} target="_blank" rel="noopener noreferrer">
+        Instagram {site.instagramHandle}
+      </a>
+      {/* the one unserious thing on the page, and it is real footage */}
+      <video class="ft-dog" src={videos.dog.src} width={videos.dog.width}
+             height={videos.dog.height} muted loop playsinline autoplay
+             preload="none" aria-label={videos.dog.label}></video>
+    </div>
+  </div>
+
+  <div class="shell ft-btm">
+    <p>© {site.year} {site.romanised}</p>
+  </div>
+</footer>
+<style>
+  .ft { padding-top: clamp(3rem, 6vw, 5rem); border-top: 1px solid var(--line-soft); }
+  .ft-in {
+    display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 3.5rem); align-items: start;
+  }
+  .ft-logo { width: auto; height: 56px; margin-bottom: 1.25rem; }
+  .ft-who { font-weight: 500; margin-bottom: 0.25rem; }
+  .ft-where { color: var(--mute); font-size: var(--fs-sm); }
+  .ft-nav ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.625rem; }
+  .ft-nav a {
+    font-size: var(--fs-sm); text-decoration: none; color: var(--mute);
+    border-bottom: 1px solid transparent; transition: color var(--t-fast) var(--ease);
+  }
+  .ft-nav a:hover { color: var(--foam); border-bottom-color: var(--caustic); }
+  .ft-side { display: grid; gap: 1.25rem; justify-items: start; }
+  .ft-ig {
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.08em; text-decoration: none; color: var(--foam);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.2rem; min-height: 44px; display: inline-flex; align-items: center;
+  }
+  .ft-ig:hover { border-bottom-color: var(--caustic); }
+  .ft-dog {
+    width: 100%; max-width: 220px; height: auto;
+    border: 1px solid var(--line-soft); border-radius: var(--r);
+    filter: saturate(0.8) brightness(0.9);
+  }
+  .ft-btm {
+    margin-top: clamp(2.5rem, 5vw, 4rem); padding-block: 1.5rem;
+    border-top: 1px solid var(--line-soft);
+  }
+  .ft-btm p {
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.08em; color: var(--mute);
+  }
+  @media (max-width: 768px) { .ft-in { grid-template-columns: 1fr; gap: 2.25rem; } }
+</style>

@@ -1,0 +1,65 @@
+---
+import { pricing } from "../content";
+---
+<section class="section section--light" id="pricing" aria-labelledby="pricing-h">
+  <div class="shell">
+    <div class="head" data-reveal>
+      <span class="eyebrow">{pricing.eyebrow}</span>
+      <h2 id="pricing-h">{pricing.h2}</h2>
+      <p class="lead">{pricing.lead}</p>
+    </div>
+
+    <ul class="p-list">
+      {pricing.tiers.map((t) => (
+        <li class:list={["p-item", t.featured && "p-item--f"]} data-reveal>
+          <h3 class="p-name">{t.name}</h3>
+          <p class="p-price">
+            <span class="num p-val">{t.price}</span><span class="p-cur">{t.currency}</span>
+          </p>
+          <p class="p-inc">{t.includes}</p>
+        </li>
+      ))}
+    </ul>
+
+    <div class="p-foot" data-reveal>
+      <p class="p-note">{pricing.note}</p>
+      <p class="p-limit">{pricing.limit}</p>
+    </div>
+  </div>
+</section>
+<style>
+  .p-list {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    list-style: none; margin: 0; padding: 0;
+  }
+  .p-item {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    padding: 1.5rem 1.25rem;
+    border: 1px solid var(--line-ink); border-radius: var(--r);
+    background: color-mix(in oklab, #fff 45%, transparent);
+  }
+  /* Distinguished by a gold outline, not a fill and not a "popular" badge —
+     no popularity data exists. */
+  .p-item--f { border-color: var(--gold-deep); border-width: 1px; }
+  .p-name { font-size: 1rem; font-weight: 600; margin: 0; }
+  .p-price { display: flex; align-items: baseline; gap: 0.15rem; margin: 0; }
+  .p-val { font-size: var(--fs-num); color: var(--ink); }
+  .p-cur { font-family: var(--font-mono); font-size: 1rem; color: var(--gold-deep); }
+  .p-inc {
+    margin: 0; font-size: var(--fs-sm); line-height: 1.5;
+    color: color-mix(in oklab, var(--ink) 72%, transparent);
+  }
+  .p-foot {
+    margin-top: clamp(2rem, 4vw, 3rem); padding-top: 1.5rem;
+    border-top: 1px solid var(--line-ink);
+    display: grid; gap: 0.875rem;
+  }
+  .p-note, .p-limit {
+    margin: 0; font-size: var(--fs-sm);
+    color: color-mix(in oklab, var(--ink) 68%, transparent);
+  }
+  .p-limit { font-weight: 500; color: color-mix(in oklab, var(--ink) 88%, transparent); }
+  @media (max-width: 1100px) { .p-list { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+  @media (max-width: 560px) { .p-list { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,108 @@
+---
+/**
+ * The framed-media primitive.
+ *
+ * This is the grammar the client approved in the previous prototype, lifted
+ * out of that one-off hero and made reusable. Every value here is
+ * load-bearing and was measured off the original:
+ *
+ *   aspect-ratio   the source's own — never cropped to 16:9
+ *   border         1px caustic at 25%, a hairline and nothing more
+ *   radius         2px — near-square, editorial rather than "card"
+ *   box-shadow     none, anywhere, ever
+ *   background     --deep, so the frame has substance before media loads
+ *   grade          cools the bright gym footage into the ocean palette
+ *   vignette       two stops from an empty aria-hidden span — this is what
+ *                  makes a phone video read as composed rather than dropped in
+ *
+ * The vignette and the grade are the two things most easily lost in a
+ * refactor, and they are most of the reason the treatment works.
+ */
+interface Props {
+  ratio?: string;
+  maxWidth?: string;
+  grade?: boolean;
+  /** "soft" lifts the bottom stop so burnt-in captions stay readable. */
+  vignette?: "normal" | "soft";
+  class?: string;
+  caption?: string;
+}
+const {
+  ratio = "9 / 16",
+  maxWidth,
+  grade = false,
+  vignette = "normal",
+  class: className = "",
+  caption,
+} = Astro.props;
+---
+
+<figure class:list={["frame-wrap", className]}>
+  <div
+    class:list={["frame", grade && "frame--grade"]}
+    style={`--ratio:${ratio};${maxWidth ? `--mw:${maxWidth};` : ""}`}
+  >
+    <slot />
+    <span class:list={["frame-edge", vignette === "soft" && "frame-edge--soft"]} aria-hidden="true"></span>
+  </div>
+  {caption && <figcaption class="frame-cap">{caption}</figcaption>}
+</figure>
+
+<style>
+  .frame-wrap { margin: 0; width: 100%; }
+
+  .frame {
+    position: relative;
+    width: 100%;
+    max-width: var(--mw, none);
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    background: var(--deep);
+  }
+
+  .frame :global(video),
+  .frame :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The gym footage is bright, blue and clinical. Ungraded it fights the
+     ocean palette; this sits it down into the page without muddying it. */
+  .frame--grade :global(video),
+  .frame--grade :global(img) {
+    filter: saturate(0.72) contrast(1.06) brightness(0.82);
+  }
+  /* A softer grade where the source carries burnt-in text that must stay
+     readable — dimming it to 0.82 washes the captions out. */
+  .frame--grade:has(.frame-edge--soft) :global(video),
+  .frame--grade:has(.frame-edge--soft) :global(img) {
+    filter: saturate(0.8) contrast(1.04) brightness(0.94);
+  }
+
+  .frame-edge {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--abyss) 52%, transparent) 0%, transparent 26%),
+      linear-gradient(0deg,   color-mix(in oklab, var(--abyss) 70%, transparent) 0%, transparent 32%);
+  }
+
+  .frame-edge--soft {
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--abyss) 40%, transparent) 0%, transparent 22%),
+      linear-gradient(0deg,   color-mix(in oklab, var(--abyss) 34%, transparent) 0%, transparent 20%);
+  }
+
+  .frame-cap {
+    margin-top: 0.875rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.06em;
+    color: var(--mute);
+  }
+</style>

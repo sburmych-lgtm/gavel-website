@@ -1,0 +1,318 @@
+---
+import Base from "../layouts/Base.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import Hero from "../sections/Hero.astro";
+import Proof from "../sections/Proof.astro";
+import Fit from "../sections/Fit.astro";
+import Method from "../sections/Method.astro";
+import Results from "../sections/Results.astro";
+import Formats from "../sections/Formats.astro";
+import Pricing from "../sections/Pricing.astro";
+import Coach from "../sections/Coach.astro";
+import Athlete from "../sections/Athlete.astro";
+import Credentials from "../sections/Credentials.astro";
+import Faq from "../sections/Faq.astro";
+import Contact from "../sections/Contact.astro";
+import SiteFooter from "../sections/SiteFooter.astro";
+import { hero } from "../content";
+---
+
+<Base>
+  <SiteHeader />
+
+  <main id="main">
+    <Hero />
+    <Proof />
+    <Fit />
+    <Method />
+    <Results />
+    <Formats />
+    <Pricing />
+    <Coach />
+    <Athlete />
+    <Credentials />
+    <Faq />
+    <Contact />
+  </main>
+
+  <SiteFooter />
+
+  <!-- Mobile only. Appears once the hero CTA has left the viewport and hides
+       again near #contact so it never covers the real form. -->
+  <div class="sticky-cta" data-sticky hidden>
+    <a class="btn btn-primary" href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</a>
+  </div>
+</Base>
+
+<style>
+  .sticky-cta {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: var(--z-sticky);
+    padding: 0.75rem var(--gut) calc(0.75rem + env(safe-area-inset-bottom));
+    background: var(--glass);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line-soft);
+    transform: translateY(100%);
+    transition: transform var(--t-base) var(--ease);
+  }
+  .sticky-cta.is-in { transform: none; }
+  .sticky-cta .btn { width: 100%; }
+  .sticky-cta[hidden] { display: none; }
+
+  @media (min-width: 769px) { .sticky-cta { display: none !important; } }
+</style>
+
+<script>
+  /* ------------------------------------------------------------------ *
+   * Three small islands. No framework runtime, no bundled library.
+   * Every one of them is progressive: with this file absent the page
+   * still renders completely and every link still works.
+   * ------------------------------------------------------------------ */
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  /* --- header: scroll state, overlay, focus trap --------------------- */
+  (() => {
+    const hdr = document.querySelector<HTMLElement>("[data-hdr]");
+    const toggle = document.querySelector<HTMLButtonElement>("[data-hdr-toggle]");
+    const panel = document.querySelector<HTMLElement>("[data-hdr-panel]");
+    if (!hdr) return;
+
+    // The hero opens clean; the bar only gains its ground after it.
+    const onScroll = () => {
+      hdr.classList.toggle("is-solid", window.scrollY > window.innerHeight * 0.6);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    if (!toggle || !panel) return;
+
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      panel.hidden = !open;
+      document.body.style.overflow = open ? "hidden" : "";
+      if (open) panel.querySelector<HTMLElement>("a")?.focus();
+      else toggle.focus();
+    };
+
+    toggle.addEventListener("click", () =>
+      setOpen(toggle.getAttribute("aria-expanded") !== "true"),
+    );
+
+    // Following a link should close the overlay, not leave it covering the
+    // section the user just asked for.
+    panel.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !panel.hidden) setOpen(false);
+      if (e.key !== "Tab" || panel.hidden) return;
+      const items = [...panel.querySelectorAll<HTMLElement>("a, button")];
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    // A resize past the breakpoint must not leave the overlay stranded open.
+    window.matchMedia("(min-width: 1101px)").addEventListener("change", (m) => {
+      if (m.matches && !panel.hidden) setOpen(false);
+    });
+  })();
+
+  /* --- reveal --------------------------------------------------------- *
+   * If IntersectionObserver is unavailable, everything reveals immediately.
+   * A reveal may enhance; it may never be the reason content is invisible.
+   * ------------------------------------------------------------------- */
+  (() => {
+    const items = [...document.querySelectorAll<HTMLElement>("[data-reveal]")];
+    const showAll = () => items.forEach((el) => el.classList.add("is-in"));
+
+    if (reduced.matches || !("IntersectionObserver" in window)) {
+      showAll();
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          e.target.classList.add("is-in");
+          io.unobserve(e.target); // once, never again on the way back up
+        }
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
+    );
+    items.forEach((el) => io.observe(el));
+  })();
+
+  /* --- video ---------------------------------------------------------- *
+   * src lives in data-src and is only promoted when motion is allowed AND
+   * the element is actually visible at this breakpoint. So a phone never
+   * downloads the desktop loop, and someone who asked for reduced motion
+   * downloads nothing at all — they keep the poster.
+   * ------------------------------------------------------------------- */
+  (() => {
+    const vids = document.querySelectorAll<HTMLVideoElement>("[data-autovideo]");
+    if (reduced.matches) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          const v = e.target as HTMLVideoElement;
+          if (e.isIntersecting) {
+            if (!v.src && v.dataset.src) v.src = v.dataset.src;
+            if (!v.dataset.paused) v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    vids.forEach((v) => {
+      // offsetParent is null when a display:none breakpoint hides it
+      if (v.offsetParent === null) return;
+      io.observe(v);
+
+      const btn = v.closest(".av")?.querySelector<HTMLButtonElement>("[data-av-pause]");
+      const label = btn?.querySelector<HTMLElement>("[data-av-label]");
+      if (!btn || !label) return;
+      btn.hidden = false;
+      btn.addEventListener("click", () => {
+        if (v.paused) { v.dataset.paused = ""; delete v.dataset.paused; v.play().catch(() => {}); label.textContent = "Пауза"; }
+        else { v.pause(); v.dataset.paused = "1"; label.textContent = "Грати"; }
+      });
+    });
+  })();
+
+  /* --- before / after -------------------------------------------------- *
+   * Pointer, keyboard and click-to-position. All three required.
+   * ------------------------------------------------------------------- */
+  (() => {
+    const root = document.querySelector<HTMLElement>("[data-ba]");
+    if (!root) return;
+    const stage = root.querySelector<HTMLElement>("[data-ba-stage]");
+    const handle = root.querySelector<HTMLElement>("[data-ba-handle]");
+    if (!stage || !handle) return;
+
+    let pos = 50;
+
+    const paint = () => {
+      stage.style.setProperty("--pos", pos + "%");
+      handle.setAttribute("aria-valuenow", String(Math.round(pos)));
+      handle.setAttribute(
+        "aria-valuetext",
+        `${Math.round(pos)}% — частка кадру «до»`,
+      );
+    };
+
+    const fromClientX = (x: number) => {
+      const r = stage.getBoundingClientRect();
+      pos = Math.min(100, Math.max(0, ((x - r.left) / r.width) * 100));
+      paint();
+    };
+
+    let dragging = false;
+    handle.addEventListener("pointerdown", (e) => {
+      dragging = true;
+      handle.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    handle.addEventListener("pointermove", (e) => {
+      if (dragging) fromClientX(e.clientX);
+    });
+    const stop = (e: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      try { handle.releasePointerCapture(e.pointerId); } catch {}
+    };
+    handle.addEventListener("pointerup", stop);
+    handle.addEventListener("pointercancel", stop);
+
+    // clicking anywhere on the frame jumps the handle there
+    stage.addEventListener("pointerdown", (e) => {
+      if (e.target === handle || handle.contains(e.target as Node)) return;
+      fromClientX(e.clientX);
+    });
+
+    handle.addEventListener("keydown", (e) => {
+      const step = e.shiftKey ? 10 : 1;
+      let next = pos;
+      if (e.key === "ArrowLeft" || e.key === "ArrowDown") next = pos - step;
+      else if (e.key === "ArrowRight" || e.key === "ArrowUp") next = pos + step;
+      else if (e.key === "Home") next = 0;
+      else if (e.key === "End") next = 100;
+      else return;
+      e.preventDefault();
+      pos = Math.min(100, Math.max(0, next));
+      paint();
+    });
+
+    paint();
+  })();
+
+  /* --- sticky mobile CTA ----------------------------------------------- */
+  (() => {
+    const bar = document.querySelector<HTMLElement>("[data-sticky]");
+    const heroCta = document.querySelector<HTMLElement>(".hero-actions");
+    const contactSec = document.getElementById("contact");
+    if (!bar || !heroCta || !contactSec) return;
+    if (!window.matchMedia("(max-width: 768px)").matches) return;
+
+    bar.hidden = false;
+    let pastHero = false;
+    let atContact = false;
+    const sync = () => bar.classList.toggle("is-in", pastHero && !atContact);
+
+    new IntersectionObserver(
+      ([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; sync(); },
+      { threshold: 0 },
+    ).observe(heroCta);
+
+    new IntersectionObserver(
+      ([e]) => { atContact = e.isIntersecting; sync(); },
+      { threshold: 0.05 },
+    ).observe(contactSec);
+  })();
+
+  /* --- contact form ----------------------------------------------------- *
+   * Validates, then says plainly that there is no endpoint. It never shows
+   * a success state, because there is nothing to succeed at yet.
+   * -------------------------------------------------------------------- */
+  (() => {
+    const form = document.querySelector<HTMLFormElement>("[data-contact]");
+    if (!form) return;
+    const note = form.querySelector<HTMLElement>("[data-contact-note]");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const get = (k: string) => String(data.get(k) ?? "").trim();
+
+      const errors: Record<string, string> = {};
+      if (!get("name")) errors.name = "Вкажіть ім'я";
+      if (!get("goal")) errors.goal = "Опишіть коротко вашу ціль";
+      if (!get("contact")) errors.contact = "Вкажіть, як з вами зв'язатися";
+
+      form.querySelectorAll<HTMLElement>("[data-err]").forEach((el) => {
+        el.textContent = errors[el.dataset.err!] ?? "";
+      });
+
+      if (Object.keys(errors).length) {
+        form.querySelector<HTMLElement>(`#f-${Object.keys(errors)[0]}`)?.focus();
+        return;
+      }
+
+      if (note) {
+        note.textContent =
+          "Цей прототип не надсилає повідомлення. Напишіть, будь ласка, в Instagram — посилання ліворуч.";
+        note.style.color = "var(--gold)";
+      }
+    });
+  })();
+</script>

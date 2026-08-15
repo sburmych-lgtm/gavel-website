@@ -1,0 +1,69 @@
+---
+import "../styles/fonts.css";
+import "../styles/tokens.css";
+import "../styles/base.css";
+import { site } from "../content";
+import { buildSchema } from "../lib/schema";
+
+const siteUrl = Astro.site?.href ?? "http://localhost:4321/";
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+
+// The preview deployment must never be indexed ahead of the real domain.
+const indexable = import.meta.env.INDEXABLE === "true";
+
+const ogImage = "/og-image.jpg";
+const schema = buildSchema(siteUrl, ogImage);
+---
+
+<!doctype html>
+<html lang="uk" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{site.title}</title>
+    <meta name="description" content={site.description} />
+    <link rel="canonical" href={canonical} />
+
+    {indexable
+      ? <meta name="robots" content="index, follow, max-image-preview:large" />
+      : <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.romanised} />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:title" content={site.title} />
+    <meta property="og:description" content={site.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <meta name="theme-color" content="#060E12" />
+
+    <!-- Only the two faces used above the fold. Everything else is
+         discovered normally rather than competing with the LCP poster. -->
+    <link
+      rel="preload" as="font" type="font/woff2" crossorigin
+      href="/fonts/geologica-800-cyrillic-814be3a4.woff2" />
+    <link
+      rel="preload" as="font" type="font/woff2" crossorigin
+      href="/fonts/onest-400-cyrillic-019021ad.woff2" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <script is:inline set:html={JSON.stringify(schema)} type="application/ld+json" />
+
+    <!-- Flip the no-js class before first paint so reveal elements do not
+         flash at opacity:0 for users who have JS but a slow main thread. -->
+    <script is:inline>
+      document.documentElement.classList.remove("no-js");
+    </script>
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Перейти до вмісту</a>
+    <slot />
+  </body>
+</html>

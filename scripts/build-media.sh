@@ -36,10 +36,16 @@ say "hero mobile — Canoe_Ocean-Main 2.0-10.0s (clean window)"
 enc "$A/Video/Canoe_Ocean-Main.mp4" "$OUT/video/hero-mobile.mp4" 2 8 \
     "scale=720:1280:flags=lanczos" 26
 
-say "coach vertical — Self_Presentation 13.5-25.5s (past the burnt-in captions)"
-# Source is 2160x3840 HEVC, 105 MB — never shippable. Captions are burnt in
-# for roughly the first 12s only, so the window starts after them.
-enc "$A/Video/Self_Presentation.MOV" "$OUT/video/coach.mp4" 13.5 12 \
+say "coach vertical — Self_Presentation 0-12s (the talking-head opening)"
+# Source is 2160x3840 HEVC, 105 MB — never shippable.
+#
+# This deliberately KEEPS the burnt-in Ukrainian captions. The previous
+# prototype skipped past them because it used the clip as a decorative,
+# aria-hidden hero background, where text inside a video means nothing. Here
+# the clip IS the Coach section, and the captions introduce him by name and
+# name the venue — exactly what that section is for — which also makes the
+# muted autoplay comprehensible instead of silent.
+enc "$A/Video/Self_Presentation.MOV" "$OUT/video/coach.mp4" 0 12 \
     "scale=1080:1920:flags=lanczos" 26
 
 say "athlete — Dragonboat team racing"
@@ -96,16 +102,33 @@ sup(){ ffmpeg -y -v error -i "$1" -vf "scale=$2:-2:flags=lanczos" -q:v 4 "$3"; }
 sup "$BA/2_before-after.jpg" 1100 "$OUT/image/result-2.jpg"
 sup "$BA/3_before-after.jpg" 1100 "$OUT/image/result-3.jpg"
 sup "$BA/4_before-after.jpg" 1000 "$OUT/image/result-4.jpg"
-sup "$BA/6_before-after.JPG"  760 "$OUT/image/result-6.jpg"
+# 6_before-after carries baked white bands top and bottom (measured: the
+# content occupies rows 173..1106 of 1280). Cropped so the card is not
+# mostly padding.
+ffmpeg -y -v error -i "$BA/6_before-after.JPG" \
+  -vf "crop=768:934:0:173,scale=760:-2:flags=lanczos" -q:v 4 "$OUT/image/result-6.jpg"
 
 # ---------------------------------------------------------------- logo
 # Both logo files are JPEGs on a white ground. colorkey lifts the white so the
 # mark can sit on the deep page colour. The gold version is the brand accent
 # source; the black version is unusable on a dark page.
+#
+# The crop is the measured ink bounding box (x 362..945, y 115..678 of the
+# 1280x853 source) plus a small margin. The first attempt carried ~38% empty
+# padding, so the mark rendered at 62% of its box and read as a gold blur.
 say "logo — key out the white ground"
 ffmpeg -y -v error -i "$A/Photo/Logo_gold_version.jpg" \
-  -vf "colorkey=0xFDFDFD:0.22:0.10,crop=940:600:170:130,scale=470:-1:flags=lanczos" \
+  -vf "colorkey=0xFDFDFD:0.22:0.10,crop=603:583:352:105,scale=480:-1:flags=lanczos" \
   "$OUT/image/logo-gold.png"
+
+# Header variant: the monogram alone. The full lockup is nearly square with
+# the wordmark overlapping the mark's lower third, so at a 34px header height
+# the name is ~5px tall and the whole lockup reads as a gold smudge. The
+# monogram crops cleanly above the wordmark and stays legible; the header
+# sets the name in type beside it instead.
+ffmpeg -y -v error -i "$A/Photo/Logo_gold_version.jpg" \
+  -vf "colorkey=0xFDFDFD:0.22:0.10,crop=603:340:352:105,scale=360:-1:flags=lanczos" \
+  "$OUT/image/logo-mark.png"
 
 say "done"
 ls -la "$OUT/video" "$OUT/image"

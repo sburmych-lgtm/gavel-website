@@ -1,0 +1,77 @@
+/* Design tokens.
+ *
+ * Every colour below was sampled out of the real project photographs with
+ * ffmpeg palettegen and then adjusted only for contrast. Provenance is in the
+ * comments because it is the reason the palette is defensible rather than
+ * decorative — see docs/architecture/03_FINAL_DESIGN_SYSTEM.md.
+ */
+
+:root {
+  /* --- ground: the near-black of On_Beach.JPG's shadows (#020506), warmed
+         very slightly blue-green so it never reads as neutral black --- */
+  --abyss: #060e12;
+  --deep: #0b1a1f;   /* Canoe2.JPG #0E2124 — raised surface, nav glass */
+  --petrol: #123138; /* Canoe2.JPG #193732 — section band, card on dark */
+
+  /* --- light through water. LIGHT, NOT PAINT.
+         Hairlines, focus rings, hover underlines, panel edges. Never a fill,
+         never a heading colour, never more than ~5% of a viewport. --- */
+  --caustic: #4e9aa0;
+
+  /* --- text --- */
+  --foam: #e9eff1;   /* 16.79:1 on abyss */
+  --mute: #93a9b0;   /*  7.93:1 on abyss */
+  --mist: #dce6e8;   /* the light band ground */
+  --ink: #0a1418;    /* text on light, text on gold */
+
+  /* --- the accent, taken from the client's own logo file.
+         Gold is brand equity here, not a taste choice, and "викована" is a
+         forging word. Matte solid only: no gradient, no glow.
+         EXACTLY ONE filled gold action per screen. --- */
+  --gold: #e1ae42;      /* Logo_gold_version.jpg — 9.60:1 on abyss */
+  --gold-deep: #c8952f; /* hover, outline */
+
+  --danger: #b4453a;    /* form errors only */
+
+  /* --- derived --- */
+  --line: color-mix(in oklab, var(--caustic) 25%, transparent);
+  --line-soft: color-mix(in oklab, var(--foam) 12%, transparent);
+  --line-ink: color-mix(in oklab, var(--ink) 14%, transparent);
+  --glass: color-mix(in oklab, var(--abyss) 82%, transparent);
+
+  /* --- type --- */
+  --font-display: "Geologica", system-ui, sans-serif;
+  --font-body: "Onest", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --fs-mono: 0.8125rem;
+  --fs-sm: 0.875rem;
+  --fs-body: 1.0625rem;
+  --fs-lead: clamp(1.125rem, 0.98rem + 0.6vw, 1.375rem);
+  --fs-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-h2: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  --fs-h1: clamp(2.75rem, 1.5rem + 5.6vw, 5.75rem);
+  --fs-num: clamp(1.75rem, 1.3rem + 1.9vw, 2.5rem);
+
+  /* --- space --- */
+  --max: 75rem;
+  --gut: clamp(1.25rem, 4vw, 3.5rem);
+  --sec: clamp(4.5rem, 9vw, 8rem);
+
+  /* 2px everywhere. Rounded cards on a dark gradient is the exact silhouette
+     of generated output; sharp corners plus hairlines reads as editorial. */
+  --r: 2px;
+
+  /* --- motion --- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 180ms;
+  --t-base: 340ms;
+  --t-slow: 500ms;
+
+  /* --- layers --- */
+  --z-media: 1;
+  --z-content: 2;
+  --z-nav: 40;
+  --z-sticky: 45;
+  --z-overlay: 50;
+}

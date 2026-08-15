@@ -1,0 +1,181 @@
+{
+  "base": "http://127.0.0.1:4399",
+  "widths": [
+    {
+      "name": "1920-desktop-xl",
+      "w": 1920,
+      "h": 1080
+    },
+    {
+      "name": "1440-desktop",
+      "w": 1440,
+      "h": 900
+    },
+    {
+      "name": "1024-laptop",
+      "w": 1024,
+      "h": 768
+    },
+    {
+      "name": "768-tablet",
+      "w": 768,
+      "h": 1024
+    },
+    {
+      "name": "390-mobile",
+      "w": 390,
+      "h": 844
+    },
+    {
+      "name": "320-mobile-min",
+      "w": 320,
+      "h": 640
+    }
+  ],
+  "report": [
+    {
+      "level": "OK",
+      "m": "1920-desktop-xl: no horizontal overflow"
+    },
+    {
+      "level": "OK",
+      "m": "1920-desktop-xl: no console errors"
+    },
+    {
+      "level": "OK",
+      "m": "1440-desktop: no horizontal overflow"
+    },
+    {
+      "level": "OK",
+      "m": "1440-desktop: no console errors"
+    },
+    {
+      "level": "OK",
+      "m": "1024-laptop: no horizontal overflow"
+    },
+    {
+      "level": "OK",
+      "m": "1024-laptop: no console errors"
+    },
+    {
+      "level": "OK",
+      "m": "768-tablet: no horizontal overflow"
+    },
+    {
+      "level": "OK",
+      "m": "768-tablet: no console errors"
+    },
+    {
+      "level": "OK",
+      "m": "390-mobile: no horizontal overflow"
+    },
+    {
+      "level": "OK",
+      "m": "390-mobile: no console errors"
+    },
+    {
+      "level": "OK",
+      "m": "320-mobile-min: no horizontal overflow"
+    },
+    {
+      "level": "OK",
+      "m": "320-mobile-min: no console errors"
+    },
+    {
+      "level": "OK",
+      "m": "H1 exact: \"СИЛА ВИКОВАНА ВОДОЮ\""
+    },
+    {
+      "level": "OK",
+      "m": "exactly one h1"
+    },
+    {
+      "level": "OK",
+      "m": "slider: arrow keys step 1% (50→52)"
+    },
+    {
+      "level": "OK",
+      "m": "slider: shift+arrow steps 10% (→62)"
+    },
+    {
+      "level": "OK",
+      "m": "slider: Home jumps to 0"
+    },
+    {
+      "level": "OK",
+      "m": "slider: pointer drag moved to 35%"
+    },
+    {
+      "level": "OK",
+      "m": "slider: clip-path active (inset(0px 65% 0px 0px))"
+    },
+    {
+      "level": "OK",
+      "m": "focus ring on slider grip (2px solid)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast main h1: 16.75:1 (needs 3)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast #fit h2: 14.68:1 (needs 3)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast #fit .lead: 8.02:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast #method .eyebrow: 5.98:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast .btn-primary: 9.18:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast #pricing .p-inc: 12.32:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast #method .m-b: 7.92:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast .ft-where: 7.92:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast #results .lead: 7.23:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast .q-a p: 7.23:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "hero eyebrow over video: 8.19:1 measured from rendered pixels"
+    },
+    {
+      "level": "OK",
+      "m": "touch targets ≥44px"
+    },
+    {
+      "level": "OK",
+      "m": "reduced motion: no managed video fetched (posters only)"
+    },
+    {
+      "level": "OK",
+      "m": "reduced motion: all content visible"
+    },
+    {
+      "level": "OK",
+      "m": "no-JS: all 9 key strings present in rendered HTML"
+    },
+    {
+      "level": "OK",
+      "m": "no-JS: all 53 reveal blocks visible"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+---
+import AutoVideo from "../components/AutoVideo.astro";
+import { contact, site } from "../content";
+import { videos } from "../content/media";
+---
+<section class="section ct" id="contact" aria-labelledby="contact-h">
+  <div class="ct-media" aria-hidden="true">
+    <AutoVideo
+      src={videos.waterCalm.src}
+      poster={videos.waterCalm.poster}
+      width={videos.waterCalm.width}
+      height={videos.waterCalm.height}
+      label={videos.waterCalm.label}
+      showPause={true}
+    />
+    <span class="ct-scrim"></span>
+  </div>
+
+  <div class="shell ct-in">
+    <div class="ct-copy" data-reveal>
+      <span class="eyebrow ct-eyebrow">{contact.eyebrow}</span>
+      <h2 id="contact-h">{contact.h2}</h2>
+      <p class="lead ct-lead">{contact.lead}</p>
+      <a class="btn btn-primary ct-cta" href={contact.cta.href}
+         target="_blank" rel="noopener noreferrer">{contact.cta.label}</a>
+      <p class="ct-handle">{site.instagramHandle}</p>
+    </div>
+
+    {/* The form is a real UI on a mock adapter. It never reports success —
+        a form that silently discards a lead is worse than no form, and a
+        fake "Надіслано!" is worse than both. */}
+    <form class="ct-form" data-contact novalidate data-reveal>
+      {contact.fields.map((f) => (
+        <p class="ct-field">
+          <label class="ct-label" for={`f-${f.name}`}>{f.label}</label>
+          {f.type === "textarea"
+            ? <textarea class="ct-input" id={`f-${f.name}`} name={f.name} rows="3"></textarea>
+            : <input class="ct-input" id={`f-${f.name}`} name={f.name} type="text" />}
+          <span class="ct-err" data-err={f.name} role="alert"></span>
+        </p>
+      ))}
+      <button class="btn btn-ghost ct-submit" type="submit">{contact.submit}</button>
+      <p class="ct-note" data-contact-note>{contact.formNote}</p>
+    </form>
+  </div>
+</section>
+<style>
+  .ct { position: relative; overflow: hidden; background: var(--abyss); }
+  .ct-media { position: absolute; inset: 0; z-index: var(--z-media); opacity: 0.5; }
+  .ct-scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      var(--abyss) 0%,
+      color-mix(in oklab, var(--abyss) 62%, transparent) 40%,
+      var(--abyss) 100%);
+  }
+  .ct-in {
+    position: relative; z-index: var(--z-content);
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: clamp(2rem, 5vw, 4.5rem); align-items: start;
+  }
+  .ct-eyebrow { display: block; margin-bottom: 1rem; }
+  .ct-lead { margin: 1.25rem 0 2rem; color: var(--foam); }
+  .ct-handle {
+    margin-top: 1rem; font-family: var(--font-mono);
+    font-size: var(--fs-mono); letter-spacing: 0.1em; color: var(--mute);
+  }
+  .ct-form {
+    padding: clamp(1.5rem, 3vw, 2rem);
+    border: 1px solid var(--line-soft); border-radius: var(--r);
+    background: color-mix(in oklab, var(--deep) 80%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  .ct-field { margin: 0 0 1.25rem; max-width: none; }
+  .ct-label {
+    display: block; margin-bottom: 0.4rem;
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute);
+  }
+  .ct-input {
+    width: 100%; min-height: 48px; padding: 0.75rem 0.875rem;
+    background: var(--abyss); color: var(--foam);
+    border: 1px solid var(--line-soft); border-radius: var(--r);
+    transition: border-color var(--t-fast) var(--ease);
+  }
+  .ct-input:hover { border-color: var(--line); }
+  textarea.ct-input { resize: vertical; min-height: 88px; }
+  .ct-err {
+    display: block; margin-top: 0.35rem; min-height: 1rem;
+    font-size: 0.8125rem; color: var(--danger);
+  }
+  .ct-submit { width: 100%; }
+  .ct-note {
+    margin-top: 1rem; font-size: 0.8125rem; line-height: 1.5; color: var(--mute);
+  }
+  @media (max-width: 1100px) { .ct-in { grid-template-columns: 1fr; } }
+</style>
