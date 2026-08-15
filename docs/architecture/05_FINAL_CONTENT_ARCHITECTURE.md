@@ -97,9 +97,7 @@ decoration, and they answer the objection that a metaphor obscures the method.
 
 ```
 eyebrow   СПРАВЖНІ КЛІЄНТИ
-h2        Не віджет. Заміри.
-lead      Перетягніть повзунок. Обидва кадри зведені за лінією плечей
-          і поясом — змінюється тіло, не ракурс.
+h2        Заміри, а не обіцянки
 
 slider labels     ДО / ПІСЛЯ
 supporting h3     Ще результати
@@ -107,8 +105,8 @@ disclaimer        Результат індивідуальний. Фото пу
                   за згодою клієнтів.
 ```
 
-The lead sentence is doing real work: it tells the visitor the comparison was
-normalised, which is the difference between a proof and a trick.
+No lead. The handle sweeps on its own, so an instruction line under a moving
+control only states the obvious.
 
 ### 6 · Formats
 
@@ -271,8 +269,12 @@ fields    Ім'я · Ваша ціль · Зручний спосіб зв'яз�
 Ігор Гаврилейко · Персональний тренер
 Львів, ФЦ «Пляж» (Аквапарк)
 Instagram @gavel_man
-© 2026
+
+Розробка сайту — Сергій Бурмич
+[tg] @Bsv_22    [ig] @serhiy_lucky
 ```
+
+The credit replaces the copyright line. Both handles link to the real chats.
 
 ## Content model
 

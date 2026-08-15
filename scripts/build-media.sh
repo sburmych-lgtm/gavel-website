@@ -36,17 +36,9 @@ say "hero mobile — Canoe_Ocean-Main 2.0-10.0s (clean window)"
 enc "$A/Video/Canoe_Ocean-Main.mp4" "$OUT/video/hero-mobile.mp4" 2 8 \
     "scale=720:1280:flags=lanczos" 26
 
-say "coach vertical — Self_Presentation 0-12s (the talking-head opening)"
-# Source is 2160x3840 HEVC, 105 MB — never shippable.
-#
-# This deliberately KEEPS the burnt-in Ukrainian captions. The previous
-# prototype skipped past them because it used the clip as a decorative,
-# aria-hidden hero background, where text inside a video means nothing. Here
-# the clip IS the Coach section, and the captions introduce him by name and
-# name the venue — exactly what that section is for — which also makes the
-# muted autoplay comprehensible instead of silent.
-enc "$A/Video/Self_Presentation.MOV" "$OUT/video/coach.mp4" 0 12 \
-    "scale=1080:1920:flags=lanczos" 26
+# The Coach panel is now an edited montage, not a single clip — see
+# scripts/build-montage.mjs, which is run separately because it decodes
+# several 4K HEVC spans and takes minutes.
 
 say "athlete — Dragonboat team racing"
 enc "$A/Video/Dragonboat_canoe.mp4" "$OUT/video/dragonboat.mp4" 12 10 \
@@ -68,7 +60,6 @@ say "posters"
 post(){ ffmpeg -y -v error -i "$1" -frames:v 1 -q:v 4 "$2"; }
 post "$OUT/video/hero-desktop.mp4" "$OUT/image/hero-desktop-poster.jpg"
 post "$OUT/video/hero-mobile.mp4"  "$OUT/image/hero-mobile-poster.jpg"
-post "$OUT/video/coach.mp4"        "$OUT/image/coach-poster.jpg"
 post "$OUT/video/dragonboat.mp4"   "$OUT/image/dragonboat-poster.jpg"
 post "$OUT/video/water-calm.mp4"   "$OUT/image/water-calm-poster.jpg"
 

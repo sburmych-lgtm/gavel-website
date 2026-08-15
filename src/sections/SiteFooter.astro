@@ -1,5 +1,5 @@
 ---
-import { site, nav } from "../content";
+import { site, nav, credit } from "../content";
 import { logo, videos } from "../content/media";
 ---
 <footer class="ft">
@@ -29,7 +29,27 @@ import { logo, videos } from "../content/media";
   </div>
 
   <div class="shell ft-btm">
-    <p>© {site.year} {site.romanised}</p>
+    <p class="ft-credit-l">{credit.label} — <span class="ft-credit-n">{credit.name}</span></p>
+    <ul class="ft-credit-links">
+      {credit.links.map((l) => (
+        <li>
+          <a class="ft-credit-a" href={l.href} target="_blank" rel="noopener noreferrer">
+            {l.network === "telegram" ? (
+              <svg class="ft-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="currentColor" d="M21.9 4.3 18.8 19q-.35 1.55-1.88.77l-5.2-3.83-2.5 2.41q-.42.42-.7.42l.25-3.55 6.46-5.83q.42-.37-.09-.58l-7.98 5.02-3.44-1.07q-1.12-.35-.02-.87l13.4-5.17q.93-.34 1.8.58z"/>
+              </svg>
+            ) : (
+              <svg class="ft-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path fill="none" stroke="currentColor" stroke-width="1.8" d="M7.4 3.5h9.2a3.9 3.9 0 0 1 3.9 3.9v9.2a3.9 3.9 0 0 1-3.9 3.9H7.4a3.9 3.9 0 0 1-3.9-3.9V7.4a3.9 3.9 0 0 1 3.9-3.9Z"/>
+                <circle cx="12" cy="12" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <circle cx="17.1" cy="6.9" r="1.15" fill="currentColor"/>
+              </svg>
+            )}
+            <span>{l.handle}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </div>
 </footer>
 <style>
@@ -63,10 +83,30 @@ import { logo, videos } from "../content/media";
   .ft-btm {
     margin-top: clamp(2.5rem, 5vw, 4rem); padding-block: 1.5rem;
     border-top: 1px solid var(--line-soft);
+    display: flex; flex-wrap: wrap; align-items: center;
+    justify-content: space-between; gap: 0.75rem 1.5rem;
   }
-  .ft-btm p {
-    font-family: var(--font-mono); font-size: var(--fs-mono);
+  .ft-credit-l {
+    margin: 0; font-family: var(--font-mono); font-size: var(--fs-mono);
     letter-spacing: 0.08em; color: var(--mute);
+  }
+  .ft-credit-n { color: var(--foam); }
+  .ft-credit-links {
+    display: flex; align-items: center; gap: 1.25rem;
+    list-style: none; margin: 0; padding: 0;
+  }
+  .ft-credit-a {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    min-height: 44px;
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.06em; text-decoration: none; color: var(--mute);
+    transition: color var(--t-fast) var(--ease);
+  }
+  .ft-credit-a:hover { color: var(--gold); }
+  .ft-ic { width: 17px; height: 17px; flex: none; }
+  @media (max-width: 560px) {
+    .ft-btm { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+    .ft-credit-links { gap: 1rem; }
   }
   @media (max-width: 768px) { .ft-in { grid-template-columns: 1fr; gap: 2.25rem; } }
 </style>

@@ -126,19 +126,39 @@ for (const { name, w, h } of WIDTHS) {
   else fail(`slider: arrow keys did not step 1% (${start}→${afterArrow})`);
   if (Number(afterShift) === Number(afterArrow) + 10) ok(`slider: shift+arrow steps 10% (→${afterShift})`);
   else fail(`slider: shift+arrow did not step 10% (${afterArrow}→${afterShift})`);
-  if (Number(atHome) === 0) ok("slider: Home jumps to 0");
-  else fail(`slider: Home gave ${atHome}`);
+  // The sweep never reaches 0 or 100 — letting either side vanish reads as a
+  // glitch — so Home/End land on the declared min/max.
+  const vmin = Number(await handle.getAttribute("aria-valuemin"));
+  const vmax = Number(await handle.getAttribute("aria-valuemax"));
+  if (Number(atHome) === vmin) ok(`slider: Home jumps to min (${vmin})`);
+  else fail(`slider: Home gave ${atHome}, expected ${vmin}`);
 
   // --- before/after: pointer drag actually moves the clip
+  // Grab the handle where it actually is rather than assuming an edge — its
+  // resting position depends on the sweep range.
   await page.keyboard.press("End");
-  const box = await page.locator("[data-ba-stage]").boundingBox();
-  await page.mouse.move(box.x + box.width - 10, box.y + box.height / 2);
+  const stageBox = await page.locator("[data-ba-stage]").boundingBox();
+  const gripBox = await handle.boundingBox();
+  await page.mouse.move(gripBox.x + gripBox.width / 2, gripBox.y + gripBox.height / 2);
   await page.mouse.down();
-  await page.mouse.move(box.x + box.width * 0.35, box.y + box.height / 2, { steps: 12 });
+  await page.mouse.move(stageBox.x + stageBox.width * 0.35, stageBox.y + stageBox.height / 2, { steps: 14 });
   await page.mouse.up();
   const afterDrag = Number(await handle.getAttribute("aria-valuenow"));
-  if (afterDrag > 25 && afterDrag < 48) ok(`slider: pointer drag moved to ${afterDrag}%`);
+  if (afterDrag > 28 && afterDrag < 43) ok(`slider: pointer drag moved to ${afterDrag}%`);
   else fail(`slider: pointer drag landed at ${afterDrag}% (expected ~35%)`);
+
+  // --- the sweep runs unattended
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  await page.waitForTimeout(150);
+  const posA = await page.evaluate(() =>
+    getComputedStyle(document.querySelector("[data-ba-stage]")).getPropertyValue("--pos"));
+  await page.waitForTimeout(700);
+  const posB = await page.evaluate(() =>
+    getComputedStyle(document.querySelector("[data-ba-stage]")).getPropertyValue("--pos"));
+  const moved = Math.abs(parseFloat(posA) - parseFloat(posB));
+  moved > 1
+    ? ok(`slider: sweeps unattended (${posA.trim()} → ${posB.trim()})`)
+    : fail(`slider: not animating — stayed at ${posA.trim()}`);
 
   // --- clip-path actually applied
   const clip = await page.evaluate(() =>

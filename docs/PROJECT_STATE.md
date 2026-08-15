@@ -48,11 +48,7 @@ None.
 
 ## Open human decisions
 
-1. **`Fitness_traine_girl.mp4`** — the only real coach-with-client footage in
-   the library, but it shows an identifiable third party. This is a likeness
-   question, not a claim-verification question, so the "client-supplied content
-   is approved" rule does not settle it. Not shipped pending written consent.
-2. **`3_before-after.jpg`** shows an identifiable face and ships as supporting
+1. **`3_before-after.jpg`** **`3_before-after.jpg`** shows an identifiable face and ships as supporting
    proof; it carries burnt-in «ДО»/«ПІСЛЯ» marketing labels, which indicates it
    was composed for publication. Confirm consent covers web use.
 3. **Real domain** — canonical URL, sitemap host and OG absolute URLs are

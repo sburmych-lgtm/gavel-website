@@ -25,6 +25,7 @@ Only `opacity` and `transform` are animated. Never `width`, `height`, `top`,
 | Mobile overlay | opacity + `translateY`, 340ms |
 | Accordion | native `<details>`; height is not animated |
 | Before/After handle | follows pointer with no easing — a lagging handle feels broken |
+| Before/After sweep | sine 12–88%, omega 1.15 rad/s (~5.5s per pass); paused on drag, on focus, off-screen |
 
 ## Forbidden
 
@@ -70,9 +71,22 @@ Input, all three required:
 `touch-action: none` on the handle so a horizontal drag does not become a page
 scroll. Labels ДО and ПІСЛЯ are DOM text, never baked into the image.
 
-Under `prefers-reduced-motion` the slider keeps working — dragging is a
-deliberate user action, not decoration — but it starts at 50% rather than
-animating in.
+**The handle sweeps on its own** so the comparison reads without anyone
+touching it. A sine between 12% and 88% — never 0 or 100, because letting
+either side vanish reads as a glitch rather than a comparison.
+
+`syncPhase()` is the part that must survive a refactor: on release, on blur
+and after a click-to-position, the wave restarts **from the position the user
+left it at** rather than from where it would have been. Without it every
+release snaps the handle sideways.
+
+The sweep pauses while dragging, while the handle holds keyboard focus, and
+while the section is off-screen. Under `prefers-reduced-motion` it does not
+run at all — the slider rests at the midpoint and stays fully draggable,
+because dragging is a deliberate user action rather than decoration.
+
+`aria-valuenow` updates only while the user is driving; firing it every frame
+would make a screen reader chatter at a control nobody is touching.
 
 ## Reduced motion
 

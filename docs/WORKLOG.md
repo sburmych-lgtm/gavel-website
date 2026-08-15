@@ -125,3 +125,36 @@ serves Range requests correctly — verified 206 on the deployed video.
 
 The full QA harness was re-run against the live HTTPS URL, not just the local
 build: 36 checks, 0 fail, 0 warn. Evidence in `docs/quality/deployed/`.
+
+---
+
+## CP-11 — client revision round · 2026-08-15
+
+Previous version frozen on branch `preview-v1-approved-base` @ `dcb9c24`
+before any of this landed.
+
+**1 · The Before/After slider animates itself.** Ported from
+`New_Proto/Claude`: a sine between 12% and 88%, one sweep every ~5.5s. The part
+worth carrying over is `syncPhase()` — on release the wave restarts from where
+the user left the handle, not from where it would have been, otherwise every
+release snaps sideways. Pauses on drag, on keyboard focus, and off-screen. The
+explanatory line was removed and the heading is now «Заміри, а не обіцянки».
+
+**2 · The Coach panel is a montage.** Eleven shots from six real sources,
+crossfaded at 0.4s, one unified colour grade, silent, looping, 18.9s. Frame 0
+is also the poster, and a first cut opened on the lake — which left «Хто я»
+represented by a photograph of water. Reordered to open on the one clean
+full-face standing moment in the source, at 11.7s. Built by
+`scripts/build-montage.mjs`.
+
+`Fitness_traine_girl.mp4` is in at the client's instruction, resolving H-01.
+The AI-generated paddling clip was offered but left out — `Canoe_lake.mp4`
+covers the same beat with real footage.
+
+**3 · Footer credit** replaces the copyright line, with Telegram and Instagram
+links to the real chats.
+
+QA: 36 checks, 0 fail, both locally and against the deployed URL. One new
+assertion added — the sweep must move on its own — and two updated, because
+Home/End now land on the declared 12/88 rather than 0/100 and the drag fixture
+was grabbing the stage edge instead of the handle.

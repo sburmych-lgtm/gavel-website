@@ -12,7 +12,11 @@ Source library is read-only. `scripts/build-media.sh` is the only writer of
 |---|---|---|---|
 | `Video/Canoe_ocean_16-9.mp4` | 1280×720 h264 10.0s | `hero-desktop.mp4` 1600×900, 3.7 MB | Desktop hero, full-bleed loop |
 | `Video/Canoe_Ocean-Main.mp4` | 720×1280 h264 50.5s | `hero-mobile.mp4` 720×1280 8s, 1.5 MB | Mobile hero, window 2.0–10.0s |
-| `Video/Self_Presentation.MOV` | 2160×3840 hevc 48.4s | `coach.mp4` 1080×1920 12s, 4.3 MB | Coach section vertical panel, window 13.5–25.5s |
+| `Video/Self_Presentation.MOV` | 2160×3840 hevc 48.4s | 6 of 11 shots in `coach-montage.mp4` | Coach montage — see below |
+| `Video/SelfTrainFitness_new1.MOV` | 1080×1920 hevc 46.1s | 1 shot | cable crossover |
+| `Video/SelfTrainFitness_new2.MOV` | 2160×3840 hevc 33.6s | 1 shot | machine work |
+| `Video/Biceps_mirror.mp4` | 720×1280 h264 13.8s | 1 shot | window-light curl |
+| `Video/Fitness_traine_girl.mp4` | 720×1280 h264 14.0s | 1 shot | coaching a client — **released by the client 15.08.2026** |
 | `Video/Dragonboat_canoe.mp4` | 1024×576 h264 31.8s | `dragonboat.mp4` 10s, 3.4 MB | Athlete story — real team racing |
 | `Video/Canoe_lake.mp4` | 610×1084 h264 25.5s | `water-calm.mp4` 608×1080 9s, 2.4 MB | Contact section, calm closing water |
 | `Video/FUN!!!Canoe-Dog.mp4` | 1280×720 h264 3.7s | `dog.mp4` 640×360, 237 KB | Footer easter egg |
@@ -29,6 +33,21 @@ Source library is read-only. `scripts/build-media.sh` is the only writer of
 | `3_before-after.jpg` | 1280×780 | `result-3.jpg` w1100 | Supporting proof — has burnt-in ДО/ПІСЛЯ, so UI labels are suppressed on this card |
 | `4_before-after.jpg` | 1811×2160 | `result-4.jpg` w1000 | Supporting proof — strongest visible change |
 | `6_before-after.JPG` | 768×1280 | `result-6.jpg` w760 | Supporting proof — most disciplined comparison |
+
+### The Coach montage
+
+`coach-montage.mp4` — 810×1440, 18.9s, 4.4 MB, silent, looping. Eleven shots
+from six real sources, crossfaded at 0.4s, each colour-corrected into one
+look. Built by `scripts/build-montage.mjs`, run separately from
+`build-media.sh` because it decodes several 4K HEVC spans.
+
+Frame 0 is also the poster, and that fixed the shot order: an earlier cut
+opened on the lake and left «Хто я» represented by a photograph of water. It
+now opens on the one clean full-face standing moment in the source, at 11.7s,
+after the burnt-in captions end.
+
+810 wide is still 1.2× the panel's 340 CSS px at 2× DPR; 1080×1920 looked
+identical in the frame and cost 7.8 MB against 4.4.
 
 ### Hero encoding note
 
@@ -64,18 +83,16 @@ exist.
 
 ## Held — needs a human decision
 
-| Source | Why |
-|---|---|
-| `Video/Fitness_traine_girl.mp4` | The only real coach-with-client footage in the library, and genuinely useful. But it shows an identifiable third party, which is a likeness question rather than a claim-verification question — the "client-supplied content is approved" rule does not settle it. Not shipped pending written consent. |
+_None._ `Fitness_traine_girl.mp4` was released by the client on 15.08.2026 and
+now appears in the Coach montage.
 
 ## Rejected, with reason
 
 | Source | Reason |
 |---|---|
 | `Photo/SelfPhoto/*` (76 files) | One redundant session, 853×1280. `In_Gym.JPG` is already its best frame at higher resolution. Shipping near-duplicates would build exactly the generic card grid the brief warns against. |
-| `SelfTrainFitness_new1/new2/old` | Amateur hoodie footage; no narrative role a stronger asset does not already fill. |
-| `Biceps_mirror.mp4` | Dim mirror selfie; the yellow plates fight the palette. |
-| `Athletic_coach_paddling_water_*.mp4` | AI-generated. Real paddling footage exists. |
+| `SelfTrainFitness_old.mp4` | Amateur, low quality; superseded by new1/new2 in the montage. |
+| `Athletic_coach_paddling_water_*.mp4` | AI-generated. Offered for the montage by the client but not used — `Canoe_lake.mp4` covers the same water beat with real footage. One line to add if wanted. |
 | `Coach_training_client_in_gym_*.mp4` | AI-generated. |
 | `Animation_1/Warrior_striking_logo_*.mp4`, `Animation_1/1–5.png` | Poseidon and trident mythology — banned outright by the brief. |
 | `Animation_1/Antigravity_Final/*` | Splash intros. Banned. Noted for the record: `Intro_Final.mp4` carries the title card «Сила, викована веслом.», the direct ancestor of the mandated H1 — useful provenance, unusable asset. |

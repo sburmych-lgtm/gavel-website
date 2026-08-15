@@ -113,10 +113,9 @@ export const method = {
 
 export const results = {
   eyebrow: "Справжні клієнти",
-  h2: "Не віджет. Заміри.",
-  /* This sentence is load-bearing: telling the visitor how the comparison was
-     built is the difference between proof and a before-and-after ad. */
-  lead: "Перетягніть повзунок. Обидва кадри зведені за лінією плечей і поясом — змінюється тіло, не ракурс.",
+  h2: "Заміри, а не обіцянки",
+  /* No lead. The slider animates on its own, so nothing needs explaining —
+     an instruction line under a moving control just states the obvious. */
   labelBefore: "До",
   labelAfter: "Після",
   supportingH3: "Ще результати",
@@ -303,6 +302,16 @@ export const faq = {
 
 /* No phone or email exists in the dataset and none was invented.
    Instagram is the real channel and the form says so. */
+/* Site credit. Real handles, linking to the real chats. */
+export const credit = {
+  label: "Розробка сайту",
+  name: "Сергій Бурмич",
+  links: [
+    { network: "telegram", handle: "@Bsv_22", href: "https://t.me/Bsv_22" },
+    { network: "instagram", handle: "@serhiy_lucky", href: "https://www.instagram.com/serhiy_lucky/" },
+  ],
+} as const;
+
 export const contact = {
   eyebrow: "Почати",
   h2: "Розкажіть, що хочете змінити.",

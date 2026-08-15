@@ -115,6 +115,7 @@
       "retouching": "none — crop and scale only"
     },
     "input": ["pointer", "keyboard", "click-to-position"],
+    "auto_sweep": { "min": 12, "max": 88, "omega_rad_s": 1.15, "paused_on": ["drag", "focus", "offscreen", "reduced-motion"], "phase_sync_on_release": true },
     "labels_in_dom": true,
     "supporting": ["2_before-after.jpg", "3_before-after.jpg", "4_before-after.jpg", "6_before-after.JPG"]
   },
@@ -122,7 +123,7 @@
   "media": {
     "hero_desktop": { "source": "Canoe_ocean_16-9.mp4", "out": "1600x900", "full_bleed": true },
     "hero_mobile": { "source": "Canoe_Ocean-Main.mp4", "window": "2.0-10.0s" },
-    "coach": { "source": "Self_Presentation.MOV", "window": "13.5-25.5s", "out": "1080x1920", "treatment": "9:16 MediaFrame, mirrored from the approved hero panel grammar" },
+    "coach": { "out": "810x1440", "duration_s": 18.9, "shots": 11, "sources": ["Self_Presentation.MOV", "SelfTrainFitness_new1.MOV", "SelfTrainFitness_new2.MOV", "Biceps_mirror.mp4", "Fitness_traine_girl.mp4", "Canoe_lake.mp4"], "crossfade_s": 0.4, "opens_on": "11.7s standing portrait — frame 0 is also the poster", "treatment": "9:16 MediaFrame, mirrored from the approved hero panel grammar" },
     "never_ship": [
       "before-after/Архів/Грок/*",
       "Athletic_coach_paddling_water_202608141149.mp4",
@@ -131,8 +132,8 @@
       "Animation_1/Antigravity_Final/*",
       "Self_Presentation.MOV (HEVC source)"
     ],
-    "held_pending_consent": ["Fitness_traine_girl.mp4"],
-    "dropped_on_inspection": ["Photo/SelfPhoto/* (76)", "SelfTrainFitness_new1/new2/old", "Biceps_mirror.mp4", "5_before.JPG", "5_after.JPG"]
+    "held_pending_consent": [],
+    "dropped_on_inspection": ["Photo/SelfPhoto/* (76)", "SelfTrainFitness_old.mp4", "5_before.JPG", "5_after.JPG"]
   },
 
   "motion": {

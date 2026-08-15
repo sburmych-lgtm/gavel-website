@@ -213,3 +213,84 @@ No phone or email exists in the dataset and none was invented. Instagram
 `@gavel_man` is the real channel. The form is an isolated mock adapter that
 states plainly that it is a prototype and routes to Instagram. It never shows a
 fake success state.
+
+---
+
+## D-15 · The Before/After slider animates itself
+
+**Client request, 15.08.2026.** The handle now sweeps on its own so the
+comparison reads without anyone touching it, ported from the treatment in
+`New_Proto/Claude`.
+
+A sine between **12% and 88%** at omega = 1.15 rad/s — roughly one full sweep
+every 5.5 seconds. It never reaches 0 or 100: letting either side vanish
+completely makes it read as a glitch rather than a comparison.
+
+The detail that is easy to lose in a refactor is `syncPhase()`. When the user
+releases the handle the wave is restarted **from where they left it**, not from
+where it would have been on its own. Without that, every release snaps the
+handle sideways. The same sync runs on blur and after a click-to-position.
+
+The sweep pauses while dragging, while the handle has keyboard focus (otherwise
+it fights every arrow press), and while the section is off-screen. Under
+`prefers-reduced-motion` it does not run at all — the slider sits at the
+midpoint and stays fully draggable.
+
+`aria-valuenow` updates only while the user is driving. Firing it every frame
+would make a screen reader chatter at a control nobody is touching.
+
+Supersedes the static slider in D-09; the registration work there is unchanged.
+
+The explanatory line under the heading was removed and the heading changed from
+«Не віджет. Заміри.» to «Заміри, а не обіцянки» — an instruction line under a
+control that is already moving states the obvious.
+
+---
+
+## D-16 · The Coach panel is an edited montage, not a clip
+
+**Client request, 15.08.2026.** The section previously held a single raw 12s
+span of Igor standing and talking. It is now an eleven-shot montage cut from
+six real sources, crossfaded at 0.4s, silent, looping, 18.9s.
+
+Built by `scripts/build-montage.mjs`, deliberately separate from
+`build-media.sh` because it decodes several 4K HEVC spans and takes minutes.
+
+Shot order is dramatic, not chronological, and one constraint drove it: **frame
+0 is also the poster** — the still that represents this section before playback
+and under reduced motion. A first cut opened on the lake, which left «Хто я»
+represented by a photograph of water. It now opens on him at 11.7s, the one
+clean full-face standing moment that falls after the burnt-in captions end,
+then builds, takes a breath on the water at the midpoint, turns human on the
+client-coaching shot, and ends on a strength beat so the loop back to the
+opening portrait reads as a restart.
+
+Every source has a different white balance — the crossfit zone is cold blue,
+the mirror gym is warm window light over yellow plates, the lake is green — so
+each shot carries its own saturation and blue-lift correction into one look.
+The mirror gym is pushed hardest (0.62) because the yellow plates otherwise
+fight the palette.
+
+`Fitness_traine_girl.mp4` is included at the client's explicit instruction,
+which resolves open decision H-01. It is the only real coach-with-client
+footage in the library.
+
+`Athletic_coach_paddling_water_202608141149.mp4` was offered but not used: it is
+AI-generated, and `Canoe_lake.mp4` covers the same water beat with real
+footage. Adding it is a one-line change if the client wants it.
+
+---
+
+## D-17 · Site credit in the footer
+
+**Client request, 15.08.2026.** The bottom bar carries the developer credit
+instead of a copyright line:
+
+```
+Розробка сайту — Сергій Бурмич
+[tg] @Bsv_22    [ig] @serhiy_lucky
+```
+
+Both link to the real chats. The two glyphs are inline SVG brand marks rather
+than an icon set — the no-icons rule is about UI iconography, and a social link
+without its mark reads as a bare string.

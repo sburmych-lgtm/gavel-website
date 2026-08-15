@@ -57,15 +57,15 @@ export const videos = {
     width: 720,
     height: 1280,
   },
-  /* Self_Presentation 0–12s — the talking-head opening, captions and all.
-     They introduce him by name and name the venue, which is what the Coach
-     section is for, and they make the muted autoplay comprehensible. */
+  /* An edited montage, not a raw clip — eleven shots cut from six real
+     sources, crossfaded and graded to one look. Built by
+     scripts/build-montage.mjs; silent and looping. */
   coach: {
-    src: "/media/video/coach.mp4",
-    poster: "/media/image/coach-poster.jpg",
-    width: 1080,
-    height: 1920,
-    label: "Ігор Гаврилейко у залі ФЦ «Пляж»",
+    src: "/media/video/coach-montage.mp4",
+    poster: "/media/image/coach-montage-poster.jpg",
+    width: 810,
+    height: 1440,
+    label: "Тренування у залі та на воді",
   },
   dragonboat: {
     src: "/media/video/dragonboat.mp4",

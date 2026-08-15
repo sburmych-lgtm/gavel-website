@@ -5,7 +5,12 @@ recommendation so the decision is a yes/no rather than an essay.
 
 ---
 
-### H-01 · Consent for `Fitness_traine_girl.mp4`
+### H-01 · Consent for `Fitness_traine_girl.mp4` — RESOLVED 15.08.2026
+
+The client instructed that this file be used. It now appears as one shot in the
+Coach montage. Original note kept below for the record.
+
+
 
 The only real coach-with-client footage in the library, and the one asset that
 would show coaching actually happening rather than a coach standing still. It
