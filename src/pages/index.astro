@@ -58,19 +58,6 @@ import { hero } from "../content";
   }
   .sticky-cta.is-in { transform: none; }
   .sticky-cta .btn { width: 100%; }
-
-  /* Azure rather than gold. A full-width gold bar sat directly under a large
-     gold logo and read as an advert; this keeps the action obvious without
-     shouting, and puts it in the water half of the palette. */
-  .btn-water {
-    background: color-mix(in oklab, var(--caustic) 16%, var(--deep));
-    border-color: var(--caustic);
-    color: var(--foam);
-  }
-  .btn-water:hover {
-    background: color-mix(in oklab, var(--caustic) 26%, var(--deep));
-    border-color: var(--foam);
-  }
   .sticky-cta[hidden] { display: none; }
 
   @media (min-width: 769px) { .sticky-cta { display: none !important; } }

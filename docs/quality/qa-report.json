@@ -127,7 +127,7 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (24.41% → 12.00%)"
+      "m": "slider: sweeps unattended (24.38% → 12.00%)"
     },
     {
       "level": "OK",
@@ -156,6 +156,10 @@
     {
       "level": "OK",
       "m": "contrast .btn-primary: 9.18:1 (needs 4.5)"
+    },
+    {
+      "level": "OK",
+      "m": "contrast .hero-actions .btn-ghost: 16.75:1 (needs 4.5)"
     },
     {
       "level": "OK",

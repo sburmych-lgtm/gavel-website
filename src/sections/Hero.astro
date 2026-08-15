@@ -135,9 +135,18 @@ import { videos } from "../content/media";
   @media (max-width: 768px) {
     .hero-media-d { display: none; }
     .hero-media-m { display: block; }
-    .hero { padding-top: 6rem; }
+    .hero { padding-top: 7rem; }
     .hero-lead { max-width: none; font-size: 1.0625rem; }
     .hero-actions { flex-direction: column; align-items: stretch; }
     .hero-actions .btn { width: 100%; }
+
+    /* On mobile this button is full-width and sits a few hundred pixels below
+       a large gold logo, which made the gold fill read as an advert. Desktop
+       keeps the gold: there it is a compact button far from the mark. */
+    .hero-actions .btn-primary {
+      background: color-mix(in oklab, var(--caustic) 16%, var(--deep));
+      border-color: var(--caustic);
+      color: var(--foam);
+    }
   }
 </style>

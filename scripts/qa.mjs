@@ -260,8 +260,8 @@ for (const { name, w, h } of WIDTHS) {
     };
     const out = [];
     const sel = ["main h1", "#fit h2", "#fit .lead", "#method .eyebrow",
-                 ".btn-primary", "#pricing .p-inc", "#method .m-b",
-                 ".ft-where", "#results .lead", ".q-a p"];
+                 ".btn-primary", ".hero-actions .btn-ghost", "#pricing .p-inc",
+                 "#method .m-b", ".ft-where", "#results .lead", ".q-a p"];
     for (const s of sel) {
       const el = document.querySelector(s);
       if (!el) continue;
