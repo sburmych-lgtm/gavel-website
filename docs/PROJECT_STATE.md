@@ -1,15 +1,15 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-15 · checkpoint CP-09_
+_Last updated: 2026-08-15 · checkpoint CP-10_
 
 ## Current stage
 
-CP-09 — coded visual prototype complete locally and passing browser QA.
-Next is the Railway preview deployment.
+CP-10 — Railway preview deployed and verified on the public URL.
+**The run stops here, at the human visual approval gate.**
 
 ## Last completed checkpoint
 
-CP-09.
+CP-10 — the final checkpoint of this run.
 
 ## Latest commit SHA
 
@@ -34,10 +34,13 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 - Reduced motion suppresses transitions and fetches no managed video.
 - With JavaScript disabled the whole page still renders, all 53 reveal blocks
   visible and all key strings present.
+- Deployed to Railway and re-verified against the live HTTPS URL: 36 checks,
+  0 fail, 0 warn. See `docs/DEPLOYMENT.md` and `docs/quality/deployed/`.
 
 ## What is incomplete
 
-CP-10 only — Railway preview deployment and public-URL verification.
+Nothing in this run's scope. Deliberately not built: production backend, CRM,
+booking, analytics, final content lock, real-domain configuration.
 
 ## Blockers
 
@@ -61,6 +64,9 @@ None.
 
 ## Exact next action
 
-CP-10 — deploy to the Railway project `igor-gavrileyko-final-claude`, verify
-the public URL in a real browser, write `DEPLOYMENT_URL.txt` and
-`docs/DEPLOYMENT.md`, commit and push.
+**HUMAN VISUAL APPROVAL** of
+<https://igor-gavrileyko-final-claude-production.up.railway.app>
+
+Only after approval: production frontend hardening, final content lock, the
+separate backend/API, CRM and booking integrations, and production deployment
+on a real domain.

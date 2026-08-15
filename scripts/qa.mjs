@@ -14,7 +14,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 const BASE = process.argv[2] ?? "http://localhost:4321";
 const OUT = "docs/quality";
-const SHOTS = `${OUT}/screens`;
+const SHOTS = process.env.QA_SHOTS ? `${OUT}/${process.env.QA_SHOTS}` : `${OUT}/screens`;
 mkdirSync(SHOTS, { recursive: true });
 
 const WIDTHS = [
@@ -343,7 +343,7 @@ await browser.close();
 const fails = report.filter((r) => r.level === "FAIL");
 const warns = report.filter((r) => r.level === "WARN");
 writeFileSync(
-  `${OUT}/qa-report.json`,
+  process.env.QA_SHOTS ? `${OUT}/qa-report-${process.env.QA_SHOTS}.json` : `${OUT}/qa-report.json`,
   JSON.stringify({ base: BASE, widths: WIDTHS, report }, null, 2),
 );
 console.log(`\n${report.length} checks · ${fails.length} fail · ${warns.length} warn`);

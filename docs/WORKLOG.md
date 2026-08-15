@@ -110,3 +110,18 @@ on that false premise was reverted.
   lead image of the Athlete section.
 - `Canoe1.JPG` dropped — the weakest of the three water photographs.
 - `logo-mark.png` added: the full lockup is unreadable at header size.
+
+---
+
+## CP-10 — Railway preview deployed and verified · 2026-08-15
+
+Public URL: <https://igor-gavrileyko-final-claude-production.up.railway.app>
+
+Two build failures on the way, both recorded in `docs/DEPLOYMENT.md`:
+`npm ci --omit=dev` collided with Nixpacks' mounted cache volume (EBUSY), and
+`astro preview` 403'd every request because Vite's preview server has a Host
+allowlist. Replaced with `sirv`, which is what Astro uses internally and which
+serves Range requests correctly — verified 206 on the deployed video.
+
+The full QA harness was re-run against the live HTTPS URL, not just the local
+build: 36 checks, 0 fail, 0 warn. Evidence in `docs/quality/deployed/`.
