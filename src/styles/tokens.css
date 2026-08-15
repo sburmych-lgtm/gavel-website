@@ -74,4 +74,6 @@
   --z-nav: 40;
   --z-sticky: 45;
   --z-overlay: 50;
+  /* the bar outranks its own overlay — the burger doubles as the close */
+  --z-header: 60;
 }

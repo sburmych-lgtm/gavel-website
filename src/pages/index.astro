@@ -40,7 +40,7 @@ import { hero } from "../content";
   <!-- Mobile only. Appears once the hero CTA has left the viewport and hides
        again near #contact so it never covers the real form. -->
   <div class="sticky-cta" data-sticky hidden>
-    <a class="btn btn-primary" href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</a>
+    <a class="btn btn-water" href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</a>
   </div>
 </Base>
 
@@ -58,6 +58,19 @@ import { hero } from "../content";
   }
   .sticky-cta.is-in { transform: none; }
   .sticky-cta .btn { width: 100%; }
+
+  /* Azure rather than gold. A full-width gold bar sat directly under a large
+     gold logo and read as an advert; this keeps the action obvious without
+     shouting, and puts it in the water half of the palette. */
+  .btn-water {
+    background: color-mix(in oklab, var(--caustic) 16%, var(--deep));
+    border-color: var(--caustic);
+    color: var(--foam);
+  }
+  .btn-water:hover {
+    background: color-mix(in oklab, var(--caustic) 26%, var(--deep));
+    border-color: var(--foam);
+  }
   .sticky-cta[hidden] { display: none; }
 
   @media (min-width: 769px) { .sticky-cta { display: none !important; } }
@@ -91,6 +104,7 @@ import { hero } from "../content";
     const setOpen = (open: boolean) => {
       toggle.setAttribute("aria-expanded", String(open));
       panel.hidden = !open;
+      hdr.classList.toggle("is-open", open);
       document.body.style.overflow = open ? "hidden" : "";
       if (open) panel.querySelector<HTMLElement>("a")?.focus();
       else toggle.focus();
@@ -109,7 +123,7 @@ import { hero } from "../content";
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && !panel.hidden) setOpen(false);
       if (e.key !== "Tab" || panel.hidden) return;
-      const items = [...panel.querySelectorAll<HTMLElement>("a, button")];
+      const items = [toggle, ...panel.querySelectorAll<HTMLElement>("a, button")];
       if (!items.length) return;
       const first = items[0];
       const last = items[items.length - 1];

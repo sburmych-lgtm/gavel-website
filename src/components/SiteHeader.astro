@@ -7,13 +7,12 @@ import { logo } from "../content/media";
   <div class="shell hdr-in">
     <a class="hdr-brand" href="#top" aria-label={`${site.romanised} — на початок`}>
       <img
-        src={logo.mark.src}
-        alt={logo.mark.alt}
-        width={logo.mark.width}
-        height={logo.mark.height}
+        src={logo.full.src}
+        alt={logo.full.alt}
+        width={logo.full.width}
+        height={logo.full.height}
         decoding="async"
       />
-      <span class="hdr-word" aria-hidden="true">{site.romanised}</span>
     </a>
 
     <nav class="hdr-nav" aria-label="Основна навігація">
@@ -37,26 +36,43 @@ import { logo } from "../content/media";
       aria-controls="hdr-panel"
     >
       <span class="sr-only">Меню</span>
-      <span class="hdr-burger-b" aria-hidden="true"></span>
-      <span class="hdr-burger-b" aria-hidden="true"></span>
+      <span class="hdr-burger-b hdr-burger-b--t" aria-hidden="true"></span>
+      <span class="hdr-burger-b hdr-burger-b--b" aria-hidden="true"></span>
     </button>
   </div>
+</header>
 
-  <div class="hdr-panel" id="hdr-panel" data-hdr-panel hidden>
+{/*
+  The overlay is a SIBLING of the bar, not a child of it.
+
+  `.hdr` carries `backdrop-filter` once it turns solid, and a filtered element
+  becomes the containing block for its `position: fixed` descendants. With the
+  panel nested inside, `inset: <header height> 0 0 0` resolved against the
+  72px-tall header instead of the viewport: measured 772px tall at the top of
+  the page and 71px once scrolled, which is why the open menu showed a single
+  row. Keeping it outside is the fix.
+*/}
+<div class="hdr-panel" id="hdr-panel" data-hdr-panel hidden>
+  <nav aria-label="Мобільна навігація">
     <ul class="hdr-panel-list">
       {nav.links.map((l) => (
         <li><a class="hdr-panel-link" href={l.href}>{l.label}</a></li>
       ))}
     </ul>
-    <a class="btn btn-primary hdr-panel-cta" href={nav.cta.href}>{nav.cta.label}</a>
-  </div>
-</header>
+  </nav>
+  <a class="btn hdr-panel-cta" href={nav.cta.href}>{nav.cta.label}</a>
+  <p class="hdr-panel-foot">
+    {site.city}, {site.venue}
+  </p>
+</div>
 
 <style>
+  /* Above the overlay, not below it: the burger is also the close control, so
+     it has to stay reachable while the panel is open. */
   .hdr {
     position: fixed;
     inset: 0 0 auto 0;
-    z-index: var(--z-nav);
+    z-index: var(--z-header);
     /* transparent until scrolled, so the hero opens clean */
     background: transparent;
     border-bottom: 1px solid transparent;
@@ -68,31 +84,33 @@ import { logo } from "../content/media";
     backdrop-filter: blur(14px);
     border-bottom-color: var(--line-soft);
   }
+  /* While the panel is open the bar sits on an opaque overlay, so its glass
+     would read as a mismatched band across the top. Drop it. */
+  .hdr.is-open,
+  .hdr.is-open.is-solid {
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
 
   .hdr-in {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    min-height: 4.5rem;
+    min-height: 6rem;
   }
 
-  /* 44px minimum target; the monogram itself sits at 34px */
+  /* The full lockup, mark and wordmark together. The wordmark occupies only
+     the lower third of a near-square lockup, so below about 70px it stops
+     being readable — hence the generous height and the taller bar. */
   .hdr-brand {
-    display: inline-flex; align-items: center; gap: 0.7rem;
-    flex: none; min-height: 44px; text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    min-height: 44px;
+    text-decoration: none;
   }
-  .hdr-brand img { width: auto; height: 34px; }
-  /* The lockup's own wordmark is unreadable at this size, so the name is set
-     in the site's display face instead — the same bold geometric register. */
-  .hdr-word {
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: 0.8125rem;
-    letter-spacing: 0.14em;
-    color: var(--foam);
-    white-space: nowrap;
-  }
-  @media (max-width: 420px) { .hdr-word { display: none; } }
+  .hdr-brand img { width: auto; height: 76px; }
 
   .hdr-nav { margin-left: auto; }
 
@@ -118,8 +136,13 @@ import { logo } from "../content/media";
 
   .hdr-cta { flex: none; padding: 0.625rem 1.25rem; min-height: 44px; }
 
+  /* The bars are positioned absolutely and carry explicit modifier classes.
+     They were laid out by grid and selected with :first-child / :last-child —
+     but the button's first child is the screen-reader label, so only one bar
+     ever rotated and the open state rendered as an arrow rather than a cross. */
   .hdr-burger {
     display: none;
+    position: relative;
     margin-left: auto;
     width: 44px;
     height: 44px;
@@ -128,37 +151,31 @@ import { logo } from "../content/media";
     border: 1px solid var(--line-soft);
     border-radius: var(--r);
     cursor: pointer;
-    place-items: center;
-    align-content: center;
-    justify-items: center;
-    gap: 5px;
   }
   .hdr-burger-b {
-    display: block;
+    position: absolute;
+    left: 50%;
+    top: 50%;
     width: 18px;
     height: 1.5px;
+    margin: -0.75px 0 0 -9px;
     background: var(--foam);
     transition: transform var(--t-fast) var(--ease);
   }
-  .hdr-burger[aria-expanded="true"] .hdr-burger-b:first-child {
-    transform: translateY(3.25px) rotate(45deg);
-  }
-  .hdr-burger[aria-expanded="true"] .hdr-burger-b:last-child {
-    transform: translateY(-3.25px) rotate(-45deg);
-  }
+  .hdr-burger-b--t { transform: translateY(-3px); }
+  .hdr-burger-b--b { transform: translateY(3px); }
+  .hdr-burger[aria-expanded="true"] .hdr-burger-b--t { transform: rotate(45deg); }
+  .hdr-burger[aria-expanded="true"] .hdr-burger-b--b { transform: rotate(-45deg); }
 
-  /* The overlay is a sibling of the bar, not a child of a filtered element:
-     a backdrop-filter creates a containing block, and nesting the panel
-     inside one is a bug this project has already hit once. */
   .hdr-panel {
     display: none;
     position: fixed;
-    inset: 4.5rem 0 0 0;
+    inset: 0;
     z-index: var(--z-overlay);
     background: var(--abyss);
-    padding: var(--gut);
-    padding-top: clamp(2rem, 6vh, 3.5rem);
+    padding: 6rem var(--gut) calc(var(--gut) + env(safe-area-inset-bottom));
     overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .hdr-panel[hidden] { display: none; }
 
@@ -174,16 +191,43 @@ import { logo } from "../content/media";
     padding: 1rem 0;
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 7vw, 2rem);
     letter-spacing: -0.02em;
+    line-height: 1.1;
     text-decoration: none;
     border-bottom: 1px solid var(--line-soft);
   }
-  .hdr-panel-cta { width: 100%; }
+  .hdr-panel-link:hover { color: var(--caustic); }
+
+  /* Matches the restrained mobile CTA rather than the gold one — the panel
+     already sits under a large gold logo. */
+  .hdr-panel-cta {
+    width: 100%;
+    background: color-mix(in oklab, var(--caustic) 16%, var(--deep));
+    border-color: var(--caustic);
+    color: var(--foam);
+  }
+  .hdr-panel-cta:hover {
+    background: color-mix(in oklab, var(--caustic) 26%, var(--deep));
+  }
+
+  .hdr-panel-foot {
+    margin-top: 1.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.08em;
+    color: var(--mute);
+  }
 
   @media (max-width: 1100px) {
     .hdr-nav, .hdr-cta { display: none; }
-    .hdr-burger { display: grid; }
+    .hdr-burger { display: block; }
     .hdr-panel:not([hidden]) { display: block; }
+  }
+
+  @media (max-width: 560px) {
+    .hdr-in { min-height: 5.5rem; }
+    .hdr-brand img { height: 68px; }
+    .hdr-panel { padding-top: 5.5rem; }
   }
 </style>

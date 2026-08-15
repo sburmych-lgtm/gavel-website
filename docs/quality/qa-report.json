@@ -127,11 +127,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (24.90% → 12.01%)"
+      "m": "slider: sweeps unattended (24.41% → 12.00%)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 87.99% 0px 0px))"
+      "m": "slider: clip-path active (inset(0px 88% 0px 0px))"
     },
     {
       "level": "OK",
@@ -175,7 +175,7 @@
     },
     {
       "level": "OK",
-      "m": "hero eyebrow over video: 8.19:1 measured from rendered pixels"
+      "m": "hero eyebrow over video: 8.2:1 measured from rendered pixels"
     },
     {
       "level": "OK",
@@ -199,7 +199,7 @@
     },
     {
       "level": "OK",
-      "m": "no-JS: all 48 reveal blocks visible"
+      "m": "no-JS: all 52 reveal blocks visible"
     }
   ]
 }

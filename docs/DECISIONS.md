@@ -378,3 +378,78 @@ The mobile sticky CTA now hides reliably at the foot of the page. Observing
 once it scrolled past, `isIntersecting` went false again and the bar
 reappeared over the credit. Scroll position against the footer height is the
 reliable signal, with the observers kept as a fast path.
+
+---
+
+## D-21 · Header carries the complete lockup
+
+**Client request, 15.08.2026.** The header was showing a cropped monogram with
+the name set in type beside it. It now shows the client's actual lockup, mark
+and wordmark together, on both breakpoints.
+
+The wordmark occupies only the lower third of a near-square lockup, so below
+roughly 70px it stops being readable. Rendered at 52 / 64 / 78 / 92px to check,
+and 76px is the first size where the name reads cleanly. The bar grew to 6rem
+to hold it (5.5rem and 68px below 560px).
+
+Supersedes the monogram-plus-type arrangement in D-20.
+
+---
+
+## D-22 · The mobile menu overlay is a sibling of the bar
+
+**Bug, found by rendering.** The open menu showed a single row.
+
+`.hdr` carries `backdrop-filter` once it turns solid, and a filtered element
+becomes the containing block for its `position: fixed` descendants. The panel
+was nested inside it, so `inset: 4.5rem 0 0 0` resolved against the header box
+rather than the viewport. Measured: **772px tall at the top of the page, 71px
+once scrolled** — which is exactly the reported symptom, and exactly the trap
+the code comment already warned about while the markup did the opposite.
+
+The panel is now a sibling of `<header>`, full-viewport, with the bar raised
+above it on `--z-header: 60` so the burger stays reachable as the close
+control. The bar drops its glass while the panel is open, otherwise it reads
+as a mismatched band across an opaque overlay. The focus trap now includes the
+burger, since it lives outside the panel.
+
+Second bug in the same control: the open state rendered as an arrow rather
+than a cross, because the bars were selected with `:first-child` /
+`:last-child` — and the button's first child is the screen-reader label, so
+only one bar ever rotated. They now carry explicit modifier classes and are
+positioned absolutely.
+
+---
+
+## D-23 · The mobile CTA is azure, not gold
+
+**Client request, 15.08.2026.** A full-width gold bar sitting directly beneath
+a large gold logo read as an advert and competed with the brand mark.
+
+It is now `--caustic` at 16% over `--deep` with a solid caustic border and
+foam text — visible, calm, and in the water half of the palette rather than
+the metal half. The mobile menu's CTA matches it for the same reason.
+
+This is a deliberate, scoped exception to the "gold is the one filled action"
+rule in D-03: gold still owns the hero and desktop actions; the mobile sticky
+bar is a persistent chrome element rather than an in-page action, and
+persistent gold is what made it shout.
+
+---
+
+## D-24 · The Вода section is about the team
+
+**Client copy, 15.08.2026.** The headline is now
+«Вода вчить працювати в команді», with the existing canoe sentence moved up
+into the headline composition beneath it, then «В нашій команді ти також
+отримаєш:» and three offers: Dragon Boat and active recreation, outdoor
+personal training, and sports nutrition support.
+
+The offers use the same grammar as the Method phases — mono numeral, hairline
+rule, three columns — so they read as part of the system rather than a card
+grid bolted onto the end.
+
+Note for the record: the third item names фармакологічна підтримка, which D-01
+had deliberately kept off the public page. This is the client's own wording,
+supplied directly, so it ships as written; the earlier caution is superseded
+by an explicit instruction.

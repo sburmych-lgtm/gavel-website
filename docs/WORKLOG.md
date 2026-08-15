@@ -196,3 +196,29 @@ sound toggle. Two existing checks had to be reordered rather than changed: the
 sound test scrolls to the coach video, which correctly pauses the slider
 sweep, and a programmatic focus after a mouse click does not satisfy
 `:focus-visible`.
+
+---
+
+## CP-13 — third client revision round · 2026-08-15
+
+Four requested changes, plus two bugs found while fixing them.
+
+**Header logo.** Complete lockup on both breakpoints. Rendered at four sizes
+to find where the wordmark becomes readable — 76px desktop, 68px mobile, bar
+grown to 6rem.
+
+**Mobile menu.** Root cause was `backdrop-filter` on the header creating a
+containing block for the `position: fixed` panel nested inside it: 772px tall
+at the top of the page, 71px once scrolled. Panel moved out to be a sibling.
+Raising the bar above the overlay then hid the burger, so `--z-header: 60` was
+added and the bar drops its glass while open. Separately, the burger's X
+rendered as an arrow because `:first-child` matched the screen-reader label
+rather than the first bar.
+
+**Mobile CTA.** Azure instead of gold — it sat directly under a large gold
+logo and read as an advert.
+
+**Вода section.** New headline, canoe line lifted into the headline
+composition, three offers in the Method's row grammar.
+
+QA 42 checks, 0 fail, locally and deployed.
