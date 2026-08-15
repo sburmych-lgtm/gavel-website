@@ -46,3 +46,36 @@ Newest last. One entry per checkpoint.
   is rejected (splash intro, and its Poseidon siblings are banned).
 
 **Commit** — see `git log`.
+
+---
+
+## CP-01 — final architecture package · 2026-08-15
+
+17 documents written and mirrored to `FINAL_CLAUDE_CANDIDATE`.
+
+**Conflicts resolved rather than averaged**
+
+- *CTA colour.* Cursor mandated off-white and made ember a release blocker;
+  Antigravity mandated `#E85D22`, inside Cursor's forbidden family. Resolved on
+  evidence neither weighted: the client owns a gold logo variant, so gold is
+  brand equity, hue ≈42° is outside the banned orange family, and «викована»
+  is a forging word. Gold at `#E1AE42`, ink text, 9.19:1.
+- *Full-bleed hero.* Cursor and Claude both forbade it on correct arithmetic
+  about the vertical source. Overturned — the landscape source is a different,
+  natively 16:9 file that postdates both audits.
+- *Before/After slider.* Cursor and Codex both rejected it. Client decision is
+  fixed, so it is built; their underlying registration objection was real and
+  is solved by measurement.
+- *Method model.* Codex rejected the stroke metaphor as obscuring the factual
+  method; Cursor and Claude adopted it. Adopted, with the literal meaning set
+  beside each phase name so the metaphor carries no information alone.
+- *Self_Presentation placement.* Claude said before pricing, Codex after. After
+  — the Method→Results→Formats→Pricing argument must not be interrupted, and
+  after pricing the section answers the objection pricing creates.
+- *Typography.* Fixel and e-Ukraine Head are not reliably obtainable.
+  Substituted Geologica / Onest / JetBrains Mono, which satisfy every stated
+  rule including both ban lists.
+
+**Added where every prior package was silent** — a full SEO, local SEO and
+AI-search architecture (`13`), including a crawler policy that separates search
+visibility from model-training permission.

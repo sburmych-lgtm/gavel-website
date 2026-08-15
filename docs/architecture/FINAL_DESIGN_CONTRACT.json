@@ -1,0 +1,197 @@
+{
+  "contract_id": "IGOR_GAVRILEYKO_FINAL_CLAUDE_CANDIDATE_V1",
+  "status": "FROZEN_FOR_IMPLEMENTATION",
+  "date": "2026-08-15",
+  "concept": "Сила викована водою — deep ocean ground, brand gold accent, water made commercially load-bearing through the stroke-cycle method",
+
+  "fixed_client_decisions": {
+    "brand_romanisation": "IGOR GAVRILEYKO",
+    "h1_exact": "Сила викована водою",
+    "h1_line_break": ["СИЛА", "ВИКОВАНА", "ВОДОЮ"],
+    "first_impression": "water_canoe",
+    "before_after_slider": "MANDATORY",
+    "credential_exact": "Майстер спорту України",
+    "forbidden_credential": "міжнародного класу"
+  },
+
+  "color": {
+    "abyss": "#060E12",
+    "deep": "#0B1A1F",
+    "petrol": "#123138",
+    "caustic": "#4E9AA0",
+    "foam": "#E9EFF1",
+    "mute": "#93A9B0",
+    "mist": "#DCE6E8",
+    "ink": "#0A1418",
+    "gold": "#E1AE42",
+    "gold_deep": "#C8952F",
+    "danger": "#B4453A",
+    "provenance": "sampled from On_Beach.JPG, Canoe2.JPG, Canoe_ocean_16-9.mp4 and Logo_gold_version.jpg via ffmpeg palettegen",
+    "cta_fill": "#E1AE42",
+    "cta_text": "#0A1418",
+    "contrast_measured": {
+      "foam_on_abyss": 16.79,
+      "mute_on_abyss": 7.93,
+      "caustic_on_abyss": 6.01,
+      "gold_on_abyss": 9.6,
+      "ink_on_gold": 9.19,
+      "ink_on_mist": 14.68
+    },
+    "usage_law": {
+      "caustic": "light only — hairline, focus, underline, panel edge. Never a fill, never >5% of viewport",
+      "gold": "accent + exactly one filled primary action per screen. Matte solid, no gradient, no glow"
+    },
+    "forbidden_hex": ["#E85D22", "#FB5607", "#D9612C", "#F97316", "#22D3EE", "#000000", "#FFFFFF"]
+  },
+
+  "typography": {
+    "display": { "family": "Geologica", "weight": 800 },
+    "body": { "family": "Onest", "weights": [400, 500, 600] },
+    "data": { "family": "JetBrains Mono", "weight": 500 },
+    "delivery": "self-hosted woff2, no CDN, cyrillic + cyrillic-ext + latin + latin-ext",
+    "substitution_note": "Fixel and e-Ukraine Head were specified by prior audits but are not reliably obtainable",
+    "forbidden_families": ["Unbounded", "Oswald", "Manrope", "Anton", "Bebas Neue"],
+    "scale": {
+      "mono": "0.8125rem",
+      "sm": "0.875rem",
+      "body": "1.0625rem",
+      "lead": "clamp(1.125rem, 0.98rem + 0.6vw, 1.375rem)",
+      "h3": "clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem)",
+      "h2": "clamp(2rem, 1.4rem + 2.6vw, 3.25rem)",
+      "h1": "clamp(2.75rem, 1.5rem + 5.6vw, 5.75rem)",
+      "num": "clamp(1.75rem, 1.3rem + 1.9vw, 2.5rem)"
+    },
+    "all_numerals_mono": true
+  },
+
+  "layout": {
+    "max": "75rem",
+    "gutter": "clamp(1.25rem, 4vw, 3.5rem)",
+    "section": "clamp(4.5rem, 9vw, 8rem)",
+    "radius": "2px",
+    "breakpoints": [1100, 768, 560],
+    "review_widths": [320, 390, 768, 1024, 1440, 1920],
+    "pill_buttons": false,
+    "icon_sets": false
+  },
+
+  "information_architecture": [
+    { "n": 1, "id": "top", "name": "Hero", "ground": "abyss" },
+    { "n": 2, "id": null, "name": "Proof strip", "ground": "deep" },
+    { "n": 3, "id": "fit", "name": "Problem / Fit", "ground": "mist" },
+    { "n": 4, "id": "method", "name": "Method", "ground": "abyss" },
+    { "n": 5, "id": "results", "name": "Results", "ground": "deep" },
+    { "n": 6, "id": "formats", "name": "Formats", "ground": "abyss" },
+    { "n": 7, "id": "pricing", "name": "Pricing", "ground": "mist" },
+    { "n": 8, "id": "coach", "name": "Coach", "ground": "abyss" },
+    { "n": 9, "id": "athlete", "name": "Athlete story", "ground": "deep" },
+    { "n": 10, "id": "credentials", "name": "Credentials", "ground": "abyss" },
+    { "n": 11, "id": "faq", "name": "FAQ", "ground": "deep" },
+    { "n": 12, "id": "contact", "name": "Contact", "ground": "abyss" }
+  ],
+
+  "method": {
+    "adopted": true,
+    "h2": "Чотири фази гребка. Одна логіка тренування.",
+    "phases": [
+      { "n": "01", "ua": "Захват", "en": "Catch" },
+      { "n": "02", "ua": "Проведення", "en": "Drive" },
+      { "n": "03", "ua": "Вихід", "en": "Exit" },
+      { "n": "04", "ua": "Курс", "en": "Recovery" }
+    ],
+    "only_numbered_sequence_on_site": true
+  },
+
+  "before_after": {
+    "component": "draggable_slider",
+    "featured_pair": ["1_before.png", "1_after.png"],
+    "faces_blurred": true,
+    "registration": {
+      "method": "shoulder line and waistband measured in both sources, torso height equalised, waistband pinned to shared canvas Y",
+      "canvas": "900x1200",
+      "waistband_y": 812,
+      "before_crop": "681:908:165:15",
+      "after_crop": "890:1187:99:241",
+      "retouching": "none — crop and scale only"
+    },
+    "input": ["pointer", "keyboard", "click-to-position"],
+    "labels_in_dom": true,
+    "supporting": ["2_before-after.jpg", "3_before-after.jpg", "4_before-after.jpg", "6_before-after.JPG"]
+  },
+
+  "media": {
+    "hero_desktop": { "source": "Canoe_ocean_16-9.mp4", "out": "1600x900", "full_bleed": true },
+    "hero_mobile": { "source": "Canoe_Ocean-Main.mp4", "window": "2.0-10.0s" },
+    "coach": { "source": "Self_Presentation.MOV", "window": "13.5-25.5s", "out": "1080x1920", "treatment": "9:16 MediaFrame, mirrored from the approved hero panel grammar" },
+    "never_ship": [
+      "before-after/Архів/Грок/*",
+      "Athletic_coach_paddling_water_202608141149.mp4",
+      "Coach_training_client_in_gym_202608141149.mp4",
+      "Animation_1/Warrior_striking_logo_animation_202608132121.mp4",
+      "Animation_1/Antigravity_Final/*",
+      "Self_Presentation.MOV (HEVC source)"
+    ],
+    "held_pending_consent": ["Fitness_traine_girl.mp4"],
+    "dropped_on_inspection": ["Photo/SelfPhoto/* (76)", "SelfTrainFitness_new1/new2/old", "Biceps_mirror.mp4", "5_before.JPG", "5_after.JPG"]
+  },
+
+  "motion": {
+    "ease": "cubic-bezier(0.22, 1, 0.36, 1)",
+    "fast": "180ms",
+    "base": "340ms",
+    "reveal": "500ms once, opacity + translateY 10px",
+    "hero_reveal": false,
+    "hover_scale": false,
+    "scrolljack": false,
+    "scroll_scrub_video": false,
+    "animated_properties": ["opacity", "transform"],
+    "reduced_motion": "transitions suppressed AND video not fetched — poster rendered as img"
+  },
+
+  "seo": {
+    "rendering": "Astro static, full HTML in server response",
+    "lang": "uk",
+    "canonical": "from SITE_URL config",
+    "sitemap": "@astrojs/sitemap",
+    "robots": "search + user-directed retrieval allowed (Googlebot, Google-Extended, OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot); training crawlers unlisted pending owner decision",
+    "preview_noindex": true,
+    "og_image_source": "In_Gym.JPG — not the canoe, which does not read at thumbnail size",
+    "jsonld": ["Person", "LocalBusiness/SportsActivityLocation", "WebSite", "WebPage", "Service x4"],
+    "never_emit": ["aggregateRating", "review", "streetAddress", "telephone", "openingHours"],
+    "local_intents": ["персональний тренер Львів", "фітнес тренер Львів", "персональні тренування Львів", "personal trainer Lviv"]
+  },
+
+  "backend": {
+    "built_in_this_run": false,
+    "adapter": "src/lib/contact.ts — single function, mock returns no-endpoint + Instagram fallback",
+    "fake_success": "PROHIBITED",
+    "future_endpoint": "POST /api/v1/leads"
+  },
+
+  "budgets": {
+    "lcp_s": 2.5,
+    "cls": 0.1,
+    "inp_ms": 200,
+    "above_fold_mb": 1.6,
+    "hero_poster_kb": 250,
+    "hero_loop_mb": 4,
+    "touch_target_px": 44,
+    "body_min_px": 16
+  },
+
+  "do_not": [
+    "Do not replace or reword the H1",
+    "Do not mix Latin romanisations of the name",
+    "Do not use teal as a fill or a heading colour",
+    "Do not use more than one filled gold action per screen",
+    "Do not add a splash, intro, preloader or scroll-jack",
+    "Do not use pill buttons or rounded cards",
+    "Do not add an icon set",
+    "Do not publish AI-generated clients or transformations",
+    "Do not ship the HEVC source or any video with an audio track",
+    "Do not invent counts, testimonials, ratings, timelines, phone numbers or currency conversions",
+    "Do not upgrade the credential to міжнародного класу",
+    "Do not show a form success state without a real endpoint response",
+    "Do not index the preview deployment"
+  ]
+}

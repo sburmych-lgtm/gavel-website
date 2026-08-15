@@ -1,15 +1,14 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-15 · checkpoint CP-00_
+_Last updated: 2026-08-15 · checkpoint CP-01_
 
 ## Current stage
 
-CP-00 — repository and continuity scaffold. Media pipeline and font vendoring
-have already run, so the derived assets exist before the first commit.
+CP-01 — final architecture package frozen and mirrored.
 
 ## Last completed checkpoint
 
-CP-00 (this commit).
+CP-01.
 
 ## Latest commit SHA
 
@@ -25,11 +24,13 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 - The mandatory Before/After pair is registered: shoulder line and waistband
   align across the wipe seam, verified visually.
 - Brand logo extracted from JPEG to transparent PNG, gold on dark verified.
+- Final architecture package written: 17 documents in `docs/architecture/`,
+  mirrored to `Assets\Архітектура та пайплайн\FINAL_CLAUDE_CANDIDATE`.
 
 ## What is incomplete
 
-Everything downstream of CP-01. No architecture package written yet, no Astro
-config, no tokens, no sections, no page, no deployment.
+Everything downstream of CP-01. No Astro config, no tokens, no components, no
+sections, no page, no deployment.
 
 ## Blockers
 
@@ -53,6 +54,4 @@ None.
 
 ## Exact next action
 
-CP-01 — write the final architecture package into
-`Assets\Архітектура та пайплайн\FINAL_CLAUDE_CANDIDATE`, mirror it into
-`docs/architecture/`, commit, push.
+CP-02 — Astro scaffold, design tokens, base layer, content and media modules.
