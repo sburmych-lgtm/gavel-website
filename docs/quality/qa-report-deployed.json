@@ -127,11 +127,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (75.64% → 87.99%)"
+      "m": "slider: sweeps unattended (75.65% → 88.00%)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 12.01% 0px 0px))"
+      "m": "slider: clip-path active (inset(0px 12% 0px 0px))"
     },
     {
       "level": "OK",
@@ -179,7 +179,7 @@
     },
     {
       "level": "OK",
-      "m": "hero eyebrow over video: 8.29:1 measured from rendered pixels"
+      "m": "hero eyebrow over video: 8.28:1 measured from rendered pixels"
     },
     {
       "level": "OK",

@@ -1,8 +1,35 @@
 # SEO audit — 2026-08-15
 
 **Target:** <https://igor-gavrileyko-final-claude-production.up.railway.app>
-**Scope:** audit and recommendations only. **Nothing in this document was
-implemented.** The site was not modified on the basis of these findings.
+**Scope:** originally audit-only. **On 15.08.2026 the client asked for the SEO
+architecture to be resolved on the prototype rather than deferred, so most of
+this has since been implemented** — see the status column below and D-28 in
+`docs/DECISIONS.md`. The findings are kept verbatim as the record of what was
+wrong and why.
+
+## Implementation status
+
+| Finding | Status |
+|---|---|
+| C-1 canonical/OG/sitemap/JSON-LD pointing at a 404 host | **fixed** — `SITE_URL` fallback corrected at source; canonical and `og:image` verified 200 on the live URL |
+| C-2 build vocabulary in client copy | **fixed** — guarded by `verify-fixes.mjs` |
+| C-3 `noindex` | unchanged, deliberately — it is the launch switch |
+| I-1 headings carry no topical or geo signal | **fixed** — descriptive `h2` beside the fixed H1; geo on Pricing, Formats, Credentials |
+| I-2 H1 reads as one token to non-CSS extractors | **fixed** — verified `"СИЛА ВИКОВАНА ВОДОЮ"` from raw HTML |
+| I-3 no `FAQPage` | **fixed** — 6 Question/Answer pairs live |
+| I-4 orphaned `OfferCatalog` | **fixed** — `hasOfferCatalog`, `itemOffered`, monthly `priceSpecification` |
+| I-5 price and currency split | **fixed** — one text node |
+| I-6 no `cache-control` | **open** — needs a server that supports per-path headers; sirv cannot express it |
+| I-7 ~650 KB avoidable payload | **mostly fixed** — 1026 KB → 583 KB excluding the hero loop. Logo 270 KB → 29 KB WebP, fonts 24 faces → 12 files, below-fold posters deferred, footer clip routed through `AutoVideo` |
+| I-8 result cases only inside a script tag | **fixed** — titles and descriptions server-rendered on the tabs |
+| I-9 undated competition titles | **open** — needs facts from the client |
+| I-10 `LocalBusiness` missing properties | **partly fixed** — `priceRange`, `currenciesAccepted`, `hasCredential`, venue address added; `telephone`, `geo`, `streetAddress`, `openingHours` still need client input |
+| I-11 non-atomic deploy window | **open** — Railway deploy strategy |
+| I-12 Dragon Boat string | **fixed** — two-word form plus one Cyrillic mention |
+| title length, `og:image:alt`, twitter tags, apple-touch-icon, robots contradiction | **fixed** |
+| brotli, AVIF, custom 404, sitemap `lastmod`/images, unreferenced assets | **open** — optional |
+
+---
 
 Two independent passes against the live deployment — one technical/crawlability,
 one on-page/semantic/AI-search — plus direct verification of the critical items.

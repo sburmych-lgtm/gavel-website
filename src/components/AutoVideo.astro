@@ -16,8 +16,12 @@
 interface Props {
   src: string;
   poster: string;
-  /** Below the fold: the poster is deferred with the video. Above the fold it
-      must stay eager, because it is the LCP candidate. */
+  /** Below the fold the poster is withheld entirely and assigned by the same
+      observer that loads the source — a `poster` attribute is fetched eagerly
+      no matter where the element sits, and a CSS background is fetched as soon
+      as the element paints, so neither defers anything. Until then the frame
+      shows its own --deep ground. Above the fold it stays eager: it is the
+      LCP candidate. */
   eagerPoster?: boolean;
   width: number;
   height: number;
@@ -51,7 +55,6 @@ const {
     data-src={src}
     poster={eagerPoster ? poster : undefined}
     data-poster={eagerPoster ? undefined : poster}
-    style={eagerPoster ? undefined : `background-image:url("${poster}")`}
     width={width}
     height={height}
     muted
@@ -84,10 +87,6 @@ const {
     height: 100%;
     object-fit: cover;
     display: block;
-    /* the deferred poster rides in as a background, which the browser only
-       fetches when the element is actually painted */
-    background-size: cover;
-    background-position: center;
   }
 
   /* A real button with a text label, not an icon glyph — every looping video
