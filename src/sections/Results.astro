@@ -1,7 +1,6 @@
 ---
 import BeforeAfter from "../components/BeforeAfter.astro";
 import { results } from "../content";
-import { resultsMedia } from "../content/media";
 ---
 <section class="section section--deep" id="results" aria-labelledby="results-h">
   <div class="shell">
@@ -10,75 +9,19 @@ import { resultsMedia } from "../content/media";
       <h2 id="results-h">{results.h2}</h2>
     </div>
 
-    <div class="r-grid">
-      <div class="r-featured" data-reveal>
-        <BeforeAfter />
-      </div>
-
-      <div class="r-side">
-        <h3 class="r-side-h" data-reveal>{results.supportingH3}</h3>
-        <ul class="r-sup">
-          {resultsMedia.supporting.map((s) => (
-            <li class="r-sup-item" data-reveal>
-              <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />
-              {!s.hasBakedLabels && (
-                <span class="r-sup-tag" aria-hidden="true">
-                  {results.labelBefore} / {results.labelAfter}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div data-reveal>
+      <BeforeAfter />
     </div>
 
     <p class="r-note" data-reveal>{results.disclaimer}</p>
   </div>
 </section>
 <style>
-  .r-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-    align-items: start;
-  }
-  .r-side-h {
-    margin-bottom: 1.25rem; padding-bottom: 0.875rem;
-    border-bottom: 1px solid var(--line-soft);
-  }
-  .r-sup {
-    columns: 2;
-    column-gap: clamp(0.75rem, 1.5vw, 1.25rem);
-    list-style: none; margin: 0; padding: 0;
-  }
-  .r-sup-item {
-    position: relative; overflow: hidden;
-    break-inside: avoid;
-    margin-bottom: clamp(0.75rem, 1.5vw, 1.25rem);
-    border: 1px solid var(--line-soft); border-radius: var(--r);
-    background: var(--abyss);
-  }
-  /* No forced aspect ratio. These four composites have wildly different
-     shapes; boxing them into 4/3 with object-fit:contain produced heavy
-     black letterbox bars and made the grid look broken. Let each keep its
-     own proportions — the raggedness reads as editorial, the bars did not. */
-  .r-sup-item img { width: 100%; height: auto; display: block; }
-  .r-sup-tag {
-    position: absolute; left: 0.5rem; bottom: 0.5rem;
-    padding: 0.2rem 0.45rem;
-    background: color-mix(in oklab, var(--abyss) 78%, transparent);
-    border: 1px solid var(--line); border-radius: var(--r);
-    font-family: var(--font-mono); font-size: 0.625rem;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--mute);
-  }
   .r-note {
-    margin-top: clamp(2rem, 4vw, 3rem); padding-top: 1.25rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.25rem;
     border-top: 1px solid var(--line-soft);
-    font-size: var(--fs-sm); color: var(--mute);
+    font-size: var(--fs-sm);
+    color: var(--mute);
   }
-  @media (max-width: 1100px) {
-    .r-grid { grid-template-columns: 1fr; gap: 2.5rem; }
-    .r-featured { max-width: 480px; }
-  }
-  @media (max-width: 560px) { .r-featured { max-width: none; } }
 </style>

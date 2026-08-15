@@ -80,11 +80,14 @@ import { logo, videos } from "../content/media";
     border: 1px solid var(--line-soft); border-radius: var(--r);
     filter: saturate(0.8) brightness(0.9);
   }
+  /* Credit and handles read as one line, so they sit together. Pushing them
+     to opposite edges of a 1200px shell made them look like two unrelated
+     items. */
   .ft-btm {
     margin-top: clamp(2.5rem, 5vw, 4rem); padding-block: 1.5rem;
     border-top: 1px solid var(--line-soft);
     display: flex; flex-wrap: wrap; align-items: center;
-    justify-content: space-between; gap: 0.75rem 1.5rem;
+    justify-content: flex-start; gap: 0.5rem 1.75rem;
   }
   .ft-credit-l {
     margin: 0; font-family: var(--font-mono); font-size: var(--fs-mono);

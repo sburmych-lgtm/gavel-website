@@ -12,7 +12,8 @@ Source library is read-only. `scripts/build-media.sh` is the only writer of
 |---|---|---|---|
 | `Video/Canoe_ocean_16-9.mp4` | 1280×720 h264 10.0s | `hero-desktop.mp4` 1600×900, 3.7 MB | Desktop hero, full-bleed loop |
 | `Video/Canoe_Ocean-Main.mp4` | 720×1280 h264 50.5s | `hero-mobile.mp4` 720×1280 8s, 1.5 MB | Mobile hero, window 2.0–10.0s |
-| `Video/Self_Presentation.MOV` | 2160×3840 hevc 48.4s | 6 of 11 shots in `coach-montage.mp4` | Coach montage — see below |
+| `Video/IGOR GAVRILEYKO.MOV` | 1080×1920 hevc 47.7s + AAC | `coach.mp4` 720×1280, 9.1 MB | **Coach panel** — client's own edit, with sound |
+| `Video/Self_Presentation.MOV` | 2160×3840 hevc 48.4s | montage only (not shipped) | superseded |
 | `Video/SelfTrainFitness_new1.MOV` | 1080×1920 hevc 46.1s | 1 shot | cable crossover |
 | `Video/SelfTrainFitness_new2.MOV` | 2160×3840 hevc 33.6s | 1 shot | machine work |
 | `Video/Biceps_mirror.mp4` | 720×1280 h264 13.8s | 1 shot | window-light curl |
@@ -34,7 +35,15 @@ Source library is read-only. `scripts/build-media.sh` is the only writer of
 | `4_before-after.jpg` | 1811×2160 | `result-4.jpg` w1000 | Supporting proof — strongest visible change |
 | `6_before-after.JPG` | 768×1280 | `result-6.jpg` w760 | Supporting proof — most disciplined comparison |
 
-### The Coach montage
+### The Coach video
+
+`coach.mp4` — the client's own finished edit of `IGOR GAVRILEYKO.MOV`.
+720×1280, 47.7s, 9.1 MB, **with audio**. It is the only video on the site
+that keeps a soundtrack; every other one is encoded `-an`. The panel
+therefore carries a sound toggle rather than a pause button, and the video
+is not `aria-hidden` — it has content, not just motion.
+
+### The Coach montage (superseded, script retained)
 
 `coach-montage.mp4` — 810×1440, 18.9s, 4.4 MB, silent, looping. Eleven shots
 from six real sources, crossfaded at 0.4s, each colour-corrected into one
@@ -60,7 +69,24 @@ Prior audits forbade a full-bleed hero on the arithmetic that the *vertical*
 source upscales 2×. That arithmetic is right and no longer applies — this is a
 different, natively landscape file that did not exist when they were written.
 
-### Before/After registration
+### Before/After — five cases, four of them cut from composites
+
+Every case drives the slider. Four arrived as two-up composites, so each was
+cut at its measured seam — the seams are **not** at 50%:
+
+```
+case 2   x=1141 of 2560  (44.6%)   largest column-to-column difference
+case 3   x=597  of 1280  (46.6%)   white divider strip
+case 4   x=997  of 1811  (55.1%)   largest column-to-column difference
+case 6   x=383  of 768   (49.9%)   white divider strip
+```
+
+Halves within a case are padded to identical dimensions against the page
+ground; `scripts/build-results.mjs` fails the build if a pair comes out
+mismatched, because a wipe across differently sized images tears at the
+seam. Case 3 keeps its burnt-in ДО/ПІСЛЯ type and suppresses the DOM labels.
+
+### The featured pair's registration
 
 The featured pair is not camera-registered: different rooms, different framing,
 subject at different scale. A wipe across un-normalised images reads as a

@@ -26,6 +26,8 @@ Only `opacity` and `transform` are animated. Never `width`, `height`, `top`,
 | Accordion | native `<details>`; height is not animated |
 | Before/After handle | follows pointer with no easing — a lagging handle feels broken |
 | Before/After sweep | sine 12–88%, omega 1.15 rad/s (~5.5s per pass); paused on drag, on focus, off-screen |
+| Case switch | instant; the sweep restarts from the midpoint so a new case opens readable |
+| Sound toggle | no motion; state shown by gold border and a changed label, not colour alone |
 
 ## Forbidden
 

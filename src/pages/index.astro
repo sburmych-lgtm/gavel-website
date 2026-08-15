@@ -179,12 +179,33 @@ import { hero } from "../content";
       if (v.offsetParent === null) return;
       io.observe(v);
 
-      const btn = v.closest(".av")?.querySelector<HTMLButtonElement>("[data-av-pause]");
+      const wrap = v.closest(".av");
+
+      // Sound toggle — only on the one video whose audio is content.
+      // It still autoplays muted; browsers permit nothing else, and the
+      // click that unmutes is the user gesture that makes it legal.
+      const snd = wrap?.querySelector<HTMLButtonElement>("[data-av-sound]");
+      if (snd) {
+        const sLabel = snd.querySelector<HTMLElement>("[data-av-label]")!;
+        const sIcon = snd.querySelector<HTMLElement>("[data-av-ic]")!;
+        snd.hidden = false;
+        snd.addEventListener("click", () => {
+          v.muted = !v.muted;
+          snd.setAttribute("aria-pressed", String(!v.muted));
+          sLabel.textContent = v.muted ? "Звук" : "Без звуку";
+          sIcon.textContent = v.muted ? "♪" : "✕";
+          // unmuting is also an invitation to actually watch it
+          if (!v.muted) v.play().catch(() => {});
+        });
+        return;
+      }
+
+      const btn = wrap?.querySelector<HTMLButtonElement>("[data-av-pause]");
       const label = btn?.querySelector<HTMLElement>("[data-av-label]");
       if (!btn || !label) return;
       btn.hidden = false;
       btn.addEventListener("click", () => {
-        if (v.paused) { v.dataset.paused = ""; delete v.dataset.paused; v.play().catch(() => {}); label.textContent = "Пауза"; }
+        if (v.paused) { delete v.dataset.paused; v.play().catch(() => {}); label.textContent = "Пауза"; }
         else { v.pause(); v.dataset.paused = "1"; label.textContent = "Грати"; }
       });
     });
@@ -308,6 +329,69 @@ import { hero } from "../content";
     handle.setAttribute("aria-valuemax", String(MAX));
     paint(true);
 
+    /* --- case switcher ------------------------------------------------ *
+     * Each thumbnail swaps the pair the slider is comparing. The frame's
+     * aspect follows the case, because the archive shots run to 0.40 while
+     * the studio pair is 0.75 and one fixed ratio would letterbox most of
+     * them.
+     * ----------------------------------------------------------------- */
+    const raw = root.querySelector<HTMLElement>("[data-ba-cases]")?.textContent;
+    const cases = raw ? JSON.parse(raw) : [];
+    const imgBefore = root.querySelector<HTMLImageElement>("[data-ba-before]");
+    const imgAfter = root.querySelector<HTMLImageElement>("[data-ba-after]");
+    const elTitle = root.querySelector<HTMLElement>("[data-ba-title]");
+    const elSub = root.querySelector<HTMLElement>("[data-ba-sub]");
+    const elCount = root.querySelector<HTMLElement>("[data-ba-count]");
+    const thumbs = [...root.querySelectorAll<HTMLButtonElement>("[data-ba-thumb]")];
+
+    const show = (i: number) => {
+      const c = cases[i];
+      if (!c || !imgBefore || !imgAfter) return;
+
+      imgBefore.src = c.before;
+      imgBefore.alt = `До — ${c.alt}`;
+      imgAfter.src = c.after;
+      imgAfter.alt = `Після — ${c.alt}`;
+      imgBefore.width = imgAfter.width = c.w;
+      imgBefore.height = imgAfter.height = c.h;
+
+      stage.style.setProperty("--ratio", String(c.ratio));
+      if (c.bakedLabels) stage.dataset.baked = "true";
+      else delete stage.dataset.baked;
+
+      if (elTitle) elTitle.textContent = c.title;
+      if (elSub) elSub.textContent = c.sub;
+      if (elCount) {
+        elCount.textContent =
+          `${String(i + 1).padStart(2, "0")} / ${String(cases.length).padStart(2, "0")}`;
+      }
+
+      thumbs.forEach((t, n) => {
+        t.classList.toggle("is-on", n === i);
+        t.setAttribute("aria-selected", n === i ? "true" : "false");
+      });
+
+      // restart the sweep from the middle on every switch, so a new case
+      // always opens in a readable state
+      pos = MID;
+      paint(true);
+      syncPhase();
+    };
+
+    thumbs.forEach((t, i) => {
+      t.addEventListener("click", () => show(i));
+      // a tablist should also answer to arrow keys
+      t.addEventListener("keydown", (e) => {
+        let n = i;
+        if (e.key === "ArrowRight") n = (i + 1) % thumbs.length;
+        else if (e.key === "ArrowLeft") n = (i - 1 + thumbs.length) % thumbs.length;
+        else return;
+        e.preventDefault();
+        thumbs[n].focus();
+        show(n);
+      });
+    });
+
     if (reduced.matches) return;   // static at midpoint, still draggable
 
     // Do not animate a control nobody is looking at.
@@ -320,7 +404,13 @@ import { hero } from "../content";
     ).observe(stage);
   })();
 
-  /* --- sticky mobile CTA ----------------------------------------------- */
+  /* --- sticky mobile CTA ----------------------------------------------- *
+   * It must never cover the contact form or the footer credit. Observing
+   * #contact alone was not enough: that section is taller than the viewport,
+   * so once it had scrolled past, isIntersecting went false again and the bar
+   * reappeared over the footer. The scroll position is the reliable signal,
+   * with the observers as a fast path.
+   * -------------------------------------------------------------------- */
   (() => {
     const bar = document.querySelector<HTMLElement>("[data-sticky]");
     const heroCta = document.querySelector<HTMLElement>(".hero-actions");
@@ -331,7 +421,18 @@ import { hero } from "../content";
     bar.hidden = false;
     let pastHero = false;
     let atContact = false;
-    const sync = () => bar.classList.toggle("is-in", pastHero && !atContact);
+
+    const nearBottom = () => {
+      const doc = document.documentElement;
+      const footer = document.querySelector<HTMLElement>(".ft");
+      // hide as soon as the footer starts to appear, not only at the very end
+      const reserve = (footer?.offsetHeight ?? 0) + 80;
+      return window.scrollY + window.innerHeight >= doc.scrollHeight - reserve;
+    };
+
+    const sync = () => {
+      bar.classList.toggle("is-in", pastHero && !atContact && !nearBottom());
+    };
 
     new IntersectionObserver(
       ([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; sync(); },
@@ -342,6 +443,17 @@ import { hero } from "../content";
       ([e]) => { atContact = e.isIntersecting; sync(); },
       { threshold: 0.05 },
     ).observe(contactSec);
+
+    // the observers only fire on threshold crossings; this catches everything
+    // in between, including landing at the bottom in one flick
+    let ticking = false;
+    window.addEventListener("scroll", () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { ticking = false; sync(); });
+    }, { passive: true });
+    window.addEventListener("resize", sync, { passive: true });
+    sync();
   })();
 
   /* --- contact form ----------------------------------------------------- *

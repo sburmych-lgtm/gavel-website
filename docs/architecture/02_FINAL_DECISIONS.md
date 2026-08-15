@@ -294,3 +294,87 @@ instead of a copyright line:
 Both link to the real chats. The two glyphs are inline SVG brand marks rather
 than an icon set — the no-icons rule is about UI iconography, and a social link
 without its mark reads as a bare string.
+
+---
+
+## D-18 · Every result case drives the slider
+
+**Client request, 15.08.2026.** The supporting photographs are now clickable
+and become the pair the slider compares.
+
+The obstacle was real: four of the five cases arrived as two-up **composites**
+— before and after already pasted into one file — and a wipe needs two images.
+Each was cut at its seam, and the seams are **not at 50%**. They were located
+by measurement, not assumption: the largest mean absolute column-to-column
+difference finds where one photograph ends and the next begins, and cases 3
+and 6 have a white divider strip found as the lowest-variance column.
+
+```
+case 2   seam at x=1141 of 2560   (44.6%)
+case 3   seam at x=597  of 1280   (46.6%, white divider)
+case 4   seam at x=997  of 1811   (55.1%)
+case 6   seam at x=383  of 768    (49.9%, white divider)
+```
+
+Halves within a case are padded to identical dimensions against the page
+ground — a wipe across two differently sized images tears where they meet.
+Crop, pad and scale only; no body retouching. `scripts/build-results.mjs`
+carries the numbers and fails the build if any pair comes out mismatched.
+
+The frame's aspect follows the active case. The archive shots run to 0.40
+while the studio pair is 0.75, and one fixed ratio would letterbox most of
+them. The frame is also sized from its **height** rather than the column
+width: stretching it to the column and capping the height made the box wider
+than the photograph, so `object-fit: cover` cropped a full-body comparison
+down to a chest.
+
+Case 3 keeps its burnt-in ДО/ПІСЛЯ type, so the DOM labels are suppressed on
+it rather than doubling up.
+
+Supersedes the static supporting grid in D-09.
+
+---
+
+## D-19 · The Coach panel plays the client's own edit, with a sound toggle
+
+**Client request, 15.08.2026.** `IGOR GAVRILEYKO.MOV` replaces the montage.
+It is already a finished professional edit — gym, water, running, portrait —
+and it is better than the eleven-shot cut it replaces.
+
+It is the **only video on the site with an audio track**; every other one is
+encoded `-an` because it is decoration. So this panel carries a sound toggle
+instead of a pause button. It still autoplays muted, because browsers permit
+nothing else, and the click that unmutes is the user gesture that makes sound
+legal.
+
+Because it carries speech it is no longer `aria-hidden` and no longer removed
+from the tab order — a video with content is content.
+
+720 wide is 2× the panel's 340 CSS px. 47.7s at crf 29 with 96k audio is
+9.1 MB, lazy and `preload="none"`.
+
+`scripts/build-montage.mjs` is kept and still works. Its output is no longer
+shipped; one command brings that treatment back if it is ever wanted.
+
+Supersedes D-16.
+
+---
+
+## D-20 · Footer credit sits as one line; the logo mark is no longer clipped
+
+**Client requests, 15.08.2026.**
+
+The credit and the two handles read as a single sentence, so they sit
+together. `justify-content: space-between` had thrown them to opposite ends of
+a 1200px shell, which made them look like two unrelated items.
+
+The header monogram was cropped at height 340 of the ink box, but its strokes
+and the swoosh beneath them run to roughly y=400 — the crop was slicing the
+bottom off the letterforms. Now 375, which keeps the mark whole and still
+clears the "IGOR" cap line at y≈408.
+
+The mobile sticky CTA now hides reliably at the foot of the page. Observing
+`#contact` alone was not enough: that section is taller than the viewport, so
+once it scrolled past, `isIntersecting` went false again and the bar
+reappeared over the credit. Scroll position against the footer height is the
+reliable signal, with the observers kept as a fast path.

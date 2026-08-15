@@ -104,6 +104,10 @@
 
   "before_after": {
     "component": "draggable_slider",
+    "cases": 5,
+    "case_switcher": true,
+    "frame_ratio_follows_case": true,
+    "composite_seams": { "2": 1141, "3": 597, "4": 997, "6": 383 },
     "featured_pair": ["1_before.png", "1_after.png"],
     "faces_blurred": true,
     "registration": {
@@ -117,13 +121,13 @@
     "input": ["pointer", "keyboard", "click-to-position"],
     "auto_sweep": { "min": 12, "max": 88, "omega_rad_s": 1.15, "paused_on": ["drag", "focus", "offscreen", "reduced-motion"], "phase_sync_on_release": true },
     "labels_in_dom": true,
-    "supporting": ["2_before-after.jpg", "3_before-after.jpg", "4_before-after.jpg", "6_before-after.JPG"]
+    "split_from_composites": ["2_before-after.jpg", "3_before-after.jpg", "4_before-after.jpg", "6_before-after.JPG"]
   },
 
   "media": {
     "hero_desktop": { "source": "Canoe_ocean_16-9.mp4", "out": "1600x900", "full_bleed": true },
     "hero_mobile": { "source": "Canoe_Ocean-Main.mp4", "window": "2.0-10.0s" },
-    "coach": { "out": "810x1440", "duration_s": 18.9, "shots": 11, "sources": ["Self_Presentation.MOV", "SelfTrainFitness_new1.MOV", "SelfTrainFitness_new2.MOV", "Biceps_mirror.mp4", "Fitness_traine_girl.mp4", "Canoe_lake.mp4"], "crossfade_s": 0.4, "opens_on": "11.7s standing portrait — frame 0 is also the poster", "treatment": "9:16 MediaFrame, mirrored from the approved hero panel grammar" },
+    "coach": { "source": "IGOR GAVRILEYKO.MOV", "out": "720x1280", "duration_s": 47.7, "audio": true, "control": "sound toggle, not pause", "treatment": "9:16 MediaFrame, mirrored from the approved hero panel grammar" },
     "never_ship": [
       "before-after/Архів/Грок/*",
       "Athletic_coach_paddling_water_202608141149.mp4",

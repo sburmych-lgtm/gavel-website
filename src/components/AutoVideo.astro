@@ -21,6 +21,9 @@ interface Props {
   label: string;
   class?: string;
   showPause?: boolean;
+  /** Swaps the pause control for a mute toggle. Only for a video whose audio
+      is content rather than noise — everything else here is encoded -an. */
+  sound?: boolean;
 }
 const {
   src,
@@ -30,10 +33,14 @@ const {
   label,
   class: className = "",
   showPause = true,
+  sound = false,
 } = Astro.props;
 ---
 
 <div class:list={["av", className]}>
+  {/* A video carrying speech is content, not decoration, so it keeps an
+      accessible name and stays in the tab order. A silent background loop
+      does not. */}
   <video
     class="av-el"
     data-autovideo
@@ -45,15 +52,22 @@ const {
     loop
     playsinline
     preload="none"
-    aria-hidden="true"
-    tabindex="-1"></video>
+    aria-hidden={sound ? undefined : "true"}
+    aria-label={sound ? label : undefined}
+    tabindex={sound ? undefined : "-1"}></video>
 
-  {showPause && (
-    <button type="button" class="av-pause" data-av-pause hidden>
-      <span class="av-pause-txt" data-av-label>Пауза</span>
+  {sound ? (
+    <button type="button" class="av-pause av-sound" data-av-sound aria-pressed="false" hidden>
+      <span class="av-ic" aria-hidden="true" data-av-ic>♪</span>
+      <span data-av-label>Звук</span>
       <span class="sr-only">— {label}</span>
     </button>
-  )}
+  ) : showPause ? (
+    <button type="button" class="av-pause" data-av-pause hidden>
+      <span data-av-label>Пауза</span>
+      <span class="sr-only">— {label}</span>
+    </button>
+  ) : null}
 </div>
 
 <style>
@@ -89,4 +103,12 @@ const {
     transition: border-color var(--t-fast) var(--ease);
   }
   .av-pause:hover { border-color: var(--caustic); }
+
+  .av-sound { display: inline-flex; align-items: center; gap: 0.4rem; }
+  /* on = gold, so the state is readable at a glance and not only from the word */
+  .av-sound[aria-pressed="true"] {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .av-ic { font-size: 0.85rem; line-height: 1; }
 </style>

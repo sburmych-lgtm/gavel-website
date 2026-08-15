@@ -1,84 +1,137 @@
 ---
 /**
- * The mandatory draggable Before/After slider.
+ * The mandatory Before/After slider, with a case switcher.
  *
- * The two source photographs are NOT camera-registered — different rooms,
- * different framing, subject at a different scale. They were re-cropped in
- * scripts/build-media.sh so the shoulder line and waistband land on a common
- * canvas Y. Without that the wipe reads as a glitch rather than a comparison,
- * which is exactly why two prior audits recommended abandoning the slider.
+ * Every case is a real pair. The client archive is mostly two-up composites,
+ * so each was cut at its measured seam by scripts/build-results.mjs — the
+ * seams are not at 50%. Halves within a case share identical dimensions,
+ * otherwise the wipe tears where they meet.
  *
- * Three input methods, all required, none optional:
- *   pointer   — mouse, touch and pen through one Pointer Events path
- *   keyboard  — arrows 1%, shift+arrows 10%, Home/End to the ends
- *   click     — anywhere on the frame jumps the handle there
+ * The frame's aspect follows the active case rather than being fixed: the
+ * archive shots run to 0.40 while the studio pair is 0.75, and forcing one
+ * ratio on all of them would letterbox most of the section.
  *
- * With JS off the "after" image renders with both labels visible, so the
- * section still communicates.
+ * Three input methods, none optional: pointer, keyboard, and click-to-position
+ * anywhere on the frame. With JS off the "after" image renders with both
+ * labels visible and the thumbnails are plain links to nothing — the section
+ * still communicates.
  */
-import { resultsMedia } from "../content/media";
+import { resultsCases } from "../content/media";
 import { results } from "../content";
 
-const { featured } = resultsMedia;
+const cases = resultsCases;
+const first = cases[0];
 ---
 
 <div class="ba" data-ba>
-  <div class="ba-stage" data-ba-stage>
-    <img
-      class="ba-img ba-img--after"
-      src={featured.after}
-      alt={featured.altAfter}
-      width={featured.width}
-      height={featured.height}
-      loading="lazy"
-      decoding="async"
-    />
+  <script
+    type="application/json"
+    data-ba-cases
+    is:inline
+    set:html={JSON.stringify(cases)}
+  />
 
-    <div class="ba-clip" data-ba-clip>
+  <div class="ba-main">
+    <div
+      class="ba-stage"
+      data-ba-stage
+      style={`--pos:50%;--ratio:${first.ratio}`}
+    >
       <img
-        class="ba-img ba-img--before"
-        src={featured.before}
-        alt={featured.altBefore}
-        width={featured.width}
-        height={featured.height}
+        class="ba-img"
+        data-ba-after
+        src={first.after}
+        alt={`Після — ${first.alt}`}
+        width={first.w}
+        height={first.h}
         loading="lazy"
         decoding="async"
+        draggable="false"
       />
+
+      <div class="ba-clip" data-ba-clip>
+        <img
+          class="ba-img"
+          data-ba-before
+          src={first.before}
+          alt={`До — ${first.alt}`}
+          width={first.w}
+          height={first.h}
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+      </div>
+
+      <span class="ba-tag ba-tag--l" data-ba-tag aria-hidden="true">{results.labelBefore}</span>
+      <span class="ba-tag ba-tag--r" data-ba-tag aria-hidden="true">{results.labelAfter}</span>
+
+      <div
+        class="ba-handle"
+        data-ba-handle
+        role="slider"
+        tabindex="0"
+        aria-label="Порівняння до і після"
+        aria-valuemin="12"
+        aria-valuemax="88"
+        aria-valuenow="50"
+        aria-valuetext="50% — частка кадру «до»"
+      >
+        <span class="ba-line" aria-hidden="true"></span>
+        <span class="ba-grip" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ba-side">
+    <div class="ba-meta">
+      <p class="ba-title" data-ba-title>{first.title}</p>
+      <p class="ba-sub" data-ba-sub>{first.sub}</p>
     </div>
 
-    <span class="ba-tag ba-tag--l" aria-hidden="true">{results.labelBefore}</span>
-    <span class="ba-tag ba-tag--r" aria-hidden="true">{results.labelAfter}</span>
-
-    <div
-      class="ba-handle"
-      data-ba-handle
-      role="slider"
-      tabindex="0"
-      aria-label="Порівняння до і після"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      aria-valuenow="50"
-      aria-valuetext="50% — половина кадру «до»"
-    >
-      <span class="ba-line" aria-hidden="true"></span>
-      <span class="ba-grip" aria-hidden="true"></span>
+    <div class="ba-thumbs" role="tablist" aria-label="Випадки клієнтів">
+      {cases.map((c, i) => (
+        <button
+          type="button"
+          role="tab"
+          class:list={["ba-thumb", i === 0 && "is-on"]}
+          data-ba-thumb={i}
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-label={c.title}
+        >
+          <img src={c.thumb} alt="" width="90" height="120" loading="lazy" decoding="async" />
+        </button>
+      ))}
     </div>
+
+    <p class="ba-count num" data-ba-count>01 / {String(cases.length).padStart(2, "0")}</p>
   </div>
 </div>
 
 <style>
-  .ba { width: 100%; }
+  .ba {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+    align-items: start;
+  }
 
+  /* The frame is sized from its HEIGHT, not from the column width. Stretching
+     it to the column and capping the height made the box wider than the
+     photograph's ratio, so object-fit: cover cropped a full-body shot down to
+     a chest. Deriving width from a fixed height keeps every case whole. */
   .ba-stage {
     position: relative;
-    width: 100%;
-    aspect-ratio: 900 / 1200;
-    max-height: min(78vh, 760px);
+    --h: min(72vh, 660px);
+    height: var(--h);
+    width: calc(var(--h) * var(--ratio));
+    max-width: 100%;
+    margin-inline: auto;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: var(--r);
     background: var(--deep);
-    /* the pointer path handles horizontal drags; without this a swipe on a
+    /* the pointer path owns horizontal drags; without this a swipe on a
        phone scrolls the page instead of moving the handle */
     touch-action: pan-y;
     user-select: none;
@@ -97,7 +150,6 @@ const { featured } = resultsMedia;
   .ba-clip {
     position: absolute;
     inset: 0;
-    /* --pos is written by the script; 50% is the no-JS / initial state */
     clip-path: inset(0 calc(100% - var(--pos, 50%)) 0 0);
   }
 
@@ -119,6 +171,8 @@ const { featured } = resultsMedia;
   }
   .ba-tag--l { left: 0.875rem; }
   .ba-tag--r { right: 0.875rem; }
+  /* suppressed for the case whose labels are burnt into the photograph */
+  .ba-stage[data-baked="true"] .ba-tag { display: none; }
 
   .ba-handle {
     position: absolute;
@@ -126,42 +180,33 @@ const { featured } = resultsMedia;
     bottom: 0;
     left: var(--pos, 50%);
     z-index: 4;
-    width: 44px;                 /* the touch target, not the visual */
+    width: 44px;
     margin-left: -22px;
     display: grid;
     place-items: center;
     cursor: ew-resize;
     touch-action: none;
   }
-
   .ba-line {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    margin-left: -1px;
+    top: 0; bottom: 0; left: 50%;
+    width: 2px; margin-left: -1px;
     background: var(--foam);
     opacity: 0.9;
   }
-
   .ba-grip {
     position: relative;
-    width: 44px;
-    height: 44px;
+    width: 44px; height: 44px;
     border-radius: 50%;
     background: var(--foam);
     border: 2px solid var(--foam);
     box-shadow: 0 0 0 1px color-mix(in oklab, var(--abyss) 40%, transparent);
   }
-  /* two chevrons drawn in CSS rather than an icon set */
-  .ba-grip::before,
-  .ba-grip::after {
+  .ba-grip::before, .ba-grip::after {
     content: "";
     position: absolute;
     top: 50%;
-    width: 7px;
-    height: 7px;
+    width: 7px; height: 7px;
     border-top: 2px solid var(--ink);
     border-right: 2px solid var(--ink);
   }
@@ -174,7 +219,66 @@ const { featured } = resultsMedia;
     outline-offset: 3px;
   }
 
+  /* ---- case switcher ---- */
+
+  .ba-side { display: grid; gap: 1.25rem; }
+
+  .ba-meta { padding-bottom: 1rem; border-bottom: 1px solid var(--line-soft); }
+  .ba-title { margin: 0 0 0.35rem; font-weight: 600; font-size: 1rem; }
+  .ba-sub { margin: 0; font-size: 0.8125rem; line-height: 1.5; color: var(--mute); }
+
+  .ba-thumbs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .ba-thumb {
+    padding: 0;
+    min-height: 44px;
+    background: var(--deep);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color var(--t-fast) var(--ease),
+                opacity var(--t-fast) var(--ease);
+    opacity: 0.55;
+  }
+  .ba-thumb img {
+    width: 100%; height: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+  .ba-thumb:hover { opacity: 0.85; border-color: var(--line); }
+  .ba-thumb.is-on {
+    opacity: 1;
+    border-color: var(--gold);
+  }
+
+  .ba-count {
+    font-size: var(--fs-mono);
+    letter-spacing: 0.1em;
+    color: var(--mute);
+  }
+
+  @media (max-width: 1100px) {
+    .ba { grid-template-columns: 1fr; }
+    .ba-stage { --h: min(64vh, 540px); }
+    .ba-thumbs { grid-template-columns: repeat(5, 1fr); max-width: 420px; }
+  }
+  /* Below this the height-driven box gets too narrow to read, so hand control
+     back to the width and let the ratio set the height. */
+  @media (max-width: 640px) {
+    .ba-stage {
+      width: 100%;
+      height: auto;
+      aspect-ratio: var(--ratio);
+      max-height: none;
+    }
+  }
   @media (max-width: 560px) {
-    .ba-stage { aspect-ratio: 4 / 5; }
+    .ba-thumbs { max-width: none; }
   }
 </style>

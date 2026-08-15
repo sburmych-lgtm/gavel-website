@@ -36,9 +36,15 @@ say "hero mobile — Canoe_Ocean-Main 2.0-10.0s (clean window)"
 enc "$A/Video/Canoe_Ocean-Main.mp4" "$OUT/video/hero-mobile.mp4" 2 8 \
     "scale=720:1280:flags=lanczos" 26
 
-# The Coach panel is now an edited montage, not a single clip — see
-# scripts/build-montage.mjs, which is run separately because it decodes
-# several 4K HEVC spans and takes minutes.
+say "coach — IGOR GAVRILEYKO.MOV (client-supplied edit)"
+# This one keeps its AUDIO. Every other video on the site is encoded -an
+# because it is decorative; this one is the coach speaking and the panel
+# carries a sound toggle. 720 wide is 2x the panel's 340 CSS px.
+#
+# scripts/build-montage.mjs still exists and still works — it built the
+# hand-cut montage this replaced. Left in place in case that treatment is
+# ever wanted again; its output is no longer shipped.
+ffmpeg -y -v error -i "$A/Video/IGOR GAVRILEYKO.MOV"   -c:v libx264 -profile:v high -pix_fmt yuv420p   -vf "scale=720:1280:flags=lanczos" -crf 29 -preset slow   -c:a aac -b:a 96k -ac 2 -movflags +faststart   "$OUT/video/coach.mp4"
 
 say "athlete — Dragonboat team racing"
 enc "$A/Video/Dragonboat_canoe.mp4" "$OUT/video/dragonboat.mp4" 12 10 \
@@ -60,6 +66,7 @@ say "posters"
 post(){ ffmpeg -y -v error -i "$1" -frames:v 1 -q:v 4 "$2"; }
 post "$OUT/video/hero-desktop.mp4" "$OUT/image/hero-desktop-poster.jpg"
 post "$OUT/video/hero-mobile.mp4"  "$OUT/image/hero-mobile-poster.jpg"
+post "$OUT/video/coach.mp4"        "$OUT/image/coach-poster.jpg"
 post "$OUT/video/dragonboat.mp4"   "$OUT/image/dragonboat-poster.jpg"
 post "$OUT/video/water-calm.mp4"   "$OUT/image/water-calm-poster.jpg"
 
@@ -69,35 +76,12 @@ post "$OUT/video/water-calm.mp4"   "$OUT/image/water-calm-poster.jpg"
 # fills far more of the frame. A wipe slider across un-normalised images reads
 # as a glitch, so both are cropped to a common 3:4 head-to-thigh framing and
 # emitted at identical dimensions. Only crop and scale — no body retouching.
-say "before/after — normalise the featured pair to a shared frame"
-BA="$A/before-after/Real Photos"
-# Registration is computed from two landmarks measured in each source: the
-# shoulder line and the waistband. Equalising the shoulder-to-waist distance
-# normalises camera distance, and pinning the waistband to a common canvas Y
-# makes the wipe seam continuous. Residual silhouette width difference is real
-# (arms down vs. hands on hips) and is left alone.
+# Every before/after case — the one genuine pair AND the four composites that
+# had to be cut at their seams — is produced by scripts/build-results.mjs.
+# It lives apart from this file because the seams are not at 50% and the
+# measurements are worth keeping next to the code that uses them.
 #
-#            source        shoulders  waistband  torso  scale  cropY  cropX
-#   before   1086x1448        206        630      424   1.321    15    165
-#   after    1088x1445        490       1044      554   1.011   241     99
-#   shared canvas 900x1200, waistband pinned to y=812
-ffmpeg -y -v error -i "$BA/1_before.png" \
-  -vf "crop=681:908:165:15,scale=900:1200:flags=lanczos" -q:v 3 \
-  "$OUT/image/result-1-before.jpg"
-ffmpeg -y -v error -i "$BA/1_after.png" \
-  -vf "crop=890:1187:99:241,scale=900:1200:flags=lanczos" -q:v 3 \
-  "$OUT/image/result-1-after.jpg"
-
-say "before/after — supporting composites"
-sup(){ ffmpeg -y -v error -i "$1" -vf "scale=$2:-2:flags=lanczos" -q:v 4 "$3"; }
-sup "$BA/2_before-after.jpg" 1100 "$OUT/image/result-2.jpg"
-sup "$BA/3_before-after.jpg" 1100 "$OUT/image/result-3.jpg"
-sup "$BA/4_before-after.jpg" 1000 "$OUT/image/result-4.jpg"
-# 6_before-after carries baked white bands top and bottom (measured: the
-# content occupies rows 173..1106 of 1280). Cropped so the card is not
-# mostly padding.
-ffmpeg -y -v error -i "$BA/6_before-after.JPG" \
-  -vf "crop=768:934:0:173,scale=760:-2:flags=lanczos" -q:v 4 "$OUT/image/result-6.jpg"
+#   node scripts/build-results.mjs
 
 # ---------------------------------------------------------------- logo
 # Both logo files are JPEGs on a white ground. colorkey lifts the white so the
@@ -117,8 +101,13 @@ ffmpeg -y -v error -i "$A/Photo/Logo_gold_version.jpg" \
 # the name is ~5px tall and the whole lockup reads as a gold smudge. The
 # monogram crops cleanly above the wordmark and stays legible; the header
 # sets the name in type beside it instead.
+#
+# Height 375, not 340. The monogram's strokes and the swoosh beneath them run
+# to roughly y=400 of the ink box, so cropping at 340 sliced the bottom off the
+# letterforms — visible as a clipped mark in the header. 375 keeps the mark
+# whole and still clears the "IGOR" cap line, which starts around y=408.
 ffmpeg -y -v error -i "$A/Photo/Logo_gold_version.jpg" \
-  -vf "colorkey=0xFDFDFD:0.22:0.10,crop=603:340:352:105,scale=360:-1:flags=lanczos" \
+  -vf "colorkey=0xFDFDFD:0.22:0.10,crop=603:375:352:105,scale=430:-1:flags=lanczos" \
   "$OUT/image/logo-mark.png"
 
 say "done"

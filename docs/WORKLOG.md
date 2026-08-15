@@ -158,3 +158,41 @@ QA: 36 checks, 0 fail, both locally and against the deployed URL. One new
 assertion added — the sweep must move on its own — and two updated, because
 Home/End now land on the declared 12/88 rather than 0/100 and the drag fixture
 was grabbing the stage edge instead of the handle.
+
+---
+
+## CP-12 — second client revision round · 2026-08-15
+
+**1 · Every result case drives the slider.** The blocker was that four of five
+cases arrived as two-up composites, and a wipe needs two images. Each was cut
+at its seam — and the seams are not at 50%: 44.6%, 46.6%, 55.1%, 49.9%, found
+by measuring the largest column-to-column difference (or the white divider
+strip where there is one). Halves are padded to identical dimensions and the
+build fails if a pair comes out mismatched.
+
+The frame is now sized from its height, not the column width. Stretching it to
+the column and capping the height made the box wider than the photograph, so
+`object-fit: cover` cropped a full-body comparison down to a chest.
+
+**2 · Coach panel plays `IGOR GAVRILEYKO.MOV`** — the client's own finished
+edit, which is stronger than the montage it replaces. It is the only video on
+the site with audio, so the panel carries a sound toggle instead of a pause
+button, and the video is no longer `aria-hidden`.
+
+**3 · Footer credit** sits as one line instead of being thrown to opposite
+edges.
+
+**4 · Header monogram** was cropped at 340 of the ink box; its strokes run to
+~400, so the crop was slicing the letterforms. Now 375.
+
+**5 · Mobile sticky CTA** no longer reappears over the footer credit.
+Observing `#contact` alone failed because that section is taller than the
+viewport — once it scrolled past, `isIntersecting` went false again. Verified
+across five scroll positions including a flick straight to the bottom.
+
+QA is now 42 checks, 0 fail. Six new assertions cover the case switcher (pair
+swap, frame ratio, aria-selected, caption, matching half dimensions) and the
+sound toggle. Two existing checks had to be reordered rather than changed: the
+sound test scrolls to the coach video, which correctly pauses the slider
+sweep, and a programmatic focus after a mouse click does not satisfy
+`:focus-visible`.

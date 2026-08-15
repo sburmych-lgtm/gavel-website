@@ -147,9 +147,49 @@ for (const { name, w, h } of WIDTHS) {
   if (afterDrag > 28 && afterDrag < 43) ok(`slider: pointer drag moved to ${afterDrag}%`);
   else fail(`slider: pointer drag landed at ${afterDrag}% (expected ~35%)`);
 
+  // --- case switcher: a thumbnail must swap the pair and re-shape the frame
+  const nThumbs = await page.locator("[data-ba-thumb]").count();
+  if (nThumbs < 2) fail(`case switcher: only ${nThumbs} thumbnail(s)`);
+  else {
+    const before0 = await page.locator("[data-ba-before]").getAttribute("src");
+    const ratio0 = await page.evaluate(() =>
+      getComputedStyle(document.querySelector("[data-ba-stage]")).getPropertyValue("--ratio").trim());
+    await page.locator("[data-ba-thumb]").nth(2).click();
+    await page.waitForTimeout(250);
+    const before1 = await page.locator("[data-ba-before]").getAttribute("src");
+    const ratio1 = await page.evaluate(() =>
+      getComputedStyle(document.querySelector("[data-ba-stage]")).getPropertyValue("--ratio").trim());
+    const sel = await page.locator("[data-ba-thumb]").nth(2).getAttribute("aria-selected");
+    const title = await page.locator("[data-ba-title]").innerText();
+
+    before1 && before1 !== before0
+      ? ok(`case switcher: ${nThumbs} cases, click swapped pair (${before0?.split("/").pop()} → ${before1.split("/").pop()})`)
+      : fail("case switcher: clicking a thumbnail did not swap the pair");
+    ratio1 !== ratio0
+      ? ok(`case switcher: frame ratio follows the case (${ratio0} → ${ratio1})`)
+      : fail(`case switcher: ratio stayed at ${ratio0} — the case would letterbox`);
+    sel === "true" ? ok("case switcher: aria-selected tracks the active tab")
+                   : fail(`case switcher: aria-selected is ${sel}`);
+    title.trim().length > 0 ? ok(`case switcher: caption updated ("${title.trim()}")`)
+                            : fail("case switcher: caption did not update");
+    // both halves of the new case must be the same size or the wipe tears
+    const dims = await page.evaluate(() => {
+      const b = document.querySelector("[data-ba-before]");
+      const a = document.querySelector("[data-ba-after]");
+      return { bw: b.naturalWidth, bh: b.naturalHeight, aw: a.naturalWidth, ah: a.naturalHeight };
+    });
+    dims.bw === dims.aw && dims.bh === dims.ah
+      ? ok(`case switcher: halves match (${dims.bw}x${dims.bh})`)
+      : fail(`case switcher: halves differ ${dims.bw}x${dims.bh} vs ${dims.aw}x${dims.ah} — the wipe tears`);
+    await page.locator("[data-ba-thumb]").nth(0).click();
+    await page.waitForTimeout(200);
+  }
+
   // --- the sweep runs unattended
+  // It is paused while off-screen by design, so put it back in view first.
+  await page.locator("[data-ba-stage]").scrollIntoViewIfNeeded();
   await page.evaluate(() => document.activeElement && document.activeElement.blur());
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(400);
   const posA = await page.evaluate(() =>
     getComputedStyle(document.querySelector("[data-ba-stage]")).getPropertyValue("--pos"));
   await page.waitForTimeout(700);
@@ -167,6 +207,7 @@ for (const { name, w, h } of WIDTHS) {
 
   // --- focus visibility on the handle
   await handle.focus();
+  await handle.press("ArrowRight");   // keyboard modality, so :focus-visible applies
   const ring = await page.evaluate(() => {
     const g = document.querySelector(".ba-grip");
     const s = getComputedStyle(g);
@@ -294,6 +335,30 @@ for (const { name, w, h } of WIDTHS) {
     return bad.slice(0, 8);
   });
   small.length ? warn(`targets under 44px: ${small.join(", ")}`) : ok("touch targets ≥44px");
+
+  // --- sound toggle on the coach video
+  const snd = page.locator("[data-av-sound]");
+  if (await snd.count()) {
+    await snd.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    const m0 = await page.evaluate(() => {
+      const v = document.querySelector("[data-av-sound]").closest(".av").querySelector("video");
+      return v.muted;
+    });
+    await snd.click();
+    await page.waitForTimeout(200);
+    const after = await page.evaluate(() => {
+      const b = document.querySelector("[data-av-sound]");
+      const v = b.closest(".av").querySelector("video");
+      return { muted: v.muted, pressed: b.getAttribute("aria-pressed"), label: (b.querySelector("[data-av-label]")||{}).textContent };
+    });
+    m0 === true && after.muted === false && after.pressed === "true"
+      ? ok(`sound toggle: muted → unmuted, aria-pressed true (label "${after.label}")`)
+      : fail(`sound toggle: started muted=${m0}, now ${JSON.stringify(after)}`);
+    await snd.click();
+    await page.waitForTimeout(150);
+  } else fail("sound toggle: not found on the coach video");
+
 
   await ctx.close();
 }
