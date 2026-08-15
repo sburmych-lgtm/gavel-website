@@ -180,19 +180,6 @@ p { max-width: 68ch; }
 }
 .btn-primary:hover { background: var(--gold-deep); }
 
-/* Azure action. Used where a gold fill would sit next to the gold logo and
-   read as an advert — the whole mobile column, in practice. Visible without
-   shouting, and in the water half of the palette rather than the metal half. */
-.btn-water {
-  background: color-mix(in oklab, var(--caustic) 16%, var(--deep));
-  border-color: var(--caustic);
-  color: var(--foam);
-}
-.btn-water:hover {
-  background: color-mix(in oklab, var(--caustic) 26%, var(--deep));
-  border-color: var(--foam);
-}
-
 .btn-ghost {
   background: transparent;
   color: var(--foam);

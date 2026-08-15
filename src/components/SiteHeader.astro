@@ -60,7 +60,7 @@ import { logo } from "../content/media";
       ))}
     </ul>
   </nav>
-  <a class="btn hdr-panel-cta" href={nav.cta.href}>{nav.cta.label}</a>
+  <a class="btn btn-primary hdr-panel-cta" href={nav.cta.href}>{nav.cta.label}</a>
   <p class="hdr-panel-foot">
     {site.city}, {site.venue}
   </p>
@@ -97,12 +97,12 @@ import { logo } from "../content/media";
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    min-height: 6rem;
+    min-height: 4.5rem;
   }
 
-  /* The full lockup, mark and wordmark together. The wordmark occupies only
-     the lower third of a near-square lockup, so below about 70px it stops
-     being readable — hence the generous height and the taller bar. */
+  /* The complete lockup, scaled to sit inside the original bar height rather
+     than the bar being grown to fit it. 52px in a 72px bar leaves 10px of
+     breathing room top and bottom and nothing is cropped. */
   .hdr-brand {
     display: inline-flex;
     align-items: center;
@@ -110,7 +110,7 @@ import { logo } from "../content/media";
     min-height: 44px;
     text-decoration: none;
   }
-  .hdr-brand img { width: auto; height: 76px; }
+  .hdr-brand img { width: auto; height: 52px; }
 
   .hdr-nav { margin-left: auto; }
 
@@ -173,7 +173,7 @@ import { logo } from "../content/media";
     inset: 0;
     z-index: var(--z-overlay);
     background: var(--abyss);
-    padding: 6rem var(--gut) calc(var(--gut) + env(safe-area-inset-bottom));
+    padding: 4.5rem var(--gut) calc(var(--gut) + env(safe-area-inset-bottom));
     overflow-y: auto;
     overscroll-behavior: contain;
   }
@@ -199,17 +199,7 @@ import { logo } from "../content/media";
   }
   .hdr-panel-link:hover { color: var(--caustic); }
 
-  /* Matches the restrained mobile CTA rather than the gold one — the panel
-     already sits under a large gold logo. */
-  .hdr-panel-cta {
-    width: 100%;
-    background: color-mix(in oklab, var(--caustic) 16%, var(--deep));
-    border-color: var(--caustic);
-    color: var(--foam);
-  }
-  .hdr-panel-cta:hover {
-    background: color-mix(in oklab, var(--caustic) 26%, var(--deep));
-  }
+  .hdr-panel-cta { width: 100%; }
 
   .hdr-panel-foot {
     margin-top: 1.75rem;
@@ -226,8 +216,6 @@ import { logo } from "../content/media";
   }
 
   @media (max-width: 560px) {
-    .hdr-in { min-height: 5.5rem; }
-    .hdr-brand img { height: 68px; }
-    .hdr-panel { padding-top: 5.5rem; }
+    .hdr-brand img { height: 46px; }
   }
 </style>

@@ -97,9 +97,13 @@ const first = cases[0];
           class:list={["ba-thumb", i === 0 && "is-on"]}
           data-ba-thumb={i}
           aria-selected={i === 0 ? "true" : "false"}
-          aria-label={c.title}
+          aria-label={`${c.title}. ${c.sub}`}
         >
           <img src={c.thumb} alt="" width="90" height="120" loading="lazy" decoding="async" />
+          {/* Server-rendered so the four inactive cases are not text that only
+              exists inside a script tag. It also gives each tab a real
+              description rather than just a label. */}
+          <span class="sr-only">{c.title}. {c.sub}</span>
         </button>
       ))}
     </div>

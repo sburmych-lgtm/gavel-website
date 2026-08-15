@@ -13,8 +13,11 @@ import { pricing } from "../content";
       {pricing.tiers.map((t) => (
         <li class:list={["p-item", t.featured && "p-item--f"]} data-reveal>
           <h3 class="p-name">{t.name}</h3>
+          {/* One text node, not two. Split across sibling spans, extraction
+              yielded "100" and "$" on separate lines — and with ₴ and $ in the
+              same list that is a live mis-association risk. */}
           <p class="p-price">
-            <span class="num p-val">{t.price}</span><span class="p-cur">{t.currency}</span>
+            <span class="num p-val">{t.price}&#8239;<span class="p-cur">{t.currency}</span></span>
           </p>
           <p class="p-inc">{t.includes}</p>
         </li>

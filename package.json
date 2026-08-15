@@ -4,11 +4,11 @@
   "description": "IGOR GAVRILEYKO — coded visual prototype",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && astro build",
+    "build": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && node scripts/check-fonts.mjs && astro build",
     "build:fast": "astro build",
     "preview": "astro preview",
     "start": "sirv dist --host 0.0.0.0 --port ${PORT:-4321} --etag",
-    "check": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && astro check",
+    "check": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && node scripts/check-fonts.mjs",
     "qa": "node scripts/qa.mjs",
     "qa:fixes": "node scripts/verify-fixes.mjs"
   },

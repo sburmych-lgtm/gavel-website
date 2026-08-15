@@ -40,7 +40,7 @@ import { hero } from "../content";
   <!-- Mobile only. Appears once the hero CTA has left the viewport and hides
        again near #contact so it never covers the real form. -->
   <div class="sticky-cta" data-sticky hidden>
-    <a class="btn btn-water" href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</a>
+    <a class="btn btn-primary sticky-btn" href={hero.ctaPrimary.href}>{hero.ctaPrimary.label}</a>
   </div>
 </Base>
 
@@ -49,7 +49,7 @@ import { hero } from "../content";
     position: fixed;
     inset: auto 0 0 0;
     z-index: var(--z-sticky);
-    padding: 0.75rem var(--gut) calc(0.75rem + env(safe-area-inset-bottom));
+    padding: 0.6rem var(--gut) calc(0.6rem + env(safe-area-inset-bottom));
     background: var(--glass);
     backdrop-filter: blur(14px);
     border-top: 1px solid var(--line-soft);
@@ -57,7 +57,23 @@ import { hero } from "../content";
     transition: transform var(--t-base) var(--ease);
   }
   .sticky-cta.is-in { transform: none; }
-  .sticky-cta .btn { width: 100%; }
+  /* Gold, as before — just dialled down: roughly 12% smaller than the standard
+     button and the fill mixed 8% toward the page ground so it reads as an
+     action rather than a banner. The hero CTA it duplicates is never on screen
+     at the same time, so the two golds never sit side by side. */
+  .sticky-btn {
+    width: 100%;
+    /* padding + line-height were overriding min-height and landing at 49px;
+       zero block padding lets the flex centring hold the box at exactly 42 */
+    min-height: 42px;
+    padding-block: 0;
+    padding-inline: 1.5rem;
+    font-size: 0.9375rem;
+    background: color-mix(in oklab, var(--gold) 92%, var(--deep));
+  }
+  .sticky-btn:hover {
+    background: color-mix(in oklab, var(--gold-deep) 94%, var(--deep));
+  }
   .sticky-cta[hidden] { display: none; }
 
   @media (min-width: 769px) { .sticky-cta { display: none !important; } }
@@ -165,6 +181,7 @@ import { hero } from "../content";
         for (const e of entries) {
           const v = e.target as HTMLVideoElement;
           if (e.isIntersecting) {
+            if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
             if (!v.src && v.dataset.src) v.src = v.dataset.src;
             if (!v.dataset.paused) v.play().catch(() => {});
           } else {
@@ -457,39 +474,57 @@ import { hero } from "../content";
     sync();
   })();
 
-  /* --- contact form ----------------------------------------------------- *
-   * Validates, then says plainly that there is no endpoint. It never shows
-   * a success state, because there is nothing to succeed at yet.
-   * -------------------------------------------------------------------- */
+  /* --- contact form -------------------------------------------------- *
+   * No endpoint, and no pretence of one. The two actions are real links to
+   * the trainer's chats, so they work with this script absent and cannot be
+   * blocked as popups. All this adds is the convenience: validate, then copy
+   * what was typed so it can be pasted straight into the conversation.
+   * ------------------------------------------------------------------- */
   (() => {
     const form = document.querySelector<HTMLFormElement>("[data-contact]");
     if (!form) return;
-    const note = form.querySelector<HTMLElement>("[data-contact-note]");
+    const status = form.querySelector<HTMLElement>("[data-contact-status]");
+    const fallback = form.querySelector<HTMLTextAreaElement>("[data-contact-fallback]");
 
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const data = new FormData(form);
-      const get = (k: string) => String(data.get(k) ?? "").trim();
+    // pressing Enter in a field must not reload the page
+    form.addEventListener("submit", (e) => e.preventDefault());
 
-      const errors: Record<string, string> = {};
-      if (!get("name")) errors.name = "Вкажіть ім'я";
-      if (!get("goal")) errors.goal = "Опишіть коротко вашу ціль";
-      if (!get("contact")) errors.contact = "Вкажіть, як з вами зв'язатися";
+    form.querySelectorAll<HTMLAnchorElement>("[data-go]").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        const data = new FormData(form);
+        const get = (k: string) => String(data.get(k) ?? "").trim();
 
-      form.querySelectorAll<HTMLElement>("[data-err]").forEach((el) => {
-        el.textContent = errors[el.dataset.err!] ?? "";
+        const errors: Record<string, string> = {};
+        if (!get("name")) errors.name = "Вкажіть ім'я";
+        if (!get("goal")) errors.goal = "Опишіть коротко вашу ціль";
+        if (!get("contact")) errors.contact = "Вкажіть, як з вами зв'язатися";
+
+        form.querySelectorAll<HTMLElement>("[data-err]").forEach((el) => {
+          el.textContent = errors[el.dataset.err!] ?? "";
+        });
+
+        if (Object.keys(errors).length) {
+          e.preventDefault();       // nothing to carry over yet
+          form.querySelector<HTMLElement>(`#f-${Object.keys(errors)[0]}`)?.focus();
+          return;
+        }
+
+        const text =
+          `Вітаю! Мене звати ${get("name")}.
+` +
+          `Моя ціль: ${get("goal")}
+` +
+          `Зв'язок: ${get("contact")}`;
+
+        // the link navigates regardless; this only decides what the note says
+        navigator.clipboard?.writeText(text).then(
+          () => { if (status) status.textContent = "Повідомлення скопійовано — вставте його в чат."; },
+          () => {
+            if (status) status.textContent = "Не вдалося скопіювати. Скопіюйте текст вручну:";
+            if (fallback) { fallback.hidden = false; fallback.value = text; }
+          },
+        );
       });
-
-      if (Object.keys(errors).length) {
-        form.querySelector<HTMLElement>(`#f-${Object.keys(errors)[0]}`)?.focus();
-        return;
-      }
-
-      if (note) {
-        note.textContent =
-          "Цей прототип не надсилає повідомлення. Напишіть, будь ласка, в Instagram — посилання ліворуч.";
-        note.style.color = "var(--gold)";
-      }
     });
   })();
 </script>

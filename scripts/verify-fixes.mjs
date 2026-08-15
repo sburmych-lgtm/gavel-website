@@ -60,7 +60,8 @@ for (const [name, w, h] of [["mobile-390",390,844],["mobile-320",320,640],["tabl
     closed ? ok(`${name} @${where}: menu closes`) : bad(`${name} @${where}: menu did not close`);
   }
 
-  // mobile CTA is not gold
+  // mobile CTA: gold as the client asked, but muted against --gold and
+  // smaller than a standard .btn
   if (w <= 768) {
     await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight*0.45));
     await p.waitForTimeout(800);
@@ -71,13 +72,20 @@ for (const [name, w, h] of [["mobile-390",390,844],["mobile-320",320,640],["tabl
       const cx = cv.getContext("2d");
       const px = col => { cx.clearRect(0,0,1,1); cx.fillStyle=col; cx.fillRect(0,0,1,1);
         const d = cx.getImageData(0,0,1,1).data; return [d[0],d[1],d[2]]; };
-      return { bg: px(cs.backgroundColor), border: px(cs.borderTopColor), shown: document.querySelector("[data-sticky]").classList.contains("is-in") };
+      const gold = px(getComputedStyle(document.documentElement).getPropertyValue("--gold").trim());
+      return { bg: px(cs.backgroundColor), gold,
+               h: Math.round(a.getBoundingClientRect().height),
+               shown: document.querySelector("[data-sticky]").classList.contains("is-in") };
     });
-    // gold is ~#E1AE42 (225,174,66): red-dominant and bright. Azure is blue-dominant.
-    const goldish = c.bg[0] > 150 && c.bg[0] > c.bg[2] + 60;
-    !goldish && c.shown
-      ? ok(`${name}: sticky CTA visible and not gold — bg rgb(${c.bg}), border rgb(${c.border})`)
-      : bad(`${name}: CTA gold=${goldish} shown=${c.shown} bg=${c.bg}`);
+    // still recognisably gold: red-dominant and warm
+    const isGold = c.bg[0] > 150 && c.bg[0] > c.bg[2] + 80;
+    // but dimmer than the full-strength token, by a small margin
+    const dim = (c.gold[0] - c.bg[0]) / c.gold[0];
+    const muted = dim > 0.02 && dim <= 0.15;
+    const smaller = c.h < 48;
+    isGold && muted && c.shown && smaller
+      ? ok(`${name}: sticky CTA gold, muted ${(dim*100).toFixed(0)}% vs --gold, ${c.h}px tall (standard 48)`)
+      : bad(`${name}: gold=${isGold} muted=${muted} (${(dim*100).toFixed(1)}%) smaller=${smaller} h=${c.h} shown=${c.shown} bg=${c.bg}`);
   }
   await p.close();
 }
@@ -103,6 +111,61 @@ for (const [name, w, h] of [["mobile-390",390,844],["mobile-320",320,640],["tabl
                      : bad(`Вода order wrong: ${iH} / ${iC} / ${iL}`);
   await p.close();
 }
+// contact routes to both of the trainer's channels, and no build vocabulary
+// survives anywhere in the rendered text
+{
+  const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  await p.goto(URL, { waitUntil: "networkidle" });
+
+  const links = await p.evaluate(() =>
+    [...document.querySelectorAll("#contact a[href]")].map((a) => a.getAttribute("href")));
+  const hasTg = links.some((h) => h.includes("t.me/"));
+  const hasIg = links.some((h) => h.includes("instagram.com"));
+  hasTg && hasIg
+    ? ok(`contact: routes to both channels (${links.filter((h) => h.includes("t.me/") || h.includes("instagram.com")).join(" , ")})`)
+    : bad(`contact: telegram=${hasTg} instagram=${hasIg} — ${links.join(" , ")}`);
+
+  const body = await p.locator("body").innerText();
+  const jargon = ["датасет", "прототип", "placeholder", "lorem", "todo"];
+  const found = jargon.filter((t) => body.toLowerCase().includes(t));
+  found.length === 0
+    ? ok("copy: no build vocabulary in rendered text")
+    : bad(`copy: build vocabulary present — ${found.join(", ")}`);
+
+  // the form must hand off for real, and must never claim it sent anything
+  await p.locator("#f-name").fill("Тест");
+  await p.locator("#f-goal").fill("Схуднути");
+  await p.locator("#f-contact").fill("@test");
+  const [popup] = await Promise.all([
+    p.waitForEvent("popup", { timeout: 5000 }).catch(() => null),
+    p.locator('[data-go="tg"]').click(),
+  ]);
+  await p.waitForTimeout(600);
+  const opened = !!popup && popup.url().includes("t.me/");
+  const status = (await p.locator("[data-contact-status]").innerText()).trim();
+  opened && /скопійовано|вручну/i.test(status)
+    ? ok(`contact form: opened the chat, reported "${status}"`)
+    : bad(`contact form: opened=${opened} status="${status}"`);
+  /надіслан|відправлен/i.test(status)
+    ? bad("contact form: claims a message was sent")
+    : ok("contact form: makes no false send claim");
+
+  await p.close();
+}
+
+// the H1 must extract as three words for a crawler that does not run CSS
+{
+  const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  const res = await p.goto(URL, { waitUntil: "domcontentloaded" });
+  const html = await res.text();
+  const m = /<h1[^>]*>([\s\S]*?)<\/h1>/.exec(html);
+  const raw = m ? m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() : "";
+  raw === "СИЛА ВИКОВАНА ВОДОЮ"
+    ? ok(`h1 raw extraction: "${raw}"`)
+    : bad(`h1 raw extraction: "${raw}" — must read as three separate words`);
+  await p.close();
+}
+
 await b.close();
 console.log(`\n${fails} failure(s)`);
 process.exit(fails ? 1 : 0);

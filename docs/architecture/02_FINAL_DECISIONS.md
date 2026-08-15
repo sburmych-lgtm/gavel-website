@@ -453,3 +453,74 @@ Note for the record: the third item names фармакологічна підт�
 had deliberately kept off the public page. This is the client's own wording,
 supplied directly, so it ships as written; the earlier caution is superseded
 by an explicit instruction.
+
+---
+
+## D-25 · Header keeps its original bar; only the logo changed
+
+**Client, 15.08.2026.** D-21 grew the bar to 6rem to fit a readable wordmark.
+The client's point stands: the bar is chrome, and enlarging it to serve the
+logo made the whole header louder. Reverted to 4.5rem, with the complete
+lockup scaled to 52px (46px below 560px) so it sits inside the original height
+with nothing cropped. Supersedes D-21.
+
+---
+
+## D-26 · The mobile CTA is gold again, dialled down
+
+**Client, 15.08.2026.** D-23's azure treatment overshot. Gold restored on both
+the sticky bar and the mobile hero button, with the sticky bar mixed 8% toward
+the page ground and cut from 48px to 42px. The two are never on screen at once
+— the sticky bar only appears after the hero CTA scrolls away — so the slight
+difference in gold never shows as an inconsistency. Supersedes D-23.
+
+---
+
+## D-27 · The contact form hands off to real chats
+
+**Client, 15.08.2026.** Telegram `@gavelman`, supplied by the client; the
+dataset contains no contact channels at all.
+
+Both actions are ordinary links with `target="_blank"`, not scripted opens.
+`window.open` was measurably being suppressed as a popup, and a link cannot be
+— it also means the handoff still works with JavaScript disabled. The script
+only adds the convenience: validate, then copy the composed message so it can
+be pasted into the conversation. It still never claims anything was sent.
+
+---
+
+## D-28 · SEO architecture implemented on the prototype
+
+**Client, 15.08.2026** — resolve it now rather than after the backend.
+
+The critical item was a bug of mine: the `SITE_URL` fallback omitted the
+`-production` segment, so the canonical, `og:url`, `og:image`, the sitemap and
+all nine JSON-LD `@id`s pointed at a host returning 404. Fixed at the source,
+so a missing environment variable now degrades to something valid.
+
+Also done: `FAQPage` from the six existing Q&A pairs; `OfferCatalog` linked via
+`hasOfferCatalog` with `itemOffered` and a monthly `priceSpecification`;
+`priceRange` and `currenciesAccepted` derived from published tiers;
+`hasCredential` for the two Master-of-Sport titles; Telegram added to `sameAs`.
+
+Headings: a descriptive `h2` beside the fixed H1, geo qualification on the
+Pricing, Formats and Credentials headings, the proof strip given an accessible
+name, the body sentence lifted out of the Athlete `h2`, and both unnamed
+`aside`s labelled.
+
+Entity clarity: whitespace between the H1 spans, because raw-text extraction
+returned `СИЛАВИКОВАНАВОДОЮ` and the robots policy specifically invites
+crawlers that do not run CSS. Price and currency joined into one text node.
+The four inactive result cases now have their titles and descriptions
+server-rendered on the tabs instead of living only inside a script tag.
+
+Performance: the eagerly-loaded 270 KB footer logo became a 29 KB WebP used in
+both header and footer; the variable-font faces collapsed from 24 declarations
+to 12 files, since Google returns identical bytes per weight; below-fold video
+posters deferred behind the same observer that loads the source; the footer dog
+clip routed through `AutoVideo`, because as a bare `src` + `autoplay` element
+Chrome overrode its own `preload="none"`.
+
+**Not done, and deliberately so:** anything needing facts nobody has supplied —
+street address, coordinates, competition years, opening hours. Those stay open
+in `12_OPEN_HUMAN_DECISIONS.md`.

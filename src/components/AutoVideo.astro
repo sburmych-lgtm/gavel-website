@@ -16,6 +16,9 @@
 interface Props {
   src: string;
   poster: string;
+  /** Below the fold: the poster is deferred with the video. Above the fold it
+      must stay eager, because it is the LCP candidate. */
+  eagerPoster?: boolean;
   width: number;
   height: number;
   label: string;
@@ -34,6 +37,7 @@ const {
   class: className = "",
   showPause = true,
   sound = false,
+  eagerPoster = false,
 } = Astro.props;
 ---
 
@@ -45,7 +49,9 @@ const {
     class="av-el"
     data-autovideo
     data-src={src}
-    poster={poster}
+    poster={eagerPoster ? poster : undefined}
+    data-poster={eagerPoster ? undefined : poster}
+    style={eagerPoster ? undefined : `background-image:url("${poster}")`}
     width={width}
     height={height}
     muted
@@ -78,6 +84,10 @@ const {
     height: 100%;
     object-fit: cover;
     display: block;
+    /* the deferred poster rides in as a background, which the browser only
+       fetches when the element is actually painted */
+    background-size: cover;
+    background-position: center;
   }
 
   /* A real button with a text label, not an icon glyph — every looping video

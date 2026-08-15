@@ -1,10 +1,10 @@
 ---
 import { proof } from "../content";
 ---
-<section class="section section--deep proof">
+<section class="section section--deep proof" aria-label={proof.title}>
   <div class="shell">
     <ul class="proof-list" data-reveal>
-      {proof.map((p) => (
+      {proof.items.map((p) => (
         <li class="proof-item">
           <span class="num proof-v">{p.value}</span>
           <span class="proof-l">{p.label}</span>

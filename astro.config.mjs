@@ -12,7 +12,13 @@ import sitemap from "@astrojs/sitemap";
  * INDEXABLE gates the robots meta tag — the preview must never be indexed
  * ahead of the production domain.
  */
-const SITE_URL = process.env.SITE_URL ?? "https://igor-gavrileyko-final-claude.up.railway.app";
+/* The fallback must be a host that actually resolves. It previously omitted
+   the `-production` segment, so the canonical, og:url, og:image, the sitemap
+   and all nine JSON-LD @id values pointed at a 404 — which breaks social
+   previews today and would prevent indexing outright on launch. */
+const SITE_URL =
+  process.env.SITE_URL ??
+  "https://igor-gavrileyko-final-claude-production.up.railway.app";
 
 export default defineConfig({
   site: SITE_URL,

@@ -8,6 +8,7 @@ import { Image } from "astro:assets";
     <div class="head" data-reveal>
       <span class="eyebrow">{formats.eyebrow}</span>
       <h2 id="formats-h">{formats.h2}</h2>
+      <p class="lead">{formats.formatsLead}</p>
     </div>
 
     <div class="f-grid">
@@ -23,7 +24,7 @@ import { Image } from "astro:assets";
         ))}
       </ul>
 
-      <aside class="f-aside" data-reveal>
+      <aside class="f-aside" data-reveal aria-label={formats.includedH3}>
         <Image
           src={photos.inGym.src}
           alt={photos.inGym.alt}

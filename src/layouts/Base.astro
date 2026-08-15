@@ -38,20 +38,31 @@ const schema = buildSchema(siteUrl, ogImage);
     <meta property="og:image" content={new URL(ogImage, siteUrl).href} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={site.title} />
+    <meta name="twitter:description" content={site.description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
+    <meta name="twitter:image:alt" content={site.ogImageAlt} />
 
     <meta name="theme-color" content="#060E12" />
 
     <!-- Only the two faces used above the fold. Everything else is
-         discovered normally rather than competing with the LCP poster. -->
+         discovered normally rather than competing with the LCP poster.
+         These filenames are content-hashed and change whenever the fonts are
+         re-vendored; scripts/check-fonts.mjs fails the build if a preload
+         here stops resolving, because preloading a 404 is worse than not
+         preloading at all. -->
     <link
       rel="preload" as="font" type="font/woff2" crossorigin
-      href="/fonts/geologica-800-cyrillic-814be3a4.woff2" />
+      href="/fonts/geologica-cyrillic-814be3a4.woff2" />
     <link
       rel="preload" as="font" type="font/woff2" crossorigin
-      href="/fonts/onest-400-cyrillic-019021ad.woff2" />
+      href="/fonts/onest-cyrillic-019021ad.woff2" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/* SVG-only fails on older Safari and on the iOS home screen */}
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <script is:inline set:html={JSON.stringify(schema)} type="application/ld+json" />
 

@@ -1,12 +1,13 @@
 ---
+import AutoVideo from "../components/AutoVideo.astro";
 import { site, nav, credit } from "../content";
 import { logo, videos } from "../content/media";
 ---
 <footer class="ft">
   <div class="shell ft-in">
     <div class="ft-brand">
-      <img src={logo.full.src} alt={logo.full.alt} width={logo.full.width}
-           height={logo.full.height} class="ft-logo" loading="lazy" decoding="async" />
+      <img src={logo.footer.src} alt={logo.footer.alt} width={logo.footer.width}
+           height={logo.footer.height} class="ft-logo" loading="lazy" decoding="async" />
       <p class="ft-who">{site.name} · {site.role}</p>
       <p class="ft-where">{site.city}, {site.venue}</p>
     </div>
@@ -21,10 +22,19 @@ import { logo, videos } from "../content/media";
       <a class="ft-ig" href={site.instagram} target="_blank" rel="noopener noreferrer">
         Instagram {site.instagramHandle}
       </a>
-      {/* the one unserious thing on the page, and it is real footage */}
-      <video class="ft-dog" src={videos.dog.src} width={videos.dog.width}
-             height={videos.dog.height} muted loop playsinline autoplay
-             preload="none" aria-label={videos.dog.label}></video>
+      {/* Routed through AutoVideo like every other clip. As a bare
+          src + autoplay element Chrome overrode its own preload="none" and
+          fetched 238 KB on first paint. */}
+      <div class="ft-dog">
+        <AutoVideo
+          src={videos.dog.src}
+          poster={videos.dog.poster}
+          width={videos.dog.width}
+          height={videos.dog.height}
+          label={videos.dog.label}
+          showPause={false}
+        />
+      </div>
     </div>
   </div>
 
@@ -76,7 +86,7 @@ import { logo, videos } from "../content/media";
   }
   .ft-ig:hover { border-bottom-color: var(--caustic); }
   .ft-dog {
-    width: 100%; max-width: 220px; height: auto;
+    width: 100%; max-width: 220px; aspect-ratio: 16 / 9;
     border: 1px solid var(--line-soft); border-radius: var(--r);
     filter: saturate(0.8) brightness(0.9);
   }

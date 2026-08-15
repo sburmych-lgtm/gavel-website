@@ -3,11 +3,14 @@
  * structured data cannot drift away from the visible text.
  *
  * Deliberately NOT emitted, because the data does not exist: aggregateRating,
- * review, streetAddress, telephone, openingHours, priceRange. Inventing any of
- * them would be fabricating facts, and structured data that misrepresents the
- * page is penalised rather than rewarded.
+ * review, streetAddress, telephone, openingHours. Inventing any of them would
+ * be fabricating facts, and structured data that misrepresents the page is
+ * penalised rather than rewarded.
+ *
+ * `priceRange` IS emitted — it is derived from the tiers already published on
+ * the page, not guessed.
  */
-import { site, pricing, formats } from "../content";
+import { site, pricing, formats, faq, credentials } from "../content";
 
 const PERSON = `${"#person"}`;
 const BUSINESS = "#business";
@@ -26,7 +29,7 @@ export function buildSchema(siteUrl: string, ogImage: string) {
         jobTitle: site.role,
         image: abs(ogImage),
         url: siteUrl,
-        sameAs: [site.instagram],
+        sameAs: [site.instagram, site.telegram],
         knowsAbout: [
           "Персональні тренування",
           "Групові тренування",
@@ -43,6 +46,18 @@ export function buildSchema(siteUrl: string, ogImage: string) {
           name: "Полтавський національний педагогічний університет імені В. Г. Короленка",
         },
         worksFor: { "@id": abs(BUSINESS) },
+        hasOfferCatalog: { "@id": abs("#offers") },
+        /* Titles exactly as the client states them. No years and no event
+           names are added, because neither exists in the dataset. */
+        hasCredential: credentials.groups
+          .filter((g) => g.title === "Звання")
+          .flatMap((g) =>
+            g.items.map((item) => ({
+              "@type": "EducationalOccupationalCredential",
+              credentialCategory: "Спортивне звання",
+              name: item,
+            })),
+          ),
       },
       {
         // SportsActivityLocation rather than a generic LocalBusiness: the venue
@@ -63,8 +78,20 @@ export function buildSchema(siteUrl: string, ogImage: string) {
           addressLocality: "Львів",
           addressCountry: "UA",
         },
-        location: { "@type": "Place", name: site.venue },
-        sameAs: [site.instagram],
+        location: {
+          "@type": "Place",
+          name: site.venue,
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Львів",
+            addressCountry: "UA",
+          },
+        },
+        /* Derived from the published tiers, not guessed. */
+        priceRange: "0–200 $",
+        currenciesAccepted: "UAH, USD",
+        sameAs: [site.instagram, site.telegram],
+        hasOfferCatalog: { "@id": abs("#offers") },
       },
       {
         "@type": "WebSite",
@@ -84,6 +111,20 @@ export function buildSchema(siteUrl: string, ogImage: string) {
         isPartOf: { "@id": abs("#website") },
         about: { "@id": abs(PERSON) },
         primaryImageOfPage: abs(ogImage),
+        mainEntity: { "@id": abs("#faq") },
+      },
+      /* The six Q&A pairs are already server-rendered in the page; this only
+         marks up content that is visibly there. */
+      {
+        "@type": "FAQPage",
+        "@id": abs("#faq"),
+        inLanguage: "uk",
+        mainEntity: faq.items.map((item, i) => ({
+          "@type": "Question",
+          "@id": abs(`#faq-${i + 1}`),
+          name: item.q,
+          acceptedAnswer: { "@type": "Answer", text: item.a },
+        })),
       },
       // One Service per format. Prices carry the dataset's real currencies —
       // UAH for the single session, USD for the monthly packages. No
@@ -101,15 +142,34 @@ export function buildSchema(siteUrl: string, ogImage: string) {
         "@type": "OfferCatalog",
         "@id": abs("#offers"),
         name: "Формати співпраці",
-        itemListElement: pricing.tiers.map((t) => ({
-          "@type": "Offer",
-          name: t.name,
-          description: t.includes,
-          price: t.price,
-          priceCurrency: t.currency === "₴" ? "UAH" : "USD",
-          availability: "https://schema.org/InStock",
-          seller: { "@id": abs(PERSON) },
-        })),
+        itemListElement: pricing.tiers.map((t, i) => {
+          /* The USD tiers are monthly; the hryvnia ones are per session or
+             one-off. Stating the period is what stops "$200" being read as a
+             one-time total. */
+          const monthly = t.currency === "$";
+          return {
+            "@type": "Offer",
+            "@id": abs(`#offer-${i + 1}`),
+            name: t.name,
+            description: t.includes,
+            price: t.price,
+            priceCurrency: monthly ? "USD" : "UAH",
+            availability: "https://schema.org/InStock",
+            seller: { "@id": abs(PERSON) },
+            /* All five tiers price the same service — personal training. The
+               group, online and paddling formats are published without a
+               price, so no Offer points at them. */
+            itemOffered: { "@id": abs("#service-1") },
+            priceSpecification: {
+              "@type": "UnitPriceSpecification",
+              price: t.price,
+              priceCurrency: monthly ? "USD" : "UAH",
+              ...(monthly
+                ? { unitCode: "MON", unitText: "місяць" }
+                : { unitText: i === 0 ? "консультація" : "заняття" }),
+            },
+          };
+        }),
       },
     ],
   };

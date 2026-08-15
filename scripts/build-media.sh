@@ -110,5 +110,11 @@ ffmpeg -y -v error -i "$A/Photo/Logo_gold_version.jpg" \
   -vf "colorkey=0xFDFDFD:0.22:0.10,crop=603:375:352:105,scale=430:-1:flags=lanczos" \
   "$OUT/image/logo-mark.png"
 
+# The header loads the lockup eagerly, so its weight lands on first paint.
+# WebP at 340px is 29 KB against the PNG's 270 KB.
+ffmpeg -y -v error -i "$OUT/image/logo-gold.png"   -vf "scale=340:-1:flags=lanczos" -c:v libwebp -quality 82   "$OUT/image/logo-gold.webp"
+
+post "$OUT/video/dog.mp4" "$OUT/image/dog-poster.jpg"
+
 say "done"
 ls -la "$OUT/video" "$OUT/image"

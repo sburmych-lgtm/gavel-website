@@ -1,4 +1,10 @@
 ---
+/**
+ * The form does not pretend to send anything, and it no longer talks about
+ * itself. It composes what the visitor typed, copies it to the clipboard and
+ * opens the trainer's chat — a real action with a real outcome, in the two
+ * channels he actually answers on.
+ */
 import AutoVideo from "../components/AutoVideo.astro";
 import { contact, site } from "../content";
 import { videos } from "../content/media";
@@ -11,7 +17,6 @@ import { videos } from "../content/media";
       width={videos.waterCalm.width}
       height={videos.waterCalm.height}
       label={videos.waterCalm.label}
-      showPause={true}
     />
     <span class="ct-scrim"></span>
   </div>
@@ -21,15 +26,25 @@ import { videos } from "../content/media";
       <span class="eyebrow ct-eyebrow">{contact.eyebrow}</span>
       <h2 id="contact-h">{contact.h2}</h2>
       <p class="lead ct-lead">{contact.lead}</p>
-      <a class="btn btn-primary ct-cta" href={contact.cta.href}
-         target="_blank" rel="noopener noreferrer">{contact.cta.label}</a>
-      <p class="ct-handle">{site.instagramHandle}</p>
+
+      <div class="ct-actions">
+        <a class="btn btn-primary" href={contact.ctaTelegram.href}
+           target="_blank" rel="noopener noreferrer">{contact.ctaTelegram.label}</a>
+        <a class="btn btn-ghost" href={contact.ctaInstagram.href}
+           target="_blank" rel="noopener noreferrer">{contact.ctaInstagram.label}</a>
+      </div>
+
+      <ul class="ct-handles">
+        <li>Telegram <span class="ct-h">{site.telegramHandle}</span></li>
+        <li>Instagram <span class="ct-h">{site.instagramHandle}</span></li>
+      </ul>
     </div>
 
-    {/* The form is a real UI on a mock adapter. It never reports success —
-        a form that silently discards a lead is worse than no form, and a
-        fake "Надіслано!" is worse than both. */}
-    <form class="ct-form" data-contact novalidate data-reveal>
+    <form class="ct-form" data-contact novalidate data-reveal
+          data-tg={contact.ctaTelegram.href} data-ig={contact.ctaInstagram.href}>
+      <h3 class="ct-form-h">{contact.formTitle}</h3>
+      <p class="ct-form-hint">{contact.formHint}</p>
+
       {contact.fields.map((f) => (
         <p class="ct-field">
           <label class="ct-label" for={`f-${f.name}`}>{f.label}</label>
@@ -39,8 +54,25 @@ import { videos } from "../content/media";
           <span class="ct-err" data-err={f.name} role="alert"></span>
         </p>
       ))}
-      <button class="btn btn-ghost ct-submit" type="submit">{contact.submit}</button>
-      <p class="ct-note" data-contact-note>{contact.formNote}</p>
+
+      {/* Anchors, not submit buttons. window.open was being suppressed as a
+          popup, and a real link cannot be — it also means the handoff still
+          works with JavaScript disabled, where the fields are simply a
+          prompt for what to write. */}
+      <div class="ct-submits">
+        <a class="btn btn-primary ct-submit" data-go="tg"
+           href={contact.ctaTelegram.href} target="_blank" rel="noopener noreferrer">
+          {contact.submitTelegram}
+        </a>
+        <a class="btn btn-ghost ct-submit" data-go="ig"
+           href={contact.ctaInstagram.href} target="_blank" rel="noopener noreferrer">
+          {contact.submitInstagram}
+        </a>
+      </div>
+
+      <p class="ct-status" data-contact-status role="status" aria-live="polite"></p>
+      <textarea class="ct-fallback" data-contact-fallback hidden readonly rows="5"
+                aria-label="Текст повідомлення"></textarea>
     </form>
   </div>
 </section>
@@ -61,15 +93,26 @@ import { videos } from "../content/media";
   }
   .ct-eyebrow { display: block; margin-bottom: 1rem; }
   .ct-lead { margin: 1.25rem 0 2rem; color: var(--foam); }
-  .ct-handle {
-    margin-top: 1rem; font-family: var(--font-mono);
-    font-size: var(--fs-mono); letter-spacing: 0.1em; color: var(--mute);
+
+  .ct-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .ct-handles {
+    list-style: none; margin: 1.5rem 0 0; padding: 0;
+    display: grid; gap: 0.4rem;
+    font-family: var(--font-mono); font-size: var(--fs-mono);
+    letter-spacing: 0.08em; color: var(--mute);
   }
+  .ct-h { color: var(--foam); }
+
   .ct-form {
     padding: clamp(1.5rem, 3vw, 2rem);
     border: 1px solid var(--line-soft); border-radius: var(--r);
     background: color-mix(in oklab, var(--deep) 80%, transparent);
     backdrop-filter: blur(8px);
+  }
+  .ct-form-h { margin-bottom: 0.4rem; }
+  .ct-form-hint {
+    margin-bottom: 1.5rem; font-size: var(--fs-sm);
+    line-height: 1.5; color: var(--mute);
   }
   .ct-field { margin: 0 0 1.25rem; max-width: none; }
   .ct-label {
@@ -89,9 +132,19 @@ import { videos } from "../content/media";
     display: block; margin-top: 0.35rem; min-height: 1rem;
     font-size: 0.8125rem; color: var(--danger);
   }
+  .ct-submits { display: grid; gap: 0.6rem; }
   .ct-submit { width: 100%; }
-  .ct-note {
-    margin-top: 1rem; font-size: 0.8125rem; line-height: 1.5; color: var(--mute);
+  .ct-status {
+    margin-top: 1rem; min-height: 1.2rem;
+    font-size: 0.8125rem; line-height: 1.5; color: var(--caustic);
   }
+  .ct-fallback {
+    width: 100%; margin-top: 0.75rem; padding: 0.75rem;
+    background: var(--abyss); color: var(--foam);
+    border: 1px solid var(--line); border-radius: var(--r);
+    font-size: 0.8125rem; resize: vertical;
+  }
+
   @media (max-width: 1100px) { .ct-in { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .ct-actions .btn { width: 100%; } }
 </style>

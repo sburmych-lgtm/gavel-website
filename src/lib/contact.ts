@@ -3,9 +3,10 @@
  * backend. Connecting a real API means replacing the body of submitContact()
  * and nothing else.
  *
- * In the prototype it always reports that no endpoint exists and hands back
- * the Instagram URL. It never returns success. A form that silently discards a
- * lead is worse than no form, and a fake "Надіслано!" is worse than both.
+ * Today it reports that no endpoint exists and hands back the trainer's own
+ * channels, which is what the UI routes to. It never returns success. A form
+ * that silently discards a lead is worse than no form, and a fake "Надіслано!"
+ * is worse than both.
  *
  * Contract for the real endpoint: docs/architecture/09_FINAL_BACKEND_API_ARCHITECTURE.md
  */
@@ -19,7 +20,7 @@ export type ContactPayload = {
 
 export type ContactResult =
   | { ok: true; channel: "api" }
-  | { ok: false; reason: "no-endpoint"; fallbackUrl: string }
+  | { ok: false; reason: "no-endpoint"; channels: { telegram: string; instagram: string } }
   | { ok: false; reason: "validation"; fields: Record<string, string> };
 
 export function validate(p: Partial<ContactPayload>): Record<string, string> {
@@ -38,6 +39,10 @@ export async function submitContact(
     return { ok: false, reason: "validation", fields: errors };
   }
 
-  // No endpoint exists yet. Say so.
-  return { ok: false, reason: "no-endpoint", fallbackUrl: site.instagram };
+  // No endpoint exists yet. The UI hands off to the trainer's own channels.
+  return {
+    ok: false,
+    reason: "no-endpoint",
+    channels: { telegram: site.telegram, instagram: site.instagram },
+  };
 }

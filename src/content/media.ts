@@ -36,11 +36,11 @@ export const photos = {
   },
   champion: {
     src: champion,
-    alt: "Ігор Гаврилейко з медаллю чемпіонату України з веслування на човнах Dragonboat",
+    alt: "Ігор Гаврилейко з медаллю чемпіонату України з веслування на човнах Dragon Boat",
   },
   certificates: {
     src: certificates,
-    alt: "Сертифікати та дипломи про професійну підготовку",
+    alt: "Дипломи й сертифікати: персональний тренер тренажерного залу, дієтологія у фітнесі, реабілітаційний тренінг, МФР, TRX",
   },
 } as const;
 
@@ -84,6 +84,7 @@ export const videos = {
   },
   dog: {
     src: "/media/video/dog.mp4",
+    poster: "/media/image/dog-poster.jpg",
     width: 640,
     height: 360,
     label: "Пес у каное",
@@ -107,7 +108,7 @@ export const resultsCases = [
     w: 900, h: 1200, ratio: 0.75,
     title: "Набір форми",
     sub: "Обличчя приховано на прохання клієнта.",
-    alt: "Порівняння до і після: клієнт, фронтальна стійка, обличчя розмите",
+    alt: "клієнт, фронтальна стійка, обличчя розмите",
     bakedLabels: false,
   },
   {
@@ -118,7 +119,7 @@ export const resultsCases = [
     w: 994, h: 2160, ratio: 0.4602,
     title: "Мінус живіт",
     sub: "Архів тренера, побутова зйомка. Профіль.",
-    alt: "Порівняння до і після: клієнт у профіль",
+    alt: "клієнт у профіль",
     bakedLabels: false,
   },
   {
@@ -129,7 +130,7 @@ export const resultsCases = [
     w: 1416, h: 2064, ratio: 0.686,
     title: "Спина і постава",
     sub: "Архів тренера, побутова зйомка. Вид зі спини.",
-    alt: "Порівняння до і після: клієнт, вид зі спини",
+    alt: "клієнт, вид зі спини",
     bakedLabels: false,
   },
   {
@@ -140,7 +141,7 @@ export const resultsCases = [
     w: 378, h: 934, ratio: 0.4047,
     title: "Схуднення й тонус",
     sub: "Той самий ракурс і те саме світло.",
-    alt: "Порівняння до і після: клієнтка, вид зі спини",
+    alt: "клієнтка, вид зі спини",
     bakedLabels: false,
   },
   {
@@ -153,22 +154,30 @@ export const resultsCases = [
     w: 678, h: 780, ratio: 0.8692,
     title: "Суха вага",
     sub: "Архів тренера. Підписи — на оригіналі знімка.",
-    alt: "Порівняння до і після: клієнт, знімок у дзеркалі",
+    alt: "клієнт, знімок у дзеркалі",
     bakedLabels: true,
   },
 ] as const;
 
 export const logo = {
-  /* Full lockup — legible from roughly 56px up. Footer. */
+  /* WebP, not the 270 KB PNG. The header loads this eagerly — it is the brand
+     mark at the top of the page — so its weight is the single biggest lever on
+     first paint. 340px wide covers the 52px header render at 2x DPR and the
+     56px footer render with room to spare. */
   full: {
-    src: "/media/image/logo-gold.png",
-    width: 480,
-    height: 464,
+    src: "/media/image/logo-gold.webp",
+    width: 340,
+    height: 329,
     alt: "IGOR GAVRILEYKO",
   },
-  /* Monogram alone. The header sets the name in type beside it, because the
-     lockup's wordmark is only ~5px tall at header size and the whole thing
-     reads as a gold smudge. */
+  footer: {
+    src: "/media/image/logo-gold.webp",
+    width: 340,
+    height: 329,
+    alt: "IGOR GAVRILEYKO",
+  },
+  /* Monogram alone. Not currently used — kept because it is the right asset
+     for a favicon or a compact header if either is wanted. */
   mark: {
     src: "/media/image/logo-mark.png",
     width: 430,

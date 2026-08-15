@@ -222,3 +222,29 @@ logo and read as an advert.
 composition, three offers in the Method's row grammar.
 
 QA 42 checks, 0 fail, locally and deployed.
+
+---
+
+## CP-14 — fourth revision round + SEO implementation · 2026-08-15
+
+Rollback point for the previous version: branch `preview-v2-approved-base`
+@ `0492d01`.
+
+Four requested fixes: header bar back to 4.5rem with the full lockup scaled to
+fit; sticky CTA gold again at 8% muted and 42px; all build vocabulary removed
+from client-facing copy; the contact form now hands off to Telegram
+`@gavelman` and Instagram `@gavel_man`.
+
+Then the SEO audit's recommendations implemented on the prototype rather than
+deferred. Full list in D-28. The headline item was mine to fix: the `SITE_URL`
+fallback was missing `-production`, pointing every canonical signal at a 404.
+
+Three bugs surfaced while doing it, each caught by measuring rather than
+assuming: preloading fonts whose content-hashed names had changed (now guarded
+by `check-fonts.mjs`); the sticky button landing at 49px because padding and
+line-height beat `min-height`; and `window.open` being suppressed as a popup
+after an `await` spent the user-gesture context — fixed properly by making the
+handoff an ordinary link, which also works with JS disabled.
+
+Verification: `qa.mjs` 43 checks and `verify-fixes.mjs` 25 checks, both 0 fail,
+locally and against the deployment.

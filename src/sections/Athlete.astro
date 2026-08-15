@@ -12,10 +12,8 @@ import { Image } from "astro:assets";
       {/* Two-part headline: the promise, then the canoe line that used to sit
           in the body copy. The second part is set smaller so the composition
           still has one dominant line. */}
-      <h2 id="athlete-h" class="a-h2">
-        {athlete.h2}
-        <span class="a-h2-sub">{athlete.h2Sub}</span>
-      </h2>
+      <h2 id="athlete-h" class="a-h2">{athlete.h2}</h2>
+      <p class="a-h2-sub">{athlete.h2Sub}</p>
     </div>
 
     <div class="a-grid">
@@ -74,7 +72,6 @@ import { Image } from "astro:assets";
 <style>
   .a-h2 { max-width: 22ch; }
   .a-h2-sub {
-    display: block;
     margin-top: 1rem;
     max-width: 46ch;
     font-family: var(--font-body);
