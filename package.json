@@ -6,16 +6,17 @@
     "dev": "astro dev",
     "build": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && astro build",
     "build:fast": "astro build",
-    "preview": "astro preview --host 0.0.0.0 --port ${PORT:-4321}",
-    "start": "astro preview --host 0.0.0.0 --port ${PORT:-4321}",
+    "preview": "astro preview",
+    "start": "sirv dist --host 0.0.0.0 --port ${PORT:-4321} --etag",
     "check": "node scripts/check-facts.mjs && node scripts/check-assets.mjs && astro check",
     "qa": "node scripts/qa.mjs"
   },
   "type": "module",
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.2.2",
     "sharp": "^0.35.3",
-    "@astrojs/sitemap": "^3.7.3"
+    "sirv-cli": "^3.0.1"
   },
   "devDependencies": {
     "playwright": "^1.62.1"
