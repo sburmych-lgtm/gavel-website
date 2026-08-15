@@ -127,11 +127,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (75.65% → 88.00%)"
+      "m": "slider: sweeps unattended (24.17% → 12.00%)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 12% 0px 0px))"
+      "m": "slider: clip-path active (inset(0px 88% 0px 0px))"
     },
     {
       "level": "OK",
