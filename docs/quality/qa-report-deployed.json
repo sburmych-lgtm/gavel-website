@@ -99,7 +99,7 @@
     },
     {
       "level": "OK",
-      "m": "slider: Home jumps to 0"
+      "m": "slider: Home jumps to min (12)"
     },
     {
       "level": "OK",
@@ -107,7 +107,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 65% 0px 0px))"
+      "m": "slider: sweeps unattended (41.47% → 70.77%)"
+    },
+    {
+      "level": "OK",
+      "m": "slider: clip-path active (inset(0px 28.02% 0px 0px))"
     },
     {
       "level": "OK",
@@ -144,10 +148,6 @@
     {
       "level": "OK",
       "m": "contrast .ft-where: 7.92:1 (needs 4.5)"
-    },
-    {
-      "level": "OK",
-      "m": "contrast #results .lead: 7.23:1 (needs 4.5)"
     },
     {
       "level": "OK",

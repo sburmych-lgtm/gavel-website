@@ -1,6 +1,6 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-15 · checkpoint CP-10_
+_Last updated: 2026-08-15 · checkpoint CP-11_
 
 ## Current stage
 
@@ -9,7 +9,9 @@ CP-10 — Railway preview deployed and verified on the public URL.
 
 ## Last completed checkpoint
 
-CP-10 — the final checkpoint of this run.
+CP-11 — client revision round deployed and verified.
+
+Rollback point: branch `preview-v1-approved-base` @ `dcb9c24`.
 
 ## Latest commit SHA
 

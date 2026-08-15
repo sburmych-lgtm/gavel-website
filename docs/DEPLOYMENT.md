@@ -13,6 +13,7 @@
 | Environment | `production` (Railway's default environment name; the deployment is a preview) |
 | GitHub | <https://github.com/sburmych-lgtm/igor-gavrileyko-final-claude> (private) |
 | Branch | `main` |
+| Rollback | `preview-v1-approved-base` @ `dcb9c24` — the version approved before the 15.08 revision round |
 | Deployed | 2026-08-15 |
 
 ## Build and start
