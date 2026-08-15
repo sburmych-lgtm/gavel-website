@@ -1,6 +1,6 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-15 · checkpoint CP-12_
+_Last updated: 2026-08-15 · checkpoint CP-13_
 
 ## Current stage
 
@@ -9,7 +9,7 @@ CP-10 — Railway preview deployed and verified on the public URL.
 
 ## Last completed checkpoint
 
-CP-12 — second client revision round deployed and verified.
+CP-13 — third client revision round deployed and verified.
 
 Rollback point: branch `preview-v1-approved-base` @ `dcb9c24`.
 
@@ -32,6 +32,8 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 - Full frontend: thirteen sections, three islands, no framework runtime.
 - `npm run build` passes both content guards; static output is 18 MB.
 - `npm run qa` — 42 browser checks at six widths, 0 fail, 0 warn.
+- `npm run qa:fixes <url>` — 21 targeted checks for the header lockup, the
+  mobile menu at both scroll states, the CTA treatment and the Вода section.
 - Mandatory Before/After slider works by pointer, keyboard and click.
 - Reduced motion suppresses transitions and fetches no managed video.
 - With JavaScript disabled the whole page still renders, all 53 reveal blocks

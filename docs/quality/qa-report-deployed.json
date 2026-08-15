@@ -127,7 +127,7 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (24.40% → 12.00%)"
+      "m": "slider: sweeps unattended (24.42% → 12.00%)"
     },
     {
       "level": "OK",
@@ -175,7 +175,7 @@
     },
     {
       "level": "OK",
-      "m": "hero eyebrow over video: 8.29:1 measured from rendered pixels"
+      "m": "hero eyebrow over video: 8.31:1 measured from rendered pixels"
     },
     {
       "level": "OK",
@@ -199,7 +199,7 @@
     },
     {
       "level": "OK",
-      "m": "no-JS: all 48 reveal blocks visible"
+      "m": "no-JS: all 52 reveal blocks visible"
     }
   ]
 }
