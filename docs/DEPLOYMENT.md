@@ -54,14 +54,17 @@ server Astro uses internally — HTTP Range support, etag, no host allowlist.
 
 Not a green build log. The deployed site was driven in a real browser.
 
-- `scripts/qa.mjs` run against the public HTTPS URL: **36 checks, 0 fail,
+- `scripts/qa.mjs` run against the public HTTPS URL: **42 checks, 0 fail,
   0 warn**. Evidence in `docs/quality/deployed/`, machine-readable in
   `docs/quality/qa-report-deployed.json`.
 - Rendered at 1920 / 1440 / 1024 / 768 / 390 / 320 — no horizontal overflow,
   no console errors at any width.
 - H1 renders exactly `СИЛА ВИКОВАНА ВОДОЮ`.
 - Before/After slider driven by pointer drag, arrow keys, shift+arrows and
-  Home/End — all correct against the live build.
+  Home/End, and confirmed sweeping on its own — all against the live build.
+- Case switcher: all five cases swap the pair, reshape the frame, update the
+  caption and aria-selected, and both halves match in size.
+- Sound toggle on the coach video: muted → unmuted with aria-pressed tracking.
 - Hero eyebrow measured **8.29:1** from rendered pixels over the live video.
 - Reduced motion: no managed video fetched, all content visible.
 - JavaScript disabled: all key strings present, all 53 reveal blocks visible.
@@ -85,6 +88,7 @@ Not a green build log. The deployed site was driven in a real browser.
 - **The contact form is a mock.** It validates and then states plainly that
   the prototype does not send. It never shows a success state.
 - **No backend, CRM, booking or analytics.** Out of scope for this run.
+- The coach video is 9.1 MB with audio, lazy and `preload="none"`.
 - The desktop hero loop is 3.7 MB. It is `preload="none"` behind a 67 KB
   poster which is the LCP element, but it is worth revisiting for production
   on slow connections.

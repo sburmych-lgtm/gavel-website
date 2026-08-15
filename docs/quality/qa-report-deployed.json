@@ -107,11 +107,31 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (41.47% → 70.77%)"
+      "m": "case switcher: 5 cases, click swapped pair (result-1-before.jpg → result-2-before.jpg)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 28.02% 0px 0px))"
+      "m": "case switcher: frame ratio follows the case (0.75 → 0.686)"
+    },
+    {
+      "level": "OK",
+      "m": "case switcher: aria-selected tracks the active tab"
+    },
+    {
+      "level": "OK",
+      "m": "case switcher: caption updated (\"Спина і постава\")"
+    },
+    {
+      "level": "OK",
+      "m": "case switcher: halves match (1416x2064)"
+    },
+    {
+      "level": "OK",
+      "m": "slider: sweeps unattended (24.40% → 12.00%)"
+    },
+    {
+      "level": "OK",
+      "m": "slider: clip-path active (inset(0px 88% 0px 0px))"
     },
     {
       "level": "OK",
@@ -163,6 +183,10 @@
     },
     {
       "level": "OK",
+      "m": "sound toggle: muted → unmuted, aria-pressed true (label \"Без звуку\")"
+    },
+    {
+      "level": "OK",
       "m": "reduced motion: no managed video fetched (posters only)"
     },
     {
@@ -175,7 +199,7 @@
     },
     {
       "level": "OK",
-      "m": "no-JS: all 53 reveal blocks visible"
+      "m": "no-JS: all 48 reveal blocks visible"
     }
   ]
 }
