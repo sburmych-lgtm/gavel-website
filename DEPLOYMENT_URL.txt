@@ -1,0 +1,5 @@
+RAILWAY_PREVIEW_URL=https://igor-gavrileyko-final-claude-production.up.railway.app
+GITHUB_REPOSITORY=https://github.com/sburmych-lgtm/igor-gavrileyko-final-claude
+DEPLOYED_COMMIT=0fcaec68540a96ac3e3aa20a298940a82bf3bb7c
+DEPLOYMENT_TYPE=PREVIEW
+STATUS=READY_FOR_HUMAN_VISUAL_APPROVAL
