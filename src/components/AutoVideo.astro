@@ -31,6 +31,9 @@ interface Props {
   /** Swaps the pause control for a mute toggle. Only for a video whose audio
       is content rather than noise — everything else here is encoded -an. */
   sound?: boolean;
+  /** Keep a visible pause next to the sound toggle. Loop clips still need a
+      reachable pause; Coach keeps sound-only by leaving this unset. */
+  pauseControl?: boolean;
   /** Coordinated group. The page script plays only one member at a time. */
   group?: string;
 }
@@ -43,9 +46,11 @@ const {
   class: className = "",
   showPause = true,
   sound = false,
+  pauseControl = false,
   eagerPoster = false,
   group,
 } = Astro.props;
+const showPauseBtn = pauseControl || (showPause && !sound);
 ---
 
 <div class:list={["av", className]}>
@@ -69,18 +74,21 @@ const {
     aria-label={sound ? label : undefined}
     tabindex={sound ? undefined : "-1"}></video>
 
-  {sound ? (
-    <button type="button" class="av-pause av-sound" data-av-sound aria-pressed="false" hidden>
-      <span class="av-ic" aria-hidden="true" data-av-ic>♪</span>
-      <span data-av-label>Звук</span>
-      <span class="sr-only">— {label}</span>
-    </button>
-  ) : showPause ? (
-    <button type="button" class="av-pause" data-av-pause hidden>
-      <span data-av-label>Пауза</span>
-      <span class="sr-only">— {label}</span>
-    </button>
-  ) : null}
+  <div class="av-ctrls">
+    {showPauseBtn ? (
+      <button type="button" class="av-pause" data-av-pause hidden>
+        <span data-av-label>Пауза</span>
+        <span class="sr-only">— {label}</span>
+      </button>
+    ) : null}
+    {sound ? (
+      <button type="button" class="av-pause av-sound" data-av-sound aria-pressed="false" hidden>
+        <span class="av-ic" aria-hidden="true" data-av-ic>♪</span>
+        <span data-av-label>Звук</span>
+        <span class="sr-only">— {label}</span>
+      </button>
+    ) : null}
+  </div>
 </div>
 
 <style>
@@ -93,13 +101,20 @@ const {
     display: block;
   }
 
-  /* A real button with a text label, not an icon glyph — every looping video
-     on the page runs longer than five seconds and needs a reachable control. */
-  .av-pause {
+  .av-ctrls {
     position: absolute;
     right: 0.75rem;
     bottom: 0.75rem;
     z-index: 3;
+    display: flex;
+    gap: 0.4rem;
+    pointer-events: none;
+  }
+
+  /* A real button with a text label, not an icon glyph — every looping video
+     on the page runs longer than five seconds and needs a reachable control. */
+  .av-pause {
+    pointer-events: auto;
     min-height: 44px;
     min-width: 44px;
     padding: 0.5rem 0.9rem;

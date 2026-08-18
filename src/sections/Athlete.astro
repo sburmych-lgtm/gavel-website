@@ -1,8 +1,15 @@
 ---
-import MediaFrame from "../components/MediaFrame.astro";
 import AutoVideo from "../components/AutoVideo.astro";
 import { athlete } from "../content";
 import { videos } from "../content/media";
+
+const clips = [
+  { clip: videos.waterPrimary, n: "01" },
+  { clip: videos.waterUpper, n: "02" },
+  { clip: videos.waterLower, n: "03" },
+] as const;
+
+const roleFor = (i: number) => (i === 0 ? "active" : i === 1 ? "preview-a" : "preview-b");
 ---
 <section class="section section--deep" id="athlete" aria-labelledby="athlete-h">
   <div class="shell">
@@ -15,48 +22,47 @@ import { videos } from "../content/media";
       <p class="a-h2-sub">{athlete.h2Sub}</p>
     </div>
 
-    <div class="a-grid" data-water-stage>
-      <div class="a-slot is-active" data-water-item data-reveal>
-        <MediaFrame ratio="9 / 16">
-          <AutoVideo
-            src={videos.waterPrimary.src}
-            poster={videos.waterPrimary.poster}
-            width={videos.waterPrimary.width}
-            height={videos.waterPrimary.height}
-            label={videos.waterPrimary.label}
-            sound
-            group="water"
-          />
-        </MediaFrame>
-      </div>
-      <div class="a-side">
-        <div class="a-slot" data-water-item data-reveal>
-          <MediaFrame ratio="16 / 9">
+    <div
+      class="w-stage"
+      data-water-stage
+      data-reveal
+      role="group"
+      aria-label="Відео секції Вода"
+    >
+      {clips.map(({ clip, n }, i) => (
+        <div
+          class:list={["w-slot", i === 0 && "is-active"]}
+          data-water-item
+          data-water-role={roleFor(i)}
+          data-water-index={String(i)}
+          data-orient={clip.height > clip.width ? "portrait" : "landscape"}
+        >
+          <div class="w-frame">
             <AutoVideo
-              src={videos.waterUpper.src}
-              poster={videos.waterUpper.poster}
-              width={videos.waterUpper.width}
-              height={videos.waterUpper.height}
-              label={videos.waterUpper.label}
+              src={clip.src}
+              poster={clip.poster}
+              width={clip.width}
+              height={clip.height}
+              label={clip.label}
               sound
+              pauseControl
               group="water"
             />
-          </MediaFrame>
+            <span class="w-edge" aria-hidden="true"></span>
+            <span class="w-num" aria-hidden="true">{n}</span>
+            <button
+              type="button"
+              class="w-select"
+              data-water-select
+              hidden={i === 0}
+              tabindex={i === 0 ? -1 : undefined}
+              aria-label={`Дивитися кліп ${n}`}
+            >
+              <span class="w-watch">Дивитися</span>
+            </button>
+          </div>
         </div>
-        <div class="a-slot" data-water-item data-reveal>
-          <MediaFrame ratio="4 / 3">
-            <AutoVideo
-              src={videos.waterLower.src}
-              poster={videos.waterLower.poster}
-              width={videos.waterLower.width}
-              height={videos.waterLower.height}
-              label={videos.waterLower.label}
-              sound
-              group="water"
-            />
-          </MediaFrame>
-        </div>
-      </div>
+      ))}
     </div>
 
     {/* The three offers. Rows with a hairline and a mono numeral — the same
@@ -89,25 +95,130 @@ import { videos } from "../content/media";
     color: var(--mute);
   }
 
-  .a-grid {
+  .w-stage {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: clamp(1rem, 2.5vw, 2rem);
-    align-items: start;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "active preview-a"
+      "active preview-b";
+    gap: 0.65rem;
+    height: min(36.75rem, 70vh);
+    isolation: isolate;
   }
-  .a-side { display: grid; gap: clamp(1rem, 2.5vw, 2rem); }
 
-  .a-slot {
+  .w-slot {
+    min-width: 0;
+    min-height: 0;
+  }
+  .w-slot[data-water-role="active"] { grid-area: active; }
+  .w-slot[data-water-role="preview-a"] { grid-area: preview-a; }
+  .w-slot[data-water-role="preview-b"] { grid-area: preview-b; }
+  .w-slot[data-water-index="0"] { view-transition-name: water-clip-0; }
+  .w-slot[data-water-index="1"] { view-transition-name: water-clip-1; }
+  .w-slot[data-water-index="2"] { view-transition-name: water-clip-2; }
+
+  .w-frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--r);
+    background: var(--abyss);
+    transition:
+      filter var(--t-base) var(--ease),
+      box-shadow var(--t-base) var(--ease);
+  }
+
+  .w-slot.is-active .w-frame {
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--gold) 42%, transparent);
+  }
+  .w-slot:not(.is-active) .w-frame {
+    filter: saturate(0.82) brightness(0.72);
+  }
+  .w-slot:not(.is-active):hover .w-frame,
+  .w-slot:not(.is-active):focus-within .w-frame {
+    filter: saturate(0.95) brightness(0.9);
+  }
+
+  .w-frame :global(.av),
+  .w-frame :global(video) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+  .w-slot[data-orient="portrait"] :global(video) {
+    object-position: center 22%;
+  }
+
+  .w-edge {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--abyss) 42%, transparent) 0%, transparent 28%),
+      linear-gradient(0deg, color-mix(in oklab, var(--abyss) 58%, transparent) 0%, transparent 34%);
+  }
+
+  .w-num {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.9rem;
+    z-index: 3;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+  }
+
+  .w-select {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0.85rem 0.9rem;
+    background: transparent;
+    border: 0;
     cursor: pointer;
+    color: inherit;
   }
-  .a-slot:not(.is-active) :global(.frame) {
-    opacity: 0.78;
-    transition: opacity var(--t-fast) var(--ease);
+  .w-select[hidden] { display: none; }
+  .w-slot:not(.is-active) :global(.av-ctrls) { display: none; }
+  .no-js .w-select { display: none; }
+
+  .w-watch {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--foam);
+    padding: 0.5rem 0.8rem;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    background: color-mix(in oklab, var(--abyss) 74%, transparent);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity var(--t-fast) var(--ease),
+      transform var(--t-fast) var(--ease),
+      border-color var(--t-fast) var(--ease);
   }
-  .a-slot.is-active :global(.frame) { border-color: var(--gold); }
-  .a-slot:focus-visible {
-    outline: 2px solid var(--caustic);
-    outline-offset: 3px;
+  .w-slot:not(.is-active):hover .w-watch,
+  .w-slot:not(.is-active):focus-within .w-watch {
+    opacity: 1;
+    transform: none;
+    border-color: var(--caustic);
   }
 
   .a-offer-lead {
@@ -141,8 +252,35 @@ import { videos } from "../content/media";
   .a-offer-t { margin-bottom: 0.625rem; }
   .a-offer-b { color: var(--mute); font-size: var(--fs-body); }
 
+  @media (max-width: 900px) {
+    .w-stage {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      grid-template-areas:
+        "active active"
+        "preview-a preview-b";
+      height: auto;
+      gap: 0.55rem;
+    }
+    .w-slot[data-water-role="active"] .w-frame {
+      aspect-ratio: 16 / 10;
+      max-height: 58vh;
+    }
+    .w-slot[data-water-role="preview-a"] .w-frame,
+    .w-slot[data-water-role="preview-b"] .w-frame {
+      aspect-ratio: 16 / 10;
+    }
+    .w-watch {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .w-slot { view-transition-name: none; }
+  }
+
   @media (max-width: 1100px) {
-    .a-grid { grid-template-columns: 1fr; }
     .a-offers { grid-template-columns: 1fr; gap: 1.75rem; }
   }
 </style>

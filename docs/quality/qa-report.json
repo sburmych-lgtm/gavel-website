@@ -127,11 +127,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (24.34% → 12.00%)"
+      "m": "slider: sweeps unattended (75.58% → 88.00%)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 88% 0px 0px))"
+      "m": "slider: clip-path active (inset(0px 12% 0px 0px))"
     },
     {
       "level": "OK",
@@ -203,7 +203,7 @@
     },
     {
       "level": "OK",
-      "m": "no-JS: all 52 reveal blocks visible"
+      "m": "no-JS: all 50 reveal blocks visible"
     }
   ]
 }

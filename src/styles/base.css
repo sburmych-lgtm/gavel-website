@@ -216,4 +216,24 @@ p { max-width: 68ch; }
     transition-duration: 0.01ms !important;
   }
   [data-reveal] { opacity: 1; transform: none; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* Water clip swap: interpolate the three named tiles, never the whole page. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+  height: 100%;
+}
+::view-transition-group(root) { animation-duration: 0s; }
+::view-transition-group(water-clip-0),
+::view-transition-group(water-clip-1),
+::view-transition-group(water-clip-2) {
+  animation-duration: var(--t-base);
+  animation-timing-function: var(--ease);
 }

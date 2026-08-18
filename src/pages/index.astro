@@ -235,8 +235,9 @@ import { hero } from "../content";
   })();
 
   /* --- water videos -------------------------------------------------- *
-   * Three clips, one playback focus. They share the coach-panel sound
-   * toggle, but never decode or speak at the same time.
+   * Three clips, one playback focus. Roles swap on the grid (active vs
+   * two previews) without recreating the video nodes, so decode state and
+   * the single audio stream stay coherent.
    * ------------------------------------------------------------------- */
   (() => {
     const stage = document.querySelector<HTMLElement>("[data-water-stage]");
@@ -244,12 +245,12 @@ import { hero } from "../content";
 
     const items = [...stage.querySelectorAll<HTMLElement>("[data-water-item]")];
     const videos = items.map((item) => item.querySelector<HTMLVideoElement>("[data-autovideo]"));
+    const roles = ["active", "preview-a", "preview-b"] as const;
 
     const paintSound = (v: HTMLVideoElement | null) => {
       if (!v) return;
       const snd = v.closest(".av")?.querySelector<HTMLButtonElement>("[data-av-sound]");
       if (!snd) return;
-      snd.hidden = false;
       snd.setAttribute("aria-pressed", String(!v.muted));
       const sLabel = snd.querySelector<HTMLElement>("[data-av-label]");
       const sIcon = snd.querySelector<HTMLElement>("[data-av-ic]");
@@ -257,12 +258,58 @@ import { hero } from "../content";
       if (sIcon) sIcon.textContent = v.muted ? "♪" : "✕";
     };
 
+    const paintPause = (v: HTMLVideoElement | null) => {
+      if (!v) return;
+      const btn = v.closest(".av")?.querySelector<HTMLButtonElement>("[data-av-pause]");
+      const label = btn?.querySelector<HTMLElement>("[data-av-label]");
+      if (!btn || !label) return;
+      label.textContent = v.paused && v.dataset.paused ? "Грати" : "Пауза";
+    };
+
+    const paintChrome = (index: number) => {
+      items.forEach((item, i) => {
+        const on = i === index;
+        const v = videos[i];
+        const snd = item.querySelector<HTMLButtonElement>("[data-av-sound]");
+        const pause = item.querySelector<HTMLButtonElement>("[data-av-pause]");
+        const select = item.querySelector<HTMLButtonElement>("[data-water-select]");
+        if (snd) snd.hidden = !on;
+        if (pause) pause.hidden = !on;
+        if (select) {
+          select.hidden = on;
+          select.tabIndex = on ? -1 : 0;
+        }
+        if (v) {
+          v.tabIndex = -1;
+          paintSound(v);
+          paintPause(v);
+        }
+      });
+    };
+
     const loadPoster = (v: HTMLVideoElement) => {
       if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
     };
 
+    const assignRoles = (index: number) => {
+      const order = [index, ...items.map((_, i) => i).filter((i) => i !== index)];
+      order.forEach((itemIndex, rank) => {
+        const item = items[itemIndex];
+        const on = rank === 0;
+        item.classList.toggle("is-active", on);
+        item.dataset.waterRole = roles[rank];
+      });
+    };
+
     if (reduced.matches) {
       videos.forEach((v) => { if (v) loadPoster(v); });
+      paintChrome(items.findIndex((item) => item.classList.contains("is-active")) || 0);
+      items.forEach((item, i) => {
+        item.querySelector("[data-water-select]")?.addEventListener("click", () => {
+          assignRoles(i);
+          paintChrome(i);
+        });
+      });
       return;
     }
 
@@ -277,6 +324,7 @@ import { hero } from "../content";
       v.muted = true;
       delete v.dataset.waterActive;
       paintSound(v);
+      paintPause(v);
     };
 
     const playAt = (i: number, unmute = false, force = false) => {
@@ -285,20 +333,35 @@ import { hero } from "../content";
       loadPoster(v);
       v.dataset.waterActive = "1";
       v.muted = !unmute;
-      const shouldPlay = force || inView;
+      if (force) delete v.dataset.paused;
+      const shouldPlay = (force || inView) && !v.dataset.paused;
       if (!v.src && v.dataset.src) v.src = v.dataset.src;
       if (shouldPlay) v.play().catch(() => {});
       paintSound(v);
+      paintPause(v);
+    };
+
+    const applyActive = (index: number, unmute = false, force = false) => {
+      assignRoles(index);
+      items.forEach((_, i) => {
+        if (i === index) playAt(i, unmute, force);
+        else pauseAt(i);
+      });
+      paintChrome(index);
+      active = index;
     };
 
     const setActive = (index: number, unmute = false, force = false) => {
-      items.forEach((item, i) => {
-        const on = i === index;
-        item.classList.toggle("is-active", on);
-        if (on) playAt(i, unmute, force);
-        else pauseAt(i);
-      });
-      active = index;
+      const swap = () => applyActive(index, unmute, force);
+      const canView =
+        !reduced.matches &&
+        index !== active &&
+        typeof document.startViewTransition === "function";
+      if (canView) {
+        document.startViewTransition(swap);
+        return;
+      }
+      swap();
     };
 
     new IntersectionObserver(
@@ -306,37 +369,48 @@ import { hero } from "../content";
         inView = e.isIntersecting;
         if (inView) {
           videos.forEach((v) => { if (v) loadPoster(v); });
-          setActive(active);
+          applyActive(active);
         } else videos.forEach((_, i) => pauseAt(i));
       },
       { threshold: 0, rootMargin: "0px 0px -12% 0px" },
     ).observe(stage);
 
-    items.forEach((item, i) => {
-      item.tabIndex = 0;
-      const v = videos[i];
-      if (v) paintSound(v);
+    paintChrome(active);
 
-      item.addEventListener("click", (e) => {
-        const snd = (e.target as HTMLElement).closest("[data-av-sound]");
-        if (snd) {
-          e.preventDefault();
-          e.stopPropagation();
-          const nextUnmute = i === active ? !!v?.muted : true;
-          setActive(i, nextUnmute, true);
-          return;
-        }
-        if (i === active) return;
-        setActive(i, false, true);
-      });
+    stage.addEventListener("click", (e) => {
+      const t = e.target as HTMLElement;
+      const item = t.closest<HTMLElement>("[data-water-item]");
+      if (!item || !stage.contains(item)) return;
+      const i = items.indexOf(item);
+      if (i < 0) return;
 
-      item.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" && e.key !== " ") return;
-        if ((e.target as HTMLElement).closest("[data-av-sound]")) return;
+      if (t.closest("[data-av-sound]")) {
         e.preventDefault();
-        if (i === active) return;
-        setActive(i, false, true);
-      });
+        e.stopPropagation();
+        const v = videos[i];
+        const nextUnmute = i === active ? !!v?.muted : true;
+        applyActive(i, nextUnmute, true);
+        return;
+      }
+
+      if (t.closest("[data-av-pause]")) {
+        e.preventDefault();
+        e.stopPropagation();
+        const v = videos[i];
+        if (!v || i !== active) return;
+        if (v.paused) {
+          delete v.dataset.paused;
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+          v.dataset.paused = "1";
+        }
+        paintPause(v);
+        return;
+      }
+
+      if (i === active) return;
+      setActive(i, false, true);
     });
   })();
 
