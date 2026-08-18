@@ -1,4 +1,7 @@
-# Search visibility and model-training permission are different decisions.
+import type { APIRoute } from "astro";
+
+function robotsTxt(sitemapUrl: string) {
+  return `# Search visibility and model-training permission are different decisions.
 # This file only settles the first one.
 
 User-agent: *
@@ -32,6 +35,14 @@ Allow: /
 #     grounding control, NOT its search crawler — Googlebot above is what
 #     governs search). Allowing or blocking model training is the site owner's
 #     call, not a default anyone else should make on their behalf.
-#     See docs/architecture/12_OPEN_HUMAN_DECISIONS.md H-04.
 
-Sitemap: https://igor-gavrileyko-final-claude-production.up.railway.app/sitemap-index.xml
+Sitemap: ${sitemapUrl}
+`;
+}
+
+export const GET: APIRoute = ({ site }) => {
+  const sitemapUrl = new URL("sitemap-index.xml", site ?? "https://igor-gavrileyko.com/").href;
+  return new Response(robotsTxt(sitemapUrl), {
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
+  });
+};

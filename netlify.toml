@@ -4,3 +4,5 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  SITE_URL = "https://igor-gavrileyko.com"
+  INDEXABLE = "true"

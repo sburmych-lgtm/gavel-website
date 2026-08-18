@@ -8,8 +8,8 @@ import { buildSchema } from "../lib/schema";
 const siteUrl = Astro.site?.href ?? "http://localhost:4321/";
 const canonical = new URL(Astro.url.pathname, siteUrl).href;
 
-// The preview deployment must never be indexed ahead of the real domain.
-const indexable = import.meta.env.INDEXABLE === "true";
+const indexable =
+  import.meta.env.INDEXABLE === "true" || process.env.INDEXABLE === "true";
 
 const ogImage = "/og-image.jpg";
 const schema = buildSchema(siteUrl, ogImage);
