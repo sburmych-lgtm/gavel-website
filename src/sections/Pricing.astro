@@ -19,6 +19,7 @@ import { pricing } from "../content";
           <p class="p-price">
             <span class="num p-val">{t.price}&#8239;<span class="p-cur">{t.currency}</span></span>
           </p>
+          {"intro" in t && t.intro ? <p class="p-intro">{t.intro}</p> : null}
           <p class="p-inc">{t.includes}</p>
         </li>
       ))}
@@ -26,7 +27,6 @@ import { pricing } from "../content";
 
     <div class="p-foot" data-reveal>
       <p class="p-note">{pricing.note}</p>
-      <p class="p-limit">{pricing.limit}</p>
     </div>
   </div>
 </section>
@@ -53,16 +53,23 @@ import { pricing } from "../content";
     margin: 0; font-size: var(--fs-sm); line-height: 1.5;
     color: color-mix(in oklab, var(--ink) 72%, transparent);
   }
+  /* Subordinate to the standard price — not a second competing figure. */
+  .p-intro {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    font-weight: 500;
+    color: color-mix(in oklab, var(--ink) 78%, transparent);
+  }
   .p-foot {
     margin-top: clamp(2rem, 4vw, 3rem); padding-top: 1.5rem;
     border-top: 1px solid var(--line-ink);
     display: grid; gap: 0.875rem;
   }
-  .p-note, .p-limit {
+  .p-note {
     margin: 0; font-size: var(--fs-sm);
     color: color-mix(in oklab, var(--ink) 68%, transparent);
   }
-  .p-limit { font-weight: 500; color: color-mix(in oklab, var(--ink) 88%, transparent); }
   @media (max-width: 1100px) { .p-list { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
   @media (max-width: 560px) { .p-list { grid-template-columns: 1fr; } }
 </style>

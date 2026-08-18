@@ -70,6 +70,36 @@ post "$OUT/video/coach.mp4"        "$OUT/image/coach-poster.jpg"
 post "$OUT/video/dragonboat.mp4"   "$OUT/image/dragonboat-poster.jpg"
 post "$OUT/video/water-calm.mp4"   "$OUT/image/water-calm-poster.jpg"
 
+say "formats portrait — client edit Page_5_edit.jpg"
+ffmpeg -y -v error -i "$A/Edits/Page_5_edit.jpg" -q:v 3 \
+  "$OUT/image/formats-portrait.jpg"
+cp "$OUT/image/formats-portrait.jpg" src/assets/photo/formats-portrait.jpg
+
+say "water primary — Page_8_editvideo1 (H.264 already; keep picture, trim audio)"
+ffmpeg -y -v error -i "$A/Edits/Page_8_editvideo1.mp4" \
+  -c:v copy -c:a aac -b:a 96k -ac 2 -movflags +faststart \
+  "$OUT/video/water-primary.mp4"
+
+say "water upper — Page_8_editvideo3"
+ffmpeg -y -v error -i "$A/Edits/Page_8_editvideo3.mp4" \
+  -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 26 -preset medium \
+  -c:a aac -b:a 96k -ac 2 -movflags +faststart \
+  "$OUT/video/water-upper.mp4"
+
+say "water lower — Page_8_editvideo2 (HEVC → H.264, 720×1280)"
+ffmpeg -y -v error -i "$A/Edits/Page_8_editvideo2.mp4" \
+  -c:v libx264 -profile:v high -pix_fmt yuv420p \
+  -vf "scale=720:1280:flags=lanczos" -crf 23 -preset medium \
+  -c:a aac -b:a 96k -ac 2 -movflags +faststart \
+  "$OUT/video/water-lower.mp4"
+
+ffmpeg -y -v error -ss 0.4 -i "$OUT/video/water-primary.mp4" -frames:v 1 -q:v 4 \
+  "$OUT/image/water-primary-poster.jpg"
+ffmpeg -y -v error -ss 1.5 -i "$OUT/video/water-upper.mp4" -frames:v 1 -q:v 4 \
+  "$OUT/image/water-upper-poster.jpg"
+ffmpeg -y -v error -ss 2.0 -i "$OUT/video/water-lower.mp4" -frames:v 1 -q:v 4 \
+  "$OUT/image/water-lower-poster.jpg"
+
 # ------------------------------------------------------- before / after
 # The featured pair is NOT registered: 1_before is a full-body hallway mirror
 # shot (1086x1448), 1_after is a 3/4 studio shot (1088x1445) where the subject

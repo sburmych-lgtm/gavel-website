@@ -120,7 +120,7 @@ for (const [name, w, h] of [["mobile-390",390,844],["mobile-320",320,640],["tabl
   const links = await p.evaluate(() =>
     [...document.querySelectorAll("#contact a[href]")].map((a) => a.getAttribute("href")));
   const hasTg = links.some((h) => h.includes("t.me/"));
-  const hasIg = links.some((h) => h.includes("instagram.com"));
+  const hasIg = links.some((h) => /instagram\.com|ig\.me/.test(h));
   hasTg && hasIg
     ? ok(`contact: routes to both channels (${links.filter((h) => h.includes("t.me/") || h.includes("instagram.com")).join(" , ")})`)
     : bad(`contact: telegram=${hasTg} instagram=${hasIg} — ${links.join(" , ")}`);
@@ -133,6 +133,7 @@ for (const [name, w, h] of [["mobile-390",390,844],["mobile-320",320,640],["tabl
     : bad(`copy: build vocabulary present — ${found.join(", ")}`);
 
   // the form must hand off for real, and must never claim it sent anything
+  await p.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await p.locator("#f-name").fill("Тест");
   await p.locator("#f-goal").fill("Схуднути");
   await p.locator("#f-contact").fill("@test");
@@ -149,6 +150,100 @@ for (const [name, w, h] of [["mobile-390",390,844],["mobile-320",320,640],["tabl
   /надіслан|відправлен/i.test(status)
     ? bad("contact form: claims a message was sent")
     : ok("contact form: makes no false send claim");
+
+  const clip = await p.evaluate(() => navigator.clipboard.readText()).catch(() => "");
+  const expectedBits = ["Привіт! Хочу записатися на консультацію.", "Ім'я: Тест", "Моя ціль: Схуднути", "Зручний спосіб зв'язку: @test"];
+  expectedBits.every((s) => clip.includes(s))
+    ? ok("contact form: clipboard carries the typed fields")
+    : bad(`contact form: clipboard mismatch — "${clip}"`);
+
+  const igHref = await p.locator('[data-go="ig"]').getAttribute("href");
+  /ig\.me\/m\/gavel_man/.test(igHref || "")
+    ? ok(`contact form: Instagram Direct href ${igHref}`)
+    : bad(`contact form: Instagram href is not Direct — ${igHref}`);
+
+  await p.close();
+}
+
+// Pricing: new session price, intro line, medical exclusion moved off the block
+{
+  const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  await p.goto(URL, { waitUntil: "networkidle" });
+  const block = await p.locator("#pricing").innerText();
+  block.includes("700") && block.includes("Перше тренування — 400 ₴")
+    ? ok("pricing: 700 ₴ with introductory 400 ₴")
+    : bad(`pricing: missing new session prices — ${block.slice(0, 240)}`);
+  block.includes("Не працюю з людьми, яким медично протипоказані")
+    ? bad("pricing: medical exclusion is still in the pricing block")
+    : ok("pricing: medical exclusion removed from the pricing block");
+  const faq = await p.locator("#faq").innerText();
+  faq.includes("медично протипоказані")
+    ? ok("faq: medical exclusion remains on the page")
+    : bad("faq: medical exclusion missing from the page");
+
+  const proof = await p.locator(".proof").innerText();
+  const proofNeed = ["26", "років у спорті", "років тренерської діяльності", "2×", "майстер спорту України — каное та Dragonboat", "титули: Україна, Європа, Євро-Азіатські ігри; призер ЧС"];
+  const proofMissing = proofNeed.filter((s) => !proof.includes(s));
+  proofMissing.length === 0
+    ? ok("home: achievement strip matches the client edit")
+    : bad(`home: achievement strip missing ${proofMissing.join(" | ")}`);
+  await p.close();
+}
+
+// Water: one active playback, sound arbitration, pause when off-screen
+{
+  const p = await (await b.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
+  await p.goto(URL, { waitUntil: "networkidle" });
+  await p.addStyleTag({ content: "html{scroll-behavior:auto !important}" });
+  await p.locator("[data-water-stage]").scrollIntoViewIfNeeded();
+  await p.waitForTimeout(400);
+  await p.waitForFunction(() =>
+    [...document.querySelectorAll("[data-water-stage] video")].some((v) => v.currentSrc),
+    { timeout: 5000 },
+  ).catch(() => {});
+
+  const slots = p.locator("[data-water-item]");
+  const n = await slots.count();
+  n === 3 ? ok("water: three coordinated slots") : bad(`water: ${n} slots, expected 3`);
+
+  const playing = () => p.evaluate(() =>
+    [...document.querySelectorAll("[data-water-stage] video")].map((v) => ({
+      paused: v.paused,
+      muted: v.muted,
+      src: v.currentSrc.split("/").pop() || "",
+    })));
+
+  const s0 = await playing();
+  const live0 = s0.filter((v) => !v.paused && v.src);
+  live0.length <= 1 && s0.every((v) => v.muted)
+    ? ok(`water: at most one playing, all muted (${live0.map((v) => v.src).join(",") || "none yet"})`)
+    : bad(`water: simultaneous playback — ${JSON.stringify(s0)}`);
+
+  await slots.nth(1).click();
+  await p.waitForFunction(() => {
+    const vs = [...document.querySelectorAll("[data-water-stage] video")];
+    return vs[1] && !vs[1].paused;
+  }, { timeout: 4000 }).catch(() => {});
+  const s1 = await playing();
+  const live1 = s1.filter((v) => !v.paused);
+  live1.length === 1 && s1[1] && !s1[1].paused && s1[0].paused && s1[2].paused
+    ? ok("water: selecting another slot pauses the others")
+    : bad(`water: switch state ${JSON.stringify(s1)}`);
+
+  await slots.nth(1).locator("[data-av-sound]").click();
+  await p.waitForTimeout(300);
+  const s2 = await playing();
+  const unmuted = s2.filter((v) => !v.muted);
+  unmuted.length === 1 && !s2[1].muted && s2[0].muted && s2[2].muted
+    ? ok("water: only the active clip can unmute")
+    : bad(`water: sound arbitration ${JSON.stringify(s2)}`);
+
+  await p.evaluate(() => window.scrollTo(0, 0));
+  await p.waitForTimeout(700);
+  const s3 = await playing();
+  s3.every((v) => v.paused)
+    ? ok("water: all clips pause when the section leaves the viewport")
+    : bad(`water: still playing off-screen — ${JSON.stringify(s3)}`);
 
   await p.close();
 }

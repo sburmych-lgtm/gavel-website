@@ -337,18 +337,18 @@ for (const { name, w, h } of WIDTHS) {
   small.length ? warn(`targets under 44px: ${small.join(", ")}`) : ok("touch targets ≥44px");
 
   // --- sound toggle on the coach video
-  const snd = page.locator("[data-av-sound]");
+  const snd = page.locator("#coach [data-av-sound]");
   if (await snd.count()) {
     await snd.scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
     const m0 = await page.evaluate(() => {
-      const v = document.querySelector("[data-av-sound]").closest(".av").querySelector("video");
+      const v = document.querySelector("#coach [data-av-sound]").closest(".av").querySelector("video");
       return v.muted;
     });
     await snd.click();
     await page.waitForTimeout(200);
     const after = await page.evaluate(() => {
-      const b = document.querySelector("[data-av-sound]");
+      const b = document.querySelector("#coach [data-av-sound]");
       const v = b.closest(".av").querySelector("video");
       return { muted: v.muted, pressed: b.getAttribute("aria-pressed"), label: (b.querySelector("[data-av-label]")||{}).textContent };
     });
@@ -404,7 +404,7 @@ for (const { name, w, h } of WIDTHS) {
   const page = await ctx.newPage();
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
   const text = await page.locator("body").innerText();
-  const must = ["Захват", "Проведення", "Вихід", "Курс", "600", "Майстер спорту України",
+  const must = ["Захват", "Проведення", "Вихід", "Курс", "700", "Майстер спорту України",
                 "медично протипоказані", "Сила", "ВОДОЮ"];
   const missing = must.filter((m) => !text.includes(m));
   missing.length === 0

@@ -31,6 +31,24 @@ export function validate(p: Partial<ContactPayload>): Record<string, string> {
   return errors;
 }
 
+/** Outgoing chat text. No invented fields — only what the visitor typed. */
+export function composeHandoffMessage(p: ContactPayload): string {
+  return [
+    "Привіт! Хочу записатися на консультацію.",
+    `Ім'я: ${p.name.trim()}`,
+    `Моя ціль: ${p.goal.trim()}`,
+    `Зручний спосіб зв'язку: ${p.contact.trim()}`,
+  ].join("\n");
+}
+
+/**
+ * Instagram's public Direct deep link for a known username.
+ * Profile URL remains the fallback if Direct is unavailable on a given client.
+ */
+export function instagramDirectUrl(handle: string): string {
+  return `https://ig.me/m/${handle.replace(/^@/, "")}`;
+}
+
 export async function submitContact(
   p: ContactPayload,
 ): Promise<ContactResult> {

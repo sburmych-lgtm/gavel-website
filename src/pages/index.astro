@@ -80,6 +80,9 @@ import { hero } from "../content";
 </style>
 
 <script>
+  import { composeHandoffMessage, validate } from "../lib/contact";
+  import { contact } from "../content";
+
   /* ------------------------------------------------------------------ *
    * Three small islands. No framework runtime, no bundled library.
    * Every one of them is progressive: with this file absent the page
@@ -193,6 +196,8 @@ import { hero } from "../content";
     );
 
     vids.forEach((v) => {
+      // Coordinated groups are owned by their own island below.
+      if (v.dataset.videoGroup) return;
       // offsetParent is null when a display:none breakpoint hides it
       if (v.offsetParent === null) return;
       io.observe(v);
@@ -225,6 +230,112 @@ import { hero } from "../content";
       btn.addEventListener("click", () => {
         if (v.paused) { delete v.dataset.paused; v.play().catch(() => {}); label.textContent = "Пауза"; }
         else { v.pause(); v.dataset.paused = "1"; label.textContent = "Грати"; }
+      });
+    });
+  })();
+
+  /* --- water videos -------------------------------------------------- *
+   * Three clips, one playback focus. They share the coach-panel sound
+   * toggle, but never decode or speak at the same time.
+   * ------------------------------------------------------------------- */
+  (() => {
+    const stage = document.querySelector<HTMLElement>("[data-water-stage]");
+    if (!stage) return;
+
+    const items = [...stage.querySelectorAll<HTMLElement>("[data-water-item]")];
+    const videos = items.map((item) => item.querySelector<HTMLVideoElement>("[data-autovideo]"));
+
+    const paintSound = (v: HTMLVideoElement | null) => {
+      if (!v) return;
+      const snd = v.closest(".av")?.querySelector<HTMLButtonElement>("[data-av-sound]");
+      if (!snd) return;
+      snd.hidden = false;
+      snd.setAttribute("aria-pressed", String(!v.muted));
+      const sLabel = snd.querySelector<HTMLElement>("[data-av-label]");
+      const sIcon = snd.querySelector<HTMLElement>("[data-av-ic]");
+      if (sLabel) sLabel.textContent = v.muted ? "Звук" : "Без звуку";
+      if (sIcon) sIcon.textContent = v.muted ? "♪" : "✕";
+    };
+
+    const loadPoster = (v: HTMLVideoElement) => {
+      if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
+    };
+
+    if (reduced.matches) {
+      videos.forEach((v) => { if (v) loadPoster(v); });
+      return;
+    }
+
+    let active = items.findIndex((item) => item.classList.contains("is-active"));
+    if (active < 0) active = 0;
+    let inView = false;
+
+    const pauseAt = (i: number) => {
+      const v = videos[i];
+      if (!v) return;
+      v.pause();
+      v.muted = true;
+      delete v.dataset.waterActive;
+      paintSound(v);
+    };
+
+    const playAt = (i: number, unmute = false, force = false) => {
+      const v = videos[i];
+      if (!v) return;
+      loadPoster(v);
+      v.dataset.waterActive = "1";
+      v.muted = !unmute;
+      const shouldPlay = force || inView;
+      if (!v.src && v.dataset.src) v.src = v.dataset.src;
+      if (shouldPlay) v.play().catch(() => {});
+      paintSound(v);
+    };
+
+    const setActive = (index: number, unmute = false, force = false) => {
+      items.forEach((item, i) => {
+        const on = i === index;
+        item.classList.toggle("is-active", on);
+        if (on) playAt(i, unmute, force);
+        else pauseAt(i);
+      });
+      active = index;
+    };
+
+    new IntersectionObserver(
+      ([e]) => {
+        inView = e.isIntersecting;
+        if (inView) {
+          videos.forEach((v) => { if (v) loadPoster(v); });
+          setActive(active);
+        } else videos.forEach((_, i) => pauseAt(i));
+      },
+      { threshold: 0, rootMargin: "0px 0px -12% 0px" },
+    ).observe(stage);
+
+    items.forEach((item, i) => {
+      item.tabIndex = 0;
+      const v = videos[i];
+      if (v) paintSound(v);
+
+      item.addEventListener("click", (e) => {
+        const snd = (e.target as HTMLElement).closest("[data-av-sound]");
+        if (snd) {
+          e.preventDefault();
+          e.stopPropagation();
+          const nextUnmute = i === active ? !!v?.muted : true;
+          setActive(i, nextUnmute, true);
+          return;
+        }
+        if (i === active) return;
+        setActive(i, false, true);
+      });
+
+      item.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        if ((e.target as HTMLElement).closest("[data-av-sound]")) return;
+        e.preventDefault();
+        if (i === active) return;
+        setActive(i, false, true);
       });
     });
   })();
@@ -486,44 +597,67 @@ import { hero } from "../content";
     const status = form.querySelector<HTMLElement>("[data-contact-status]");
     const fallback = form.querySelector<HTMLTextAreaElement>("[data-contact-fallback]");
 
-    // pressing Enter in a field must not reload the page
     form.addEventListener("submit", (e) => e.preventDefault());
+
+    const copyNow = (text: string): boolean => {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.setAttribute("aria-hidden", "true");
+      ta.style.cssText = "position:fixed;top:0;left:0;width:1px;height:1px;opacity:0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch {}
+      document.body.removeChild(ta);
+      return ok;
+    };
 
     form.querySelectorAll<HTMLAnchorElement>("[data-go]").forEach((link) => {
       link.addEventListener("click", (e) => {
         const data = new FormData(form);
-        const get = (k: string) => String(data.get(k) ?? "").trim();
+        const payload = {
+          name: String(data.get("name") ?? "").trim(),
+          goal: String(data.get("goal") ?? "").trim(),
+          contact: String(data.get("contact") ?? "").trim(),
+        };
 
-        const errors: Record<string, string> = {};
-        if (!get("name")) errors.name = "Вкажіть ім'я";
-        if (!get("goal")) errors.goal = "Опишіть коротко вашу ціль";
-        if (!get("contact")) errors.contact = "Вкажіть, як з вами зв'язатися";
-
+        const errors = validate(payload);
         form.querySelectorAll<HTMLElement>("[data-err]").forEach((el) => {
           el.textContent = errors[el.dataset.err!] ?? "";
         });
 
         if (Object.keys(errors).length) {
-          e.preventDefault();       // nothing to carry over yet
+          e.preventDefault();
           form.querySelector<HTMLElement>(`#f-${Object.keys(errors)[0]}`)?.focus();
           return;
         }
 
-        const text =
-          `Вітаю! Мене звати ${get("name")}.
-` +
-          `Моя ціль: ${get("goal")}
-` +
-          `Зв'язок: ${get("contact")}`;
-
-        // the link navigates regardless; this only decides what the note says
-        navigator.clipboard?.writeText(text).then(
-          () => { if (status) status.textContent = "Повідомлення скопійовано — вставте його в чат."; },
-          () => {
-            if (status) status.textContent = "Не вдалося скопіювати. Скопіюйте текст вручну:";
+        e.preventDefault();
+        const text = composeHandoffMessage(payload);
+        const copied = copyNow(text);
+        if (copied) {
+          if (status) status.textContent = contact.copied;
+          if (fallback) fallback.hidden = true;
+        } else {
+          navigator.clipboard?.writeText(text).then(
+            () => {
+              if (status) status.textContent = contact.copied;
+              if (fallback) fallback.hidden = true;
+            },
+            () => {
+              if (status) status.textContent = contact.copyFailed;
+              if (fallback) { fallback.hidden = false; fallback.value = text; }
+            },
+          );
+          if (!navigator.clipboard?.writeText) {
+            if (status) status.textContent = contact.copyFailed;
             if (fallback) { fallback.hidden = false; fallback.value = text; }
-          },
-        );
+          }
+        }
+        window.open(link.href, "_blank", "noopener,noreferrer");
       });
     });
   })();

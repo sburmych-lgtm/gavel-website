@@ -2,8 +2,7 @@
 import MediaFrame from "../components/MediaFrame.astro";
 import AutoVideo from "../components/AutoVideo.astro";
 import { athlete } from "../content";
-import { photos, videos } from "../content/media";
-import { Image } from "astro:assets";
+import { videos } from "../content/media";
 ---
 <section class="section section--deep" id="athlete" aria-labelledby="athlete-h">
   <div class="shell">
@@ -16,38 +15,46 @@ import { Image } from "astro:assets";
       <p class="a-h2-sub">{athlete.h2Sub}</p>
     </div>
 
-    <div class="a-grid">
-      <div class="a-lead" data-reveal>
-        <Image
-          src={photos.onBeach.src}
-          alt={photos.onBeach.alt}
-          widths={[600, 900, 1122]}
-          sizes="(max-width: 1100px) 100vw, 620px"
-          class="a-img"
-          loading="lazy"
-        />
+    <div class="a-grid" data-water-stage>
+      <div class="a-slot is-active" data-water-item data-reveal>
+        <MediaFrame ratio="9 / 16" caption={videos.waterPrimary.label}>
+          <AutoVideo
+            src={videos.waterPrimary.src}
+            poster={videos.waterPrimary.poster}
+            width={videos.waterPrimary.width}
+            height={videos.waterPrimary.height}
+            label={videos.waterPrimary.label}
+            sound
+            group="water"
+          />
+        </MediaFrame>
       </div>
       <div class="a-side">
-        <div data-reveal>
-          <MediaFrame ratio="16 / 9" caption={videos.dragonboat.label}>
+        <div class="a-slot" data-water-item data-reveal>
+          <MediaFrame ratio="16 / 9" caption={videos.waterUpper.label}>
             <AutoVideo
-              src={videos.dragonboat.src}
-              poster={videos.dragonboat.poster}
-              width={videos.dragonboat.width}
-              height={videos.dragonboat.height}
-              label={videos.dragonboat.label}
+              src={videos.waterUpper.src}
+              poster={videos.waterUpper.poster}
+              width={videos.waterUpper.width}
+              height={videos.waterUpper.height}
+              label={videos.waterUpper.label}
+              sound
+              group="water"
             />
           </MediaFrame>
         </div>
-        <div data-reveal>
-          <Image
-            src={photos.canoe2.src}
-            alt={photos.canoe2.alt}
-            widths={[400, 620, 900]}
-            sizes="(max-width: 1100px) 100vw, 420px"
-            class="a-img a-img--sm"
-            loading="lazy"
-          />
+        <div class="a-slot" data-water-item data-reveal>
+          <MediaFrame ratio="4 / 3" caption={videos.waterLower.label}>
+            <AutoVideo
+              src={videos.waterLower.src}
+              poster={videos.waterLower.poster}
+              width={videos.waterLower.width}
+              height={videos.waterLower.height}
+              label={videos.waterLower.label}
+              sound
+              group="water"
+            />
+          </MediaFrame>
         </div>
       </div>
     </div>
@@ -89,11 +96,19 @@ import { Image } from "astro:assets";
     align-items: start;
   }
   .a-side { display: grid; gap: clamp(1rem, 2.5vw, 2rem); }
-  .a-img {
-    width: 100%; height: auto; object-fit: cover;
-    border: 1px solid var(--line); border-radius: var(--r);
+
+  .a-slot {
+    cursor: pointer;
   }
-  .a-img--sm { aspect-ratio: 4 / 3; }
+  .a-slot:not(.is-active) :global(.frame) {
+    opacity: 0.78;
+    transition: opacity var(--t-fast) var(--ease);
+  }
+  .a-slot.is-active :global(.frame) { border-color: var(--gold); }
+  .a-slot:focus-visible {
+    outline: 2px solid var(--caustic);
+    outline-offset: 3px;
+  }
 
   .a-offer-lead {
     margin-top: clamp(2.5rem, 5vw, 4rem);

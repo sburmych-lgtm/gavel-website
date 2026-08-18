@@ -16,6 +16,7 @@ import canoe1 from "../assets/photo/Canoe1.JPG";
 import canoe2 from "../assets/photo/Canoe2.JPG";
 import champion from "../assets/photo/Champion.jpg";
 import certificates from "../assets/photo/Certificates.jpg";
+import formatsPortrait from "../assets/photo/formats-portrait.jpg";
 
 export const photos = {
   onBeach: {
@@ -25,6 +26,10 @@ export const photos = {
   inGym: {
     src: inGym,
     alt: "Ігор Гаврилейко усміхається в тренажерному залі фітнес-центру «Пляж»",
+  },
+  formatsPortrait: {
+    src: formatsPortrait,
+    alt: "Ігор Гаврилейко стоїть у тренажерному залі фітнес-центру «Пляж», руки на поясі",
   },
   canoe1: {
     src: canoe1,
@@ -74,6 +79,30 @@ export const videos = {
     width: 1024,
     height: 576,
     label: "Команда веслує на човні Dragonboat",
+  },
+  waterPrimary: {
+    src: "/media/video/water-primary.mp4",
+    poster: "/media/image/water-primary-poster.jpg",
+    width: 720,
+    height: 1280,
+    label: "Відбиття Ігоря Гаврилейка з веслом у воді біля пірсу",
+    hasAudio: true,
+  },
+  waterUpper: {
+    src: "/media/video/water-upper.mp4",
+    poster: "/media/image/water-upper-poster.jpg",
+    width: 1024,
+    height: 576,
+    label: "Ігор Гаврилейко говорить на березі в майці Dragonboat",
+    hasAudio: true,
+  },
+  waterLower: {
+    src: "/media/video/water-lower.mp4",
+    poster: "/media/image/water-lower-poster.jpg",
+    width: 720,
+    height: 1280,
+    label: "Лебеді на озері на світанку",
+    hasAudio: true,
   },
   waterCalm: {
     src: "/media/video/water-calm.mp4",

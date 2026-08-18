@@ -26,8 +26,8 @@ import { Image } from "astro:assets";
 
       <aside class="f-aside" data-reveal aria-label={formats.includedH3}>
         <Image
-          src={photos.inGym.src}
-          alt={photos.inGym.alt}
+          src={photos.formatsPortrait.src}
+          alt={photos.formatsPortrait.alt}
           widths={[400, 620, 900]}
           sizes="(max-width: 1100px) 100vw, 380px"
           class="f-img"
@@ -65,6 +65,7 @@ import { Image } from "astro:assets";
   .f-row-b { color: var(--mute); }
   .f-img {
     width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+    object-position: 50% 12%;
     border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 1.75rem;
   }
   .f-inc-h { margin-bottom: 1rem; }

@@ -4,9 +4,13 @@ Enough to continue without reading any chat history.
 
 ## What this is
 
-The final coded visual prototype for **IGOR GAVRILEYKO**, a personal trainer in
-Lviv. One of three parallel candidates; the other two must not be touched. The
-run ends at a human visual approval gate — not at production.
+The production-frontend candidate for **IGOR GAVRILEYKO**. Implementation lives
+on branch `production/frontend-v1-grok` in worktree
+`G:\01_PROJECTS\Web Design\ihor_havryleiko_fitnesstrainer\Production\Cursor_Grok`.
+The approved prototype `main` working tree must not be used for these edits.
+
+Human review is required before merge to `main`. Do not overwrite the existing
+Railway deployment.
 
 ## Where things live
 
@@ -68,7 +72,7 @@ npm run preview    # serve the build
 QA evidence, including screenshots at every reviewed width, is in
 `docs/quality/`.
 
-## Open human decisions
+## Exact next action
 
-Listed and kept current in `docs/PROJECT_STATE.md`. None of them block the
-prototype; all of them block production.
+**HUMAN REVIEW** of `production/frontend-v1-grok`. Do not merge. Do not
+overwrite Railway production.

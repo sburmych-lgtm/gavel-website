@@ -8,6 +8,9 @@
 import AutoVideo from "../components/AutoVideo.astro";
 import { contact, site } from "../content";
 import { videos } from "../content/media";
+import { instagramDirectUrl } from "../lib/contact";
+
+const igDirect = instagramDirectUrl(site.instagramHandle);
 ---
 <section class="section ct" id="contact" aria-labelledby="contact-h">
   <div class="ct-media" aria-hidden="true">
@@ -41,7 +44,7 @@ import { videos } from "../content/media";
     </div>
 
     <form class="ct-form" data-contact novalidate data-reveal
-          data-tg={contact.ctaTelegram.href} data-ig={contact.ctaInstagram.href}>
+          data-tg={contact.ctaTelegram.href} data-ig={igDirect}>
       <h3 class="ct-form-h">{contact.formTitle}</h3>
       <p class="ct-form-hint">{contact.formHint}</p>
 
@@ -65,7 +68,7 @@ import { videos } from "../content/media";
           {contact.submitTelegram}
         </a>
         <a class="btn btn-ghost ct-submit" data-go="ig"
-           href={contact.ctaInstagram.href} target="_blank" rel="noopener noreferrer">
+           href={igDirect} target="_blank" rel="noopener noreferrer">
           {contact.submitInstagram}
         </a>
       </div>

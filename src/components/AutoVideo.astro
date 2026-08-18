@@ -31,6 +31,8 @@ interface Props {
   /** Swaps the pause control for a mute toggle. Only for a video whose audio
       is content rather than noise — everything else here is encoded -an. */
   sound?: boolean;
+  /** Coordinated group. The page script plays only one member at a time. */
+  group?: string;
 }
 const {
   src,
@@ -42,6 +44,7 @@ const {
   showPause = true,
   sound = false,
   eagerPoster = false,
+  group,
 } = Astro.props;
 ---
 
@@ -52,6 +55,7 @@ const {
   <video
     class="av-el"
     data-autovideo
+    data-video-group={group}
     data-src={src}
     poster={eagerPoster ? poster : undefined}
     data-poster={eagerPoster ? undefined : poster}

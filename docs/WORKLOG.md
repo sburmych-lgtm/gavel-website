@@ -248,3 +248,29 @@ handoff an ordinary link, which also works with JS disabled.
 
 Verification: `qa.mjs` 43 checks and `verify-fixes.mjs` 25 checks, both 0 fail,
 locally and against the deployment.
+
+---
+
+## CP-15 — production frontend candidate v1 · 2026-08-18
+
+Isolated branch `production/frontend-v1-grok` from tagged baseline
+`client-approved-prototype-v1` @ `cac608a`. Approved `main` was not edited.
+
+Client content/media pass:
+
+- Home achievements: 26 / 16 / 2× / 4 with the requested labels.
+- Pricing: session 700 ₴, subordinate line «Перше тренування — 400 ₴»;
+  medical exclusion removed from the pricing block and restated under FAQ.
+- Formats portrait replaced with a derivative of `Assets/Edits/Page_5_edit.jpg`.
+- Water grid: three client videos (`Page_8_editvideo1/3/2`), one active
+  playback, viewport pause, per-clip «Звук» toggle, single audio stream.
+- Contact: message built from typed fields, sync clipboard copy, Telegram
+  `t.me/gavelman`, Instagram Direct `ig.me/m/gavel_man`. No fake send state.
+
+Verification: `npm run check` ok; `npm run build` ok; `qa.mjs` 43 checks,
+0 fail, 0 warn; `verify-fixes.mjs` 0 fail. Local preview
+`http://127.0.0.1:4321/`. Not merged to `main`. Railway production not
+touched.
+
+**Commit** — see `git log`.
+

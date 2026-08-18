@@ -21,10 +21,13 @@ import { proof } from "../content";
     gap: 1.5rem;
     list-style: none; margin: 0; padding: 0;
   }
-  .proof-item { display: flex; flex-direction: column; gap: 0.5rem; }
+  .proof-item { display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
   .proof-v { font-size: var(--fs-num); color: var(--foam); }
-  .proof-l { font-size: var(--fs-sm); color: var(--mute); line-height: 1.4; }
+  .proof-l { font-size: var(--fs-sm); color: var(--mute); line-height: 1.4; overflow-wrap: break-word; }
   @media (max-width: 768px) {
     .proof-list { grid-template-columns: repeat(2, 1fr); gap: 1.75rem 1.25rem; }
+  }
+  @media (max-width: 400px) {
+    .proof-v { font-size: clamp(1.5rem, 8vw, 1.85rem); }
   }
 </style>
