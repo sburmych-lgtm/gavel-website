@@ -154,6 +154,24 @@ const roleFor = (i: number) => (i === 0 ? "active" : i === 1 ? "preview-a" : "pr
     object-position: center 22%;
   }
 
+  /* Clip 03 is 720×1280 with a landscape picture letterboxed at
+     50% of the canvas (poster strip ~283px; paddling ~338px). Size
+     the replaced box to the poster band so preview/active fill
+     edge-to-edge, then cover-crop horizontally — never stretch. */
+  .w-slot[data-water-index="2"] :global(video) {
+    inset: auto;
+    left: 0;
+    width: 100%;
+    height: calc(100% * 1280 / 280);
+    top: 50%;
+    transform: translateY(-50%);
+    object-fit: cover;
+    object-position: 58% 50%;
+  }
+  .w-slot[data-water-index="2"][data-water-role="active"] :global(video) {
+    object-position: 48% 50%;
+  }
+
   .w-edge {
     position: absolute;
     inset: 0;
