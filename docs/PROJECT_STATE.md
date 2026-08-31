@@ -28,10 +28,10 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 
 - Astro static frontend, media pipeline, fonts, Before/After, SEO/noindex
   preview, contact seam (CP-13–CP-15).
-- First-visit open (session key `ig-open-1851-m2`): landscape film is
-  `object-fit: cover` on phones so water fills the viewport. A blurred poster
-  wash sits behind so any gap is water, not empty black. Last 0,62 s the film
-  drops away and the full lockup flies into `.hdr-brand`.
+- First-visit open (session key `ig-open-1851-m3`): landscape film is
+  **contained** (16:9, never cover-cropped). A blurred poster wash fills the
+  letterbox so the bars are water, not empty black. Last 0,62 s the lockup
+  flies into `.hdr-brand` from the same box — no size jump.
 - Hero / section loops do not start until the intro is gone, so iOS is not
   asked to decode two videos at once.
 - QA on the darkened canoe page: 43 checks, 0 fail, 0 warn. Lighthouse 13.4.1
@@ -65,6 +65,6 @@ None for preview. Merge and production deploy require a human.
 
 On a real phone, open an **incognito / new-tab** visit to
 https://motion-lab-intro-preview-production.up.railway.app
-(session key changed, so a previous «seen» flag will not hide the intro).
+(session key `ig-open-1851-m3`).
 
 Do **not** merge to `main`. Do **not** `railway up` the production service.

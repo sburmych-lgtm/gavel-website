@@ -37,6 +37,7 @@ const skipIntro = async (ctx) => {
     try {
       sessionStorage.setItem("ig-open-1851", "1");
       sessionStorage.setItem("ig-open-1851-m2", "1");
+      sessionStorage.setItem("ig-open-1851-m3", "1");
     } catch { /* ignore */ }
   });
 };

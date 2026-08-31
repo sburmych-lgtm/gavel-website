@@ -75,7 +75,7 @@ const schema = buildSchema(siteUrl, ogImage);
       try {
         if (
           !/[?&]skipintro=1(?:&|$)/.test(location.search) &&
-          !sessionStorage.getItem("ig-open-1851-m2") &&
+          !sessionStorage.getItem("ig-open-1851-m3") &&
           !window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ) {
           document.documentElement.classList.add("is-intro");

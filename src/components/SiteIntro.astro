@@ -2,10 +2,11 @@
 /**
  * One-shot open on the first visit of a session.
  *
- * Film is IMG_1851. On phones the 16:9 is cover-cropped (sides go) so the
- * water fills the screen; a blurred poster wash sits behind so nothing
- * reads as empty black. The last 0.6 s the veil fades and the lockup
- * flies into .hdr-brand. Return visits, reduced motion, and no-JS skip it.
+ * Film is IMG_1851, always contained (never cover-cropped). On phones the
+ * 16:9 sits in the middle; a blurred poster wash fills the letterbox so
+ * the bars are water, not empty black. The last 0.6 s the veil fades and
+ * the lockup flies into .hdr-brand. Return visits, reduced motion, and
+ * no-JS skip it.
  */
 import { intro } from "../content";
 import { videos } from "../content/media";
@@ -25,21 +26,23 @@ const open = videos.open;
     aria-hidden="true"
   />
   <div class="intro-veil" data-intro-veil></div>
-  <video
-    class="intro-film"
-    data-intro-film
-    muted
-    playsinline
-    webkit-playsinline
-    disablepictureinpicture
-    x-webkit-airplay="deny"
-    preload="auto"
-    poster={open.poster}
-    data-src={open.src}
-    width={open.width}
-    height={open.height}
-    aria-hidden="true"
-  ></video>
+  <div class="intro-slot">
+    <video
+      class="intro-film"
+      data-intro-film
+      muted
+      playsinline
+      webkit-playsinline
+      disablepictureinpicture
+      x-webkit-airplay="deny"
+      preload="auto"
+      poster={open.poster}
+      data-src={open.src}
+      width={open.width}
+      height={open.height}
+      aria-hidden="true"
+    ></video>
+  </div>
   <img
     class="intro-flyer"
     data-intro-flyer
@@ -63,7 +66,7 @@ const open = videos.open;
   }
   :global(html.is-intro) .intro[hidden] { display: block !important; }
 
-  /* Blurred water, not empty black, in any gap the film does not cover. */
+  /* Blurred water in the letterbox. The film never cover-crops. */
   .intro-wash {
     position: absolute;
     inset: -18%;
@@ -71,27 +74,32 @@ const open = videos.open;
     height: 136%;
     max-width: none;
     object-fit: cover;
-    filter: blur(32px) saturate(1.2) brightness(0.62);
+    filter: blur(36px) saturate(1.25) brightness(0.7);
     pointer-events: none;
   }
 
   .intro-veil {
     position: absolute;
     inset: 0;
-    background: color-mix(in oklab, var(--abyss) 38%, transparent);
+    background: color-mix(in oklab, var(--abyss) 28%, transparent);
+    pointer-events: none;
+  }
+
+  .intro-slot {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
     pointer-events: none;
   }
 
   .intro-film {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    min-width: 100%;
-    min-height: 100%;
+    display: block;
+    width: min(100vw, calc(100svh * 16 / 9));
+    height: min(100svh, calc(100vw * 9 / 16));
     max-width: none;
-    object-fit: cover;
-    object-position: center;
+    object-fit: fill;
+    box-shadow: 0 0 48px 12px color-mix(in oklab, var(--abyss) 35%, transparent);
   }
 
   .intro-flyer {
@@ -128,7 +136,7 @@ const open = videos.open;
 </style>
 
 <script>
-  const KEY = "ig-open-1851-m2";
+  const KEY = "ig-open-1851-m3";
   const FILM_W = 1280;
   const FILM_H = 720;
   const MARK = { x: 293, y: 94, w: 603, h: 484 };
@@ -158,38 +166,20 @@ const open = videos.open;
   } else {
     root.setAttribute("data-intro-live", "1");
 
-    /* Cover mapping of the lockup — same math as object-fit: cover + center.
-       The <video> size is CSS, never rewritten per frame (iOS stalls if the
-       playing element's box changes). */
-    const coverBox = () => {
-      const vw = innerWidth;
-      const vh = innerHeight;
-      const k = Math.max(vw / FILM_W, vh / FILM_H);
-      const ox = (vw - FILM_W * k) / 2;
-      const oy = (vh - FILM_H * k) / 2;
+    /* Same box as CSS contain: the <video> is sized by the slot, never
+       rewritten per frame (iOS stalls if the playing element's box changes). */
+    const flyerBox = () => {
+      const r = film.getBoundingClientRect();
+      const k = r.width > 8 ? r.width / FILM_W : Math.min(innerWidth / FILM_W, innerHeight / FILM_H);
+      const left = r.width > 8 ? r.left : (innerWidth - FILM_W * k) / 2;
+      const top = r.width > 8 ? r.top : (innerHeight - FILM_H * k) / 2;
       return {
-        left: ox + MARK.x * k,
-        top: oy + MARK.y * k,
+        left: left + MARK.x * k,
+        top: top + MARK.y * k,
         width: MARK.w * k,
         height: MARK.h * k,
       };
     };
-
-    /* Portrait cover crops the wordmark. At the hand-off, sit the full
-       lockup in the viewport; the wash is the ground around it. */
-    const fitBox = () => {
-      const vw = innerWidth;
-      const vh = innerHeight;
-      const padX = Math.max(22, Math.round(vw * 0.07));
-      const padY = Math.max(52, Math.round(vh * 0.1));
-      const k = Math.min((vw - padX * 2) / MARK.w, (vh - padY * 2) / MARK.h);
-      const width = MARK.w * k;
-      const height = MARK.h * k;
-      return { left: (vw - width) / 2, top: (vh - height) / 2, width, height };
-    };
-
-    const flyerBox = () =>
-      innerHeight > innerWidth * 1.05 ? fitBox() : coverBox();
 
     const placeFlyer = (box: { left: number; top: number; width: number; height: number }) => {
       flyer.style.left = `${box.left}px`;
@@ -230,17 +220,14 @@ const open = videos.open;
     const startReveal = () => {
       if (revealing || docking) return;
       revealing = true;
-      const portrait = innerHeight > innerWidth * 1.05;
       placeFlyer(flyerBox());
       flyer.animate(
         [{ opacity: 0 }, { opacity: 1 }],
-        { duration: portrait ? 180 : 240, easing: "linear", fill: "forwards" },
+        { duration: 240, easing: "linear", fill: "forwards" },
       );
-      /* Portrait cover crops the wordmark. Drop the film quickly and keep
-         the wash so the full lockup sits on water, not on a cropped frame. */
-      fadeOut(film, portrait ? 160 : REVEAL_S * 1000);
-      fadeOut(veil, portrait ? 280 : REVEAL_S * 1000);
-      if (wash && !portrait) fadeOut(wash, REVEAL_S * 1000);
+      fadeOut(film, REVEAL_S * 1000);
+      fadeOut(veil, REVEAL_S * 1000);
+      if (wash) fadeOut(wash, REVEAL_S * 1000);
       fadeOut(skip, 220);
       skip.style.pointerEvents = "none";
     };
@@ -343,7 +330,6 @@ const open = videos.open;
       };
       film.addEventListener("loadeddata", tryPlay);
       film.addEventListener("canplay", tryPlay);
-      film.addEventListener("playing", () => { /* keep live */ });
       tryPlay();
       window.setTimeout(tryPlay, 250);
       window.setTimeout(tryPlay, 900);
