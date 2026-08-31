@@ -15,8 +15,9 @@
 
   /* --- light through water. LIGHT, NOT PAINT.
          Hairlines, focus rings, hover underlines, panel edges. Never a fill,
-         never a heading colour, never more than ~5% of a viewport. --- */
-  --caustic: #4e9aa0;
+         never a heading colour, never more than ~5% of a viewport.
+         Lightness tuned to #5cb3b9 for >=4.5:1 contrast across all dark grounds. --- */
+  --caustic: #5cb3b9;
 
   /* --- text --- */
   --foam: #e9eff1;   /* 16.79:1 on abyss */
@@ -64,11 +65,13 @@
 
   /* --- motion --- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-overshoot: cubic-bezier(0.2, 1.15, 0.4, 1);
   --t-fast: 180ms;
   --t-base: 340ms;
   --t-slow: 500ms;
 
   /* --- layers --- */
+  --z-backdrop: 0;
   --z-media: 1;
   --z-content: 2;
   --z-nav: 40;

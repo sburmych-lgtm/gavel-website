@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import Backdrop from "../components/Backdrop.astro";
 import Hero from "../sections/Hero.astro";
 import Proof from "../sections/Proof.astro";
 import Fit from "../sections/Fit.astro";
@@ -19,6 +20,7 @@ import { hero } from "../content";
 
 <Base>
   <SiteHeader />
+  <Backdrop />
 
   <main id="main">
     <Hero />
@@ -167,6 +169,120 @@ import { hero } from "../content";
       { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
     );
     items.forEach((el) => io.observe(el));
+  })();
+
+  /* --- backdrop: scroll velocity coupling & lifecycle --------------- *
+   * Velocity-coupled canoe background video loop.
+   * Target playback rate lerps with scroll velocity, gliding to a rest when stopped.
+   * Video injected only after hero video starts to protect LCP.
+   * ------------------------------------------------------------------ */
+  (() => {
+    const backdrop = document.querySelector<HTMLElement>("[data-backdrop]");
+    const mediaContainer = backdrop?.querySelector<HTMLElement>("[data-backdrop-media]");
+    if (!backdrop || !mediaContainer) return;
+
+    if (reduced.matches || (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData === true) {
+      return;
+    }
+
+    let video: HTMLVideoElement | null = null;
+    let videoInjected = false;
+    let isCovered = false;
+    let rate = 0;
+    const V = 1200; // px/s
+    let cachedScrollY = window.scrollY;
+    let lastScrollY = window.scrollY;
+    let lastTime = performance.now();
+    let rafId = 0;
+
+    window.addEventListener("scroll", () => {
+      cachedScrollY = window.scrollY;
+    }, { passive: true });
+
+    const injectVideo = () => {
+      if (videoInjected) return;
+      videoInjected = true;
+
+      video = document.createElement("video");
+      video.className = "backdrop-video";
+      video.src = "/media/canoe-stroke.mp4";
+      video.poster = "/media/canoe-stroke-poster.webp";
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      video.setAttribute("aria-hidden", "true");
+      video.tabIndex = -1;
+
+      video.addEventListener("canplay", () => {
+        const poster = mediaContainer.querySelector<HTMLElement>(".backdrop-poster");
+        if (poster) poster.style.display = "none";
+      }, { once: true });
+
+      mediaContainer.appendChild(video);
+      startLoop();
+    };
+
+    // Hero sync: only after hero video is playing (or 3s fallback)
+    const heroVid = document.querySelector<HTMLVideoElement>(".hero [data-autovideo]");
+    if (heroVid) {
+      heroVid.addEventListener("playing", injectVideo, { once: true });
+      heroVid.addEventListener("play", injectVideo, { once: true });
+    }
+    setTimeout(injectVideo, 3000);
+
+    // Visibility change
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && video && !video.paused) {
+        video.pause();
+      }
+    });
+
+    // Pause when fully covered by light sections
+    const lightSections = [...document.querySelectorAll<HTMLElement>(".section--light")];
+    if (lightSections.length && "IntersectionObserver" in window) {
+      const lightIo = new IntersectionObserver((entries) => {
+        isCovered = entries.some((e) => e.isIntersecting && e.intersectionRatio > 0.85);
+        if (isCovered && video && !video.paused) {
+          video.pause();
+        }
+      }, { threshold: [0, 0.5, 0.85, 1.0] });
+      lightSections.forEach((s) => lightIo.observe(s));
+    }
+
+    function tick(now: number) {
+      const dt = Math.max(0.001, (now - lastTime) / 1000);
+      lastTime = now;
+
+      const instantVelocity = Math.abs(cachedScrollY - lastScrollY) / dt;
+      lastScrollY = cachedScrollY;
+
+      const targetRate = Math.min(1, Math.max(0, instantVelocity / V));
+      rate = rate + (targetRate - rate) * 0.08;
+
+      if (video && !document.hidden && !isCovered) {
+        if (rate < 0.04) {
+          if (!video.paused) {
+            video.pause();
+          }
+        } else {
+          video.playbackRate = Math.min(2.0, Math.max(0.25, 0.5 + rate * 0.75));
+          if (video.paused) {
+            video.play().catch(() => {});
+          }
+        }
+      }
+
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startLoop() {
+      if (!rafId) {
+        lastTime = performance.now();
+        lastScrollY = cachedScrollY;
+        rafId = requestAnimationFrame(tick);
+      }
+    }
   })();
 
   /* --- video ---------------------------------------------------------- *

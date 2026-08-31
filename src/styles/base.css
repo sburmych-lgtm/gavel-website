@@ -71,19 +71,23 @@ a { color: inherit; }
   padding-inline: var(--gut);
 }
 
-.section { padding-block: var(--sec); position: relative; }
+.section { padding-block: var(--sec); position: relative; z-index: var(--z-media); background: transparent; }
 
-.section--deep { background: var(--deep); }
-.section--petrol { background: var(--petrol); }
+.section--deep { background: color-mix(in oklab, var(--deep) 86%, transparent); }
+.section--petrol { background: color-mix(in oklab, var(--petrol) 86%, transparent); }
 
 /* The two light bands. Placed where brightness does commercial work rather
    than on an alternating schedule — alternating every section reads as a
-   template, one band on thirteen sections reads as monotony. */
+   template, one band on thirteen sections reads as monotony.
+   Light sections fully cover the backdrop with their own opaque background. */
 .section--light {
+  position: relative;
+  z-index: var(--z-content);
   background: var(--mist);
   color: var(--ink);
 }
 .section--light .eyebrow { color: var(--gold-deep); }
+.section--light .sec-idx { color: var(--gold-deep); }
 .section--light .lead { color: color-mix(in oklab, var(--ink) 78%, transparent); }
 .section--light .rule { background: var(--line-ink); }
 
@@ -149,10 +153,84 @@ p { max-width: 68ch; }
   border: 0;
 }
 
-/* Section heads share one shape: eyebrow over a rule, then h2, then lead. */
-.head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
-.head .eyebrow { display: block; margin-bottom: 1rem; }
-.head h2 { margin-bottom: 1.25rem; }
+/* Section heads share one shape: eyebrow/kicker over heading with rising waterline reveal, then drawn hairline, then lead. */
+.head { margin-bottom: clamp(2.5rem, 5vw, 4rem); position: relative; }
+.head-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.head-kicker .eyebrow { margin-bottom: 0; }
+.head .eyebrow {
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--t-base) 80ms var(--ease),
+              transform var(--t-base) 80ms var(--ease);
+}
+.sec-idx {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--caustic);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity var(--t-base) 80ms var(--ease),
+              transform var(--t-base) 80ms var(--ease);
+}
+.section--light .sec-idx { color: var(--gold-deep); }
+
+.head h2, .head .h2 {
+  margin-bottom: 0.75rem;
+  clip-path: inset(100% 0 0 0);
+  transform: translateY(6px);
+  transition: clip-path 420ms var(--ease),
+              transform 420ms var(--ease);
+}
+
+.waterline-hairline {
+  display: block;
+  height: 1px;
+  width: 100%;
+  max-width: clamp(14rem, 40vw, 36rem);
+  background: var(--caustic);
+  margin-bottom: 1.25rem;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 350ms 180ms var(--ease-overshoot);
+}
+.section--light .waterline-hairline {
+  background: var(--gold);
+}
+
+.head .lead {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--t-base) 140ms var(--ease),
+              transform var(--t-base) 140ms var(--ease);
+}
+
+/* Head revealed state */
+.head.is-in .eyebrow,
+.head.is-in .sec-idx {
+  opacity: 1;
+  transform: none;
+}
+.head.is-in h2,
+.head.is-in .h2 {
+  clip-path: inset(0 0 0 0);
+  transform: none;
+}
+.head.is-in .waterline-hairline {
+  transform: scaleX(1);
+}
+.head.is-in .lead {
+  opacity: 1;
+  transform: none;
+}
 
 /* -------------------------------------------------------------- buttons */
 
@@ -204,7 +282,17 @@ p { max-width: 68ch; }
 [data-reveal].is-in { opacity: 1; transform: none; }
 
 /* No JS: show everything immediately. */
-.no-js [data-reveal] { opacity: 1; transform: none; }
+.no-js [data-reveal],
+.no-js .head .eyebrow,
+.no-js .head .sec-idx,
+.no-js .head h2,
+.no-js .head .h2,
+.no-js .waterline-hairline,
+.no-js .head .lead {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
 
 /* -------------------------------------------------------- reduced motion */
 
@@ -216,6 +304,17 @@ p { max-width: 68ch; }
     transition-duration: 0.01ms !important;
   }
   [data-reveal] { opacity: 1; transform: none; }
+  .head .eyebrow,
+  .head .sec-idx,
+  .head h2,
+  .head .h2,
+  .waterline-hairline,
+  .head .lead {
+    clip-path: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {
