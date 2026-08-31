@@ -1,5 +1,5 @@
 {
-  "base": "http://127.0.0.1:4321",
+  "base": "http://localhost:4321",
   "widths": [
     {
       "name": "1920-desktop-xl",
@@ -127,7 +127,7 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (75.58% → 88.00%)"
+      "m": "slider: sweeps unattended (75.38% → 88.00%)"
     },
     {
       "level": "OK",
@@ -151,7 +151,7 @@
     },
     {
       "level": "OK",
-      "m": "contrast #method .eyebrow: 5.98:1 (needs 4.5)"
+      "m": "contrast #method .eyebrow: 7.97:1 (needs 4.5)"
     },
     {
       "level": "OK",
@@ -175,7 +175,7 @@
     },
     {
       "level": "OK",
-      "m": "contrast .q-a p: 7.23:1 (needs 4.5)"
+      "m": "contrast .q-a p: 7.24:1 (needs 4.5)"
     },
     {
       "level": "OK",
