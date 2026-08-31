@@ -111,6 +111,7 @@ the deployed artifact matches a known SHA.
 | Public URL | <https://motion-lab-intro-preview-production.up.railway.app> |
 | Service | `motion-lab-intro-preview` |
 | Branch | `claude/scroll-canoe-backdrop` |
+| Intro session | `ig-open-1851-m2` (incognito to replay) |
 
 Do **not** `railway up` the production service for this work.
 

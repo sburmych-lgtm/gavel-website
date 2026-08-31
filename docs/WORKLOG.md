@@ -284,3 +284,23 @@ The canoe canvas idles while `html.is-intro` is set, then scrubbing resumes.
 `npm run check` ok. Playwright: intro plays, brand docks, scrollY 900 still
 has the backdrop. Production `main` untouched.
 
+---
+
+## Preview — mobile intro cover, playback, darkened QA · 2026-08-31
+
+The live phone screenshot was a 16:9 strip in empty black. Cover fills the
+viewport with water; a blurred poster wash is the ground, not `#000`. On
+portrait the cropped film is dropped at the hand-off so the full lockup is
+readable, then it flies into `.hdr-brand`.
+
+iOS hang: the hero loop was starting under the overlay (one decoder, two
+films). Autovideo and the 72 canoe frames now wait until `html.is-intro` is
+gone. Intro `play()` is serialised; first tap unlocks instead of skipping;
+no per-frame video resize.
+
+QA `scripts/qa.mjs` against the canoe-darkened page: **43 / 0 / 0**. Token
+contrast after darkening still clears WCAG (h1 16.75:1, `#fit .lead` 5.62:1,
+hero eyebrow pixels 8.43:1). Lighthouse 13.4.1 mobile, page not overlay:
+accessibility 100, best-practices 100, `color-contrast` pass. `npm run check`
+ok. Production `main` untouched.
+

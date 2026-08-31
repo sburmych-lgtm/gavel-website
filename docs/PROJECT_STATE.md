@@ -1,22 +1,24 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-18 · checkpoint CP-15_
+_Last updated: 2026-08-31 · preview: mobile intro + darkened-page QA_
 
 ## Current stage
 
-Production frontend candidate v1 on isolated branch
-`production/frontend-v1-grok`. Awaiting **human review** before any merge to
-`main` or production deploy.
+Preview of **IMG_1851 intro + canoe-scroll backdrop** on branch
+`claude/scroll-canoe-backdrop`. Production `main` is untouched. The Railway
+service `motion-lab-intro-preview` is the only deploy target for this work.
+
+CP-15 (`production/frontend-v1-grok`) remains the production-frontend
+candidate. Do not merge either branch to `main` without a human.
 
 ## Last completed checkpoint
 
-CP-15 — client-requested production frontend changes implemented on the
-isolated branch.
+CP-15 — client-requested production frontend changes on
+`production/frontend-v1-grok`. Approved prototype baseline: tag
+`client-approved-prototype-v1` @ `cac608a`.
 
-Approved prototype baseline: tag `client-approved-prototype-v1` @ `cac608a`.
-
-Rollback for this candidate: that tag / `main`. Do not treat this branch as
-live production.
+This preview line (canoe backdrop → IMG_1851 open → mobile playback) is
+separate from that candidate.
 
 ## Latest commit SHA
 
@@ -24,16 +26,17 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 
 ## What works
 
-- Everything listed under CP-13/CP-14 still holds (Astro static frontend,
-  media pipeline, fonts, Before/After, SEO/noindex preview, contact seam).
-- Home achievement strip matches the client edit (26 / 16 / 2× / 4).
-- Session price is 700 ₴ with «Перше тренування — 400 ₴» as a subordinate line.
-- Medical exclusion is visible in FAQ, not in the pricing block.
-- Formats portrait is the client `Page_5_edit.jpg` derivative.
-- Water section plays one of three client videos at a time, muted by default,
-  with a visible sound toggle and viewport pause.
-- Contact form copies the typed Ukrainian message, then opens Telegram or
-  Instagram Direct. It never claims a server submission.
+- Astro static frontend, media pipeline, fonts, Before/After, SEO/noindex
+  preview, contact seam (CP-13–CP-15).
+- First-visit open (session key `ig-open-1851-m2`): landscape film is
+  `object-fit: cover` on phones so water fills the viewport. A blurred poster
+  wash sits behind so any gap is water, not empty black. Last 0,62 s the film
+  drops away and the full lockup flies into `.hdr-brand`.
+- Hero / section loops do not start until the intro is gone, so iOS is not
+  asked to decode two videos at once.
+- QA on the darkened canoe page: 43 checks, 0 fail, 0 warn. Lighthouse 13.4.1
+  mobile accessibility 100, best-practices 100, `color-contrast` pass
+  (`?skipintro=1` so the overlay is not what gets measured).
 
 ## What is incomplete
 
@@ -42,7 +45,7 @@ configuration, merge to `main`, production hosting cutover.
 
 ## Blockers
 
-None for review of this candidate. Merge and production deploy require a human.
+None for preview. Merge and production deploy require a human.
 
 ## Open human decisions
 
@@ -60,17 +63,8 @@ None for review of this candidate. Merge and production deploy require a human.
 
 ## Exact next action
 
-**HUMAN REVIEW** of branch `production/frontend-v1-grok`.
-
-Do **not** merge to `main`. Do **not** overwrite the existing Railway
-deployment.
-
-Local preview: `npm run preview` → http://127.0.0.1:4321/
-
-## Preview: intro + canoe scroll
-
-Branch `claude/scroll-canoe-backdrop` now also plays **IMG_1851** as the
-first-visit open (fade last 0,62 s, fly into `.hdr-brand`), then the
-scroll-driven canoe backdrop. Session key `ig-open-1851`. Production `main`
-untouched. Preview:
+On a real phone, open an **incognito / new-tab** visit to
 https://motion-lab-intro-preview-production.up.railway.app
+(session key changed, so a previous «seen» flag will not hide the intro).
+
+Do **not** merge to `main`. Do **not** `railway up` the production service.

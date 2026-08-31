@@ -32,10 +32,19 @@ const warn = (m) => { report.push({ level: "WARN", m }); console.warn("! " + m);
 const ok = (m) => { report.push({ level: "OK", m }); console.log("✓ " + m); };
 
 const browser = await chromium.launch();
+const skipIntro = async (ctx) => {
+  await ctx.addInitScript(() => {
+    try {
+      sessionStorage.setItem("ig-open-1851", "1");
+      sessionStorage.setItem("ig-open-1851-m2", "1");
+    } catch { /* ignore */ }
+  });
+};
 
 // ------------------------------------------------------------ per width
 for (const { name, w, h } of WIDTHS) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+  await skipIntro(ctx);
   const page = await ctx.newPage();
   const errors = [];
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
@@ -93,6 +102,7 @@ for (const { name, w, h } of WIDTHS) {
 // ------------------------------------------------- interaction @ desktop
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await skipIntro(ctx);
   const page = await ctx.newPage();
   await page.goto(BASE, { waitUntil: "networkidle" });
 
@@ -369,6 +379,7 @@ for (const { name, w, h } of WIDTHS) {
     viewport: { width: 1440, height: 900 },
     reducedMotion: "reduce",
   });
+  await skipIntro(ctx);
   const page = await ctx.newPage();
   const videoReqs = [];
   page.on("request", (r) => { if (/\.mp4/.test(r.url())) videoReqs.push(r.url()); });

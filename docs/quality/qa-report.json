@@ -1,5 +1,5 @@
 {
-  "base": "http://localhost:4321",
+  "base": "http://127.0.0.1:4322",
   "widths": [
     {
       "name": "1920-desktop-xl",
@@ -127,11 +127,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (76.38% → 88.00%)"
+      "m": "slider: sweeps unattended (15.79% → 14.63%)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 12% 0px 0px))"
+      "m": "slider: clip-path active (inset(0px 85.37% 0px 0px))"
     },
     {
       "level": "OK",
@@ -179,7 +179,7 @@
     },
     {
       "level": "OK",
-      "m": "hero eyebrow over video: 8.44:1 measured from rendered pixels"
+      "m": "hero eyebrow over video: 8.43:1 measured from rendered pixels"
     },
     {
       "level": "OK",

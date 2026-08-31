@@ -74,9 +74,10 @@ QA evidence, including screenshots at every reviewed width, is in
 
 ## Exact next action
 
-**HUMAN REVIEW** of `production/frontend-v1-grok`. Do not merge. Do not
-overwrite Railway production.
+On a real phone, incognito visit
+https://motion-lab-intro-preview-production.up.railway.app
+(session `ig-open-1851-m2`). Confirm full-bleed water, lockup readable, no
+freeze on a second open.
 
-Preview of intro + canoe scroll: branch `claude/scroll-canoe-backdrop`
-(IMG_1851 open, then the scroll-driven canoe backdrop). Deploys to
-https://motion-lab-intro-preview-production.up.railway.app — not `main`.
+Do **not** merge to `main`. Do **not** `railway up` the production service.
+The working branch is `claude/scroll-canoe-backdrop`.

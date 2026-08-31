@@ -74,7 +74,8 @@ const schema = buildSchema(siteUrl, ogImage);
       document.documentElement.classList.remove("no-js");
       try {
         if (
-          !sessionStorage.getItem("ig-open-1851") &&
+          !/[?&]skipintro=1(?:&|$)/.test(location.search) &&
+          !sessionStorage.getItem("ig-open-1851-m2") &&
           !window.matchMedia("(prefers-reduced-motion: reduce)").matches
         ) {
           document.documentElement.classList.add("is-intro");

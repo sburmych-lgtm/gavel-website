@@ -100,6 +100,16 @@ import { hero } from "../content";
    * ------------------------------------------------------------------ */
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const introIdle = () => !document.documentElement.classList.contains("is-intro");
+  const whenIntroIdle = (fn: () => void) => {
+    if (introIdle()) { fn(); return; }
+    const mo = new MutationObserver(() => {
+      if (!introIdle()) return;
+      mo.disconnect();
+      fn();
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  };
 
   /* --- header: scroll state, overlay, focus trap --------------------- */
   (() => {
@@ -208,21 +218,24 @@ import { hero } from "../content";
     let smoothFrame = 0;
     let rafId = 0;
 
-    // Preload all 72 frames
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-      const img = new Image();
-      const pad = String(i).padStart(3, "0");
-      img.src = `/media/frames/frame_${pad}.webp`;
-      img.onload = () => {
-        loadedCount++;
-        if (loadedCount === 1 && currentFrame === -1) {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          currentFrame = 0;
-          if (poster) poster.style.display = "none";
-        }
-      };
-      frames.push(img);
-    }
+    // Do not contend with the intro film for bandwidth or decode on phones.
+    const preloadFrames = () => {
+      for (let i = 1; i <= TOTAL_FRAMES; i++) {
+        const img = new Image();
+        const pad = String(i).padStart(3, "0");
+        img.src = `/media/frames/frame_${pad}.webp`;
+        img.onload = () => {
+          loadedCount++;
+          if (loadedCount === 1 && currentFrame === -1) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            currentFrame = 0;
+            if (poster) poster.style.display = "none";
+          }
+        };
+        frames.push(img);
+      }
+    };
+    whenIntroIdle(preloadFrames);
 
     // Parallax mouse depth on desktop
     window.addEventListener("mousemove", (e) => {
@@ -281,17 +294,19 @@ import { hero } from "../content";
     const vids = document.querySelectorAll<HTMLVideoElement>("[data-autovideo]");
     if (reduced.matches) return;
 
+    const promote = (v: HTMLVideoElement) => {
+      if (!introIdle()) return;
+      if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
+      if (!v.src && v.dataset.src) v.src = v.dataset.src;
+      if (!v.dataset.paused) v.play().catch(() => {});
+    };
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           const v = e.target as HTMLVideoElement;
-          if (e.isIntersecting) {
-            if (!v.poster && v.dataset.poster) v.poster = v.dataset.poster;
-            if (!v.src && v.dataset.src) v.src = v.dataset.src;
-            if (!v.dataset.paused) v.play().catch(() => {});
-          } else {
-            v.pause();
-          }
+          if (e.isIntersecting) promote(v);
+          else v.pause();
         }
       },
       { threshold: 0.1 },
@@ -332,6 +347,14 @@ import { hero } from "../content";
       btn.addEventListener("click", () => {
         if (v.paused) { delete v.dataset.paused; v.play().catch(() => {}); label.textContent = "Пауза"; }
         else { v.pause(); v.dataset.paused = "1"; label.textContent = "Грати"; }
+      });
+    });
+
+    whenIntroIdle(() => {
+      vids.forEach((v) => {
+        if (v.dataset.videoGroup || v.offsetParent === null) return;
+        const r = v.getBoundingClientRect();
+        if (r.width > 0 && r.top < innerHeight && r.bottom > 0) promote(v);
       });
     });
   })();
