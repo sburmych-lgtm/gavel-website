@@ -22,9 +22,9 @@
     z-index: var(--z-backdrop, 0);
     pointer-events: none;
     overflow: hidden;
-    opacity: 0.14;
-    mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, transparent 100%);
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 1) 80%, transparent 100%);
+    opacity: 1;
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 1) 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 1) 85%, transparent 100%);
     will-change: transform;
   }
 
@@ -43,7 +43,7 @@
     height: 100%;
     object-fit: cover;
     object-position: center center;
-    filter: saturate(0.25) brightness(0.55);
+    filter: saturate(0.35) brightness(0.7);
   }
 
   .backdrop-overlay {
@@ -51,8 +51,8 @@
     inset: 0;
     background: linear-gradient(
       135deg,
-      color-mix(in oklab, var(--abyss) 65%, transparent) 0%,
-      color-mix(in oklab, var(--petrol) 65%, transparent) 100%
+      color-mix(in oklab, var(--abyss) 38%, transparent) 0%,
+      color-mix(in oklab, var(--petrol) 38%, transparent) 100%
     );
     mix-blend-mode: multiply;
   }

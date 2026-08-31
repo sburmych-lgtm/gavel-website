@@ -27,13 +27,19 @@ import { hero } from "../content";
     <Proof />
     <Fit />
     <Method />
+    <div class="window-band" aria-hidden="true"></div>
     <Results />
+    <div class="window-band" aria-hidden="true"></div>
     <Formats />
     <Pricing />
     <Coach />
+    <div class="window-band" aria-hidden="true"></div>
     <Athlete />
+    <div class="window-band" aria-hidden="true"></div>
     <Credentials />
+    <div class="window-band" aria-hidden="true"></div>
     <Faq />
+    <div class="window-band" aria-hidden="true"></div>
     <Contact />
   </main>
 
@@ -825,29 +831,34 @@ import { hero } from "../content";
           return;
         }
 
-        e.preventDefault();
         const text = composeHandoffMessage(payload);
-        const copied = copyNow(text);
-        if (copied) {
-          if (status) status.textContent = contact.copied;
-          if (fallback) fallback.hidden = true;
-        } else {
-          navigator.clipboard?.writeText(text).then(
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(text).then(
             () => {
               if (status) status.textContent = contact.copied;
               if (fallback) fallback.hidden = true;
             },
             () => {
-              if (status) status.textContent = contact.copyFailed;
-              if (fallback) { fallback.hidden = false; fallback.value = text; }
+              const copied = copyNow(text);
+              if (copied) {
+                if (status) status.textContent = contact.copied;
+                if (fallback) fallback.hidden = true;
+              } else {
+                if (status) status.textContent = contact.copyFailed;
+                if (fallback) { fallback.hidden = false; fallback.value = text; }
+              }
             },
           );
-          if (!navigator.clipboard?.writeText) {
+        } else {
+          const copied = copyNow(text);
+          if (copied) {
+            if (status) status.textContent = contact.copied;
+            if (fallback) fallback.hidden = true;
+          } else {
             if (status) status.textContent = contact.copyFailed;
             if (fallback) { fallback.hidden = false; fallback.value = text; }
           }
         }
-        window.open(link.href, "_blank", "noopener,noreferrer");
       });
     });
   })();

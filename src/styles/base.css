@@ -71,10 +71,21 @@ a { color: inherit; }
   padding-inline: var(--gut);
 }
 
-.section { padding-block: var(--sec); position: relative; z-index: var(--z-media); background: transparent; }
+.section { padding-block: var(--sec); position: relative; z-index: var(--z-media); background: color-mix(in oklab, var(--abyss) 80%, transparent); }
 
-.section--deep { background: color-mix(in oklab, var(--deep) 86%, transparent); }
-.section--petrol { background: color-mix(in oklab, var(--petrol) 86%, transparent); }
+.section--deep { background: color-mix(in oklab, var(--deep) 80%, transparent); }
+.section--petrol { background: color-mix(in oklab, var(--petrol) 80%, transparent); }
+
+/* Spacer band: 34vh breathing window with NO background between consecutive dark sections.
+   Allows the graded canoe backdrop to show through at full strength. */
+.window-band {
+  height: 34vh;
+  min-height: 180px;
+  background: transparent;
+  pointer-events: none;
+  position: relative;
+  z-index: var(--z-media);
+}
 
 /* The two light bands. Placed where brightness does commercial work rather
    than on an alternating schedule — alternating every section reads as a
@@ -183,7 +194,7 @@ p { max-width: 68ch; }
 }
 .section--light .sec-idx { color: var(--gold-deep); }
 
-.head h2, .head .h2 {
+.head h2, .head .h2, .c-copy h2, .ct-copy h2 {
   margin-bottom: 0.75rem;
   clip-path: inset(100% 0 0 0);
   transform: translateY(6px);
@@ -206,7 +217,7 @@ p { max-width: 68ch; }
   background: var(--gold);
 }
 
-.head .lead {
+.head .lead, .ct-copy .lead {
   opacity: 0;
   transform: translateY(8px);
   transition: opacity var(--t-base) 140ms var(--ease),
@@ -215,19 +226,27 @@ p { max-width: 68ch; }
 
 /* Head revealed state */
 .head.is-in .eyebrow,
-.head.is-in .sec-idx {
+.head.is-in .sec-idx,
+.c-copy.is-in .eyebrow,
+.c-copy.is-in .sec-idx,
+.ct-copy.is-in .eyebrow {
   opacity: 1;
   transform: none;
 }
 .head.is-in h2,
-.head.is-in .h2 {
+.head.is-in .h2,
+.c-copy.is-in h2,
+.ct-copy.is-in h2 {
   clip-path: inset(0 0 0 0);
   transform: none;
 }
-.head.is-in .waterline-hairline {
+.head.is-in .waterline-hairline,
+.c-copy.is-in .waterline-hairline,
+.ct-copy.is-in .waterline-hairline {
   transform: scaleX(1);
 }
-.head.is-in .lead {
+.head.is-in .lead,
+.ct-copy.is-in .lead {
   opacity: 1;
   transform: none;
 }
