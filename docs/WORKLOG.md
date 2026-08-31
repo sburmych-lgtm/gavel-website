@@ -313,3 +313,10 @@ Rolled back to a contained 16:9 (same box from first frame through dock).
 The letterbox is a blurred water wash, not empty black. iOS decoder gating
 stays. Session `ig-open-1851-m3`.
 
+---
+
+## Preview — visible canoe letterbox on mobile · 2026-08-31
+
+The film-poster wash was too dark to tell from black. Phones now use the
+portrait canoe still behind the 16:9 open. Session `ig-open-1851-m4`.
+
