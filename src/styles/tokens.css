@@ -79,4 +79,6 @@
   --z-overlay: 50;
   /* the bar outranks its own overlay — the burger doubles as the close */
   --z-header: 60;
+  /* one-shot open sits above the bar until the mark docks into it */
+  --z-intro: 80;
 }

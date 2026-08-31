@@ -1,0 +1,347 @@
+---
+/**
+ * One-shot open on the first visit of a session.
+ *
+ * Film is IMG_1851: water, then the gold IG lockup on black. The last
+ * 0.6 s the veil and film fade so the hero shows through while the
+ * lockup stays. On end (or skip) the lockup flies into .hdr-brand
+ * (upper-left). Return visits, reduced motion, and no-JS skip it.
+ */
+import { intro } from "../content";
+import { videos } from "../content/media";
+
+const open = videos.open;
+---
+
+<div class="intro" data-intro hidden role="dialog" aria-label={intro.label} aria-modal="true">
+  <div class="intro-veil" data-intro-veil></div>
+  <video
+    class="intro-film"
+    data-intro-film
+    muted
+    playsinline
+    preload="none"
+    poster={open.poster}
+    data-src={open.src}
+    width={open.width}
+    height={open.height}
+    aria-hidden="true"
+  ></video>
+  <img
+    class="intro-flyer"
+    data-intro-flyer
+    src={open.mark}
+    alt=""
+    width="603"
+    height="484"
+    decoding="async"
+  />
+  <button type="button" class="intro-skip" data-intro-skip>{intro.skip}</button>
+</div>
+
+<style>
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-intro);
+    overflow: hidden;
+    pointer-events: auto;
+    background: transparent;
+  }
+  :global(html.is-intro) .intro[hidden] { display: block !important; }
+
+  .intro-veil {
+    position: absolute;
+    inset: 0;
+    background: var(--abyss);
+  }
+
+  .intro-film {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    max-width: none;
+    object-fit: fill;
+  }
+
+  .intro-flyer {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: auto;
+    max-width: none;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform-origin: 50% 50%;
+  }
+
+  .intro-skip {
+    position: absolute;
+    right: var(--gut);
+    bottom: calc(var(--gut) + env(safe-area-inset-bottom));
+    z-index: 1;
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--foam);
+    background: color-mix(in oklab, var(--abyss) 55%, transparent);
+    border: 1px solid color-mix(in oklab, var(--foam) 34%, transparent);
+    border-radius: var(--r);
+    min-height: 44px;
+    padding: 0.55rem 1rem;
+    cursor: pointer;
+  }
+  .intro-skip:hover { border-color: var(--foam); }
+</style>
+
+<script>
+  const KEY = "ig-open-1851";
+  const FILM_W = 1280;
+  const FILM_H = 720;
+  /* Ink box of IG + wordmark inside the 1280×720 last frame. */
+  const MARK = { x: 293, y: 94, w: 603, h: 484 };
+  /* Last beat: black may already be gone, or we fade it. 0.5–0.7 s. */
+  const REVEAL_S = 0.62;
+
+  const root = document.documentElement;
+  const stage = document.querySelector<HTMLElement>("[data-intro]");
+  const veil = document.querySelector<HTMLElement>("[data-intro-veil]");
+  const film = document.querySelector<HTMLVideoElement>("[data-intro-film]");
+  const flyer = document.querySelector<HTMLImageElement>("[data-intro-flyer]");
+  const skip = document.querySelector<HTMLButtonElement>("[data-intro-skip]");
+  const brand = document.querySelector<HTMLElement>("[data-hdr-brand] img");
+
+  const seen = () => {
+    try { return sessionStorage.getItem(KEY) === "1"; }
+    catch { return true; }
+  };
+  const remember = () => {
+    try { sessionStorage.setItem(KEY, "1"); } catch { /* ignore */ }
+  };
+
+  if (!stage || !veil || !film || !flyer || !skip || !brand) {
+    root.classList.remove("is-intro");
+  } else if (!root.classList.contains("is-intro") || seen()) {
+    root.classList.remove("is-intro");
+  } else {
+    root.setAttribute("data-intro-live", "1");
+
+    const filmBox = () => {
+      const vw = innerWidth;
+      const vh = innerHeight;
+      const padX = Math.max(20, Math.round(vw * 0.06));
+      const padY = Math.max(28, Math.round(vh * 0.07));
+      const containK = Math.min(vw / FILM_W, vh / FILM_H);
+      const coverK = Math.max(vw / FILM_W, vh / FILM_H);
+      const fitK = Math.min((vw - padX * 2) / MARK.w, (vh - padY * 2) / MARK.h);
+      const endK = Math.min(coverK, fitK);
+      const portrait = vh > vw * 1.05;
+      /* Portrait: start letterboxed so the forming IG is not cropped, then
+         ease onto the lockup so the wordmark fills the phone. Landscape
+         can cover as long as the lockup still fits. */
+      let u = 1;
+      if (portrait) {
+        const t = film.currentTime || 0;
+        const dur = film.duration || 0;
+        u = dur > 0 ? Math.max(0, Math.min(1, (t / dur - 0.48) / 0.4)) : 0;
+        u = u * u * (3 - 2 * u);
+      }
+      const k = portrait ? containK + (endK - containK) * u : endK;
+      const dw = FILM_W * k;
+      const dh = FILM_H * k;
+      const filmOx = (vw - dw) / 2;
+      const filmOy = (vh - dh) / 2;
+      const markOx = vw / 2 - (MARK.x + MARK.w / 2) * k;
+      const markOy = vh / 2 - (MARK.y + MARK.h / 2) * k;
+      const ox = filmOx + (markOx - filmOx) * u;
+      const oy = filmOy + (markOy - filmOy) * u;
+      film.style.width = `${dw}px`;
+      film.style.height = `${dh}px`;
+      film.style.left = `${ox}px`;
+      film.style.top = `${oy}px`;
+      return {
+        left: ox + MARK.x * k,
+        top: oy + MARK.y * k,
+        width: MARK.w * k,
+        height: MARK.h * k,
+      };
+    };
+
+    const placeFlyer = (box: { left: number; top: number; width: number; height: number }) => {
+      flyer.style.left = `${box.left}px`;
+      flyer.style.top = `${box.top}px`;
+      flyer.style.width = `${box.width}px`;
+      flyer.style.height = `${box.height}px`;
+      flyer.style.transform = "translate(0, 0) scale(1)";
+      flyer.style.transformOrigin = "50% 50%";
+    };
+
+    const finish = () => {
+      remember();
+      root.classList.remove("is-intro");
+      root.removeAttribute("data-intro-live");
+      stage.hidden = true;
+      flyer.style.opacity = "0";
+      try { film.pause(); } catch { /* ignore */ }
+      film.removeAttribute("src");
+      film.load();
+      window.removeEventListener("resize", onResize);
+      document.removeEventListener("keydown", onKey);
+      window.removeEventListener("wheel", onNudge);
+      window.removeEventListener("touchmove", onNudge);
+    };
+
+    let revealing = false;
+    let docking = false;
+
+    const onResize = () => {
+      if (docking) return;
+      const box = filmBox();
+      if (revealing) placeFlyer(box);
+    };
+
+    const startReveal = () => {
+      if (revealing || docking) return;
+      revealing = true;
+      const box = filmBox();
+      placeFlyer(box);
+      flyer.animate(
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: 240, easing: "linear", fill: "forwards" },
+      );
+      film.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: REVEAL_S * 1000, easing: "linear", fill: "forwards" },
+      );
+      veil.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: REVEAL_S * 1000, easing: "linear", fill: "forwards" },
+      );
+      skip.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: 220, easing: "linear", fill: "forwards" },
+      );
+      skip.style.pointerEvents = "none";
+    };
+
+    const dock = () => {
+      if (docking) return;
+      docking = true;
+      remember();
+      skip.style.opacity = "0";
+      skip.style.pointerEvents = "none";
+      try { film.pause(); } catch { /* ignore */ }
+      for (const el of [film, veil, flyer, skip]) {
+        for (const a of el.getAnimations()) a.cancel();
+      }
+
+      const from = filmBox();
+      placeFlyer(from);
+      flyer.style.opacity = "1";
+      film.style.opacity = "0";
+      veil.style.opacity = "0";
+
+      const to = brand.getBoundingClientRect();
+      if (from.width < 8 || to.height < 8) { abort(); return; }
+      const s = to.height / from.height;
+      const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+      const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+
+      const fly = flyer.animate(
+        [
+          { transform: "translate(0, 0) scale(1)", opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) scale(${s})`, opacity: 1 },
+        ],
+        { duration: 640, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" },
+      );
+
+      const settle = () => {
+        root.classList.remove("is-intro");
+        const fade = flyer.animate(
+          [{ opacity: 1 }, { opacity: 0 }],
+          { duration: 160, easing: "linear", fill: "forwards" },
+        );
+        const gone = stage.animate(
+          [{ opacity: 1 }, { opacity: 0 }],
+          { duration: 240, easing: "ease-in", fill: "forwards" },
+        );
+        Promise.all([fade.finished.catch(() => {}), gone.finished.catch(() => {})])
+          .then(finish);
+      };
+      fly.finished.then(settle).catch(settle);
+    };
+
+    const abort = () => {
+      flyer.style.opacity = "0";
+      film.style.opacity = "0";
+      veil.style.opacity = "0";
+      finish();
+    };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") dock();
+    };
+    const armedAt = performance.now() + 280;
+    const onNudge = (e: Event) => {
+      if (performance.now() < armedAt) return;
+      if (e instanceof WheelEvent && Math.abs(e.deltaY) + Math.abs(e.deltaX) < 10) return;
+      dock();
+    };
+
+    const src = film.dataset.src;
+    if (!src) {
+      abort();
+    } else {
+      stage.hidden = false;
+      film.muted = true;
+      film.playsInline = true;
+      film.src = src;
+      film.preload = "auto";
+      filmBox();
+      const tick = () => {
+        if (docking || !root.classList.contains("is-intro")) return;
+        const box = filmBox();
+        if (revealing) placeFlyer(box);
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+
+      const tryPlay = () => {
+        const play = film.play();
+        if (play && play.catch) play.catch(() => {});
+      };
+      film.addEventListener("canplay", tryPlay, { once: true });
+      tryPlay();
+
+      film.addEventListener("timeupdate", () => {
+        if (revealing || docking) return;
+        if (film.duration && film.currentTime >= film.duration - REVEAL_S) {
+          startReveal();
+        }
+      });
+      film.addEventListener("ended", dock, { once: true });
+      film.addEventListener("error", abort, { once: true });
+
+      const skipToDock = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dock();
+      };
+      skip.addEventListener("click", skipToDock);
+      stage.addEventListener("click", skipToDock);
+      document.addEventListener("keydown", onKey);
+      window.addEventListener("wheel", onNudge, { passive: true });
+      window.addEventListener("touchmove", onNudge, { passive: true });
+      window.addEventListener("resize", onResize);
+
+      window.setTimeout(() => {
+        if (root.classList.contains("is-intro")) abort();
+      }, 10000);
+    }
+  }
+</script>

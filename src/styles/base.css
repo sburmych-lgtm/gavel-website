@@ -297,6 +297,12 @@ p { max-width: 68ch; }
   clip-path: none !important;
 }
 
+/* First-visit open: lock the page and hide the header lockup until the
+   flying mark occupies the same rect. */
+html.is-intro,
+html.is-intro body { overflow: hidden; }
+html.is-intro .hdr-brand img { opacity: 0; }
+
 /* -------------------------------------------------------- reduced motion */
 
 @media (prefers-reduced-motion: reduce) {

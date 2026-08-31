@@ -62,6 +62,16 @@ export const videos = {
     width: 720,
     height: 1280,
   },
+  /* One-shot open: IMG_1851 (water → gold lockup, ~3.83 s). The last 0.6 s
+     the page fades the black so the hero shows through, then the lockup
+     flies into .hdr-brand. No audio — decorative, like every loop. */
+  open: {
+    src: "/media/video/open.mp4",
+    poster: "/media/image/open-poster.jpg",
+    mark: "/media/image/open-mark.webp",
+    width: 1280,
+    height: 720,
+  },
   /* The client's own finished edit. The only video on the site with an audio
      track, which is why this panel carries a sound toggle instead of a pause
      button. It still autoplays muted — browsers allow nothing else. */

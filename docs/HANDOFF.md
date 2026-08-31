@@ -76,3 +76,7 @@ QA evidence, including screenshots at every reviewed width, is in
 
 **HUMAN REVIEW** of `production/frontend-v1-grok`. Do not merge. Do not
 overwrite Railway production.
+
+Preview of intro + canoe scroll: branch `claude/scroll-canoe-backdrop`
+(IMG_1851 open, then the scroll-driven canoe backdrop). Deploys to
+https://motion-lab-intro-preview-production.up.railway.app — not `main`.

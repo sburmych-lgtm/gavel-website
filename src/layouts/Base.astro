@@ -67,9 +67,28 @@ const schema = buildSchema(siteUrl, ogImage);
     <script is:inline set:html={JSON.stringify(schema)} type="application/ld+json" />
 
     <!-- Flip the no-js class before first paint so reveal elements do not
-         flash at opacity:0 for users who have JS but a slow main thread. -->
+         flash at opacity:0 for users who have JS but a slow main thread.
+         is-intro is set in the same tick so the first visit does not flash
+         the hero under the overlay. -->
     <script is:inline>
       document.documentElement.classList.remove("no-js");
+      try {
+        if (
+          !sessionStorage.getItem("ig-open-1851") &&
+          !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
+          document.documentElement.classList.add("is-intro");
+          /* If the intro script never marks itself live, do not leave the
+             page locked behind a black overlay. Same watchdog as the
+             champagne sample. */
+          setTimeout(function () {
+            var d = document.documentElement;
+            if (d.classList.contains("is-intro") && !d.hasAttribute("data-intro-live")) {
+              d.classList.remove("is-intro");
+            }
+          }, 4000);
+        }
+      } catch (e) { /* private mode / blocked storage: skip the intro */ }
     </script>
   </head>
 

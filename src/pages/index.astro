@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import SiteHeader from "../components/SiteHeader.astro";
+import SiteIntro from "../components/SiteIntro.astro";
 import Backdrop from "../components/Backdrop.astro";
 import Hero from "../sections/Hero.astro";
 import Proof from "../sections/Proof.astro";
@@ -20,6 +21,7 @@ import { hero } from "../content";
 
 <Base>
   <SiteHeader />
+  <SiteIntro />
   <Backdrop />
 
   <main id="main">
@@ -231,6 +233,10 @@ import { hero } from "../content";
     }, { passive: true });
 
     function tick() {
+      if (document.documentElement.classList.contains("is-intro")) {
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
       if (!document.hidden && loadedCount > 0) {
         const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
         // Continuous cycle index

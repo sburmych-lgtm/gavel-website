@@ -66,3 +66,11 @@ Do **not** merge to `main`. Do **not** overwrite the existing Railway
 deployment.
 
 Local preview: `npm run preview` → http://127.0.0.1:4321/
+
+## Preview: intro + canoe scroll
+
+Branch `claude/scroll-canoe-backdrop` now also plays **IMG_1851** as the
+first-visit open (fade last 0,62 s, fly into `.hdr-brand`), then the
+scroll-driven canoe backdrop. Session key `ig-open-1851`. Production `main`
+untouched. Preview:
+https://motion-lab-intro-preview-production.up.railway.app

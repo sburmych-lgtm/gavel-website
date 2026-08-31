@@ -49,6 +49,11 @@ export const hero = {
   ctaSecondary: { label: "Як я працюю", href: "#method" },
 } as const;
 
+export const intro = {
+  skip: "Пропустити",
+  label: "Вступ",
+} as const;
+
 export const proof = {
   /* The section had no accessible name and «Європа / чемпіон» put a continent
      in a slot every sibling fills with a numeral. */

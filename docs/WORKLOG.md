@@ -274,3 +274,13 @@ touched.
 
 **Commit** — see `git log`.
 
+---
+
+## Preview — IMG_1851 intro on the canoe-scroll backdrop · 2026-08-31
+
+Ported the approved one-shot open (IMG_1851, last 0,62 s veil fade, fly into
+`.hdr-brand`, mobile contain) onto `claude/scroll-canoe-backdrop` @ `ef273c0`.
+The canoe canvas idles while `html.is-intro` is set, then scrubbing resumes.
+`npm run check` ok. Playwright: intro plays, brand docks, scrollY 900 still
+has the backdrop. Production `main` untouched.
+

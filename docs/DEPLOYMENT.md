@@ -103,3 +103,17 @@ railway logs --service igor-gavrileyko-final-claude
 The repository is linked to the Railway project locally. Deployment is from
 the working tree, not from a GitHub integration, so commit and push first so
 the deployed artifact matches a known SHA.
+
+## Intro + canoe-scroll preview (not production)
+
+| | |
+|---|---|
+| Public URL | <https://motion-lab-intro-preview-production.up.railway.app> |
+| Service | `motion-lab-intro-preview` |
+| Branch | `claude/scroll-canoe-backdrop` |
+
+Do **not** `railway up` the production service for this work.
+
+```bash
+railway up --service motion-lab-intro-preview --detach
+```
