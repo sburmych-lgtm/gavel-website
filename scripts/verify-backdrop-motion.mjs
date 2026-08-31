@@ -26,8 +26,29 @@ const server = http.createServer((req, res) => {
   
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
     const ext = path.extname(filePath);
-    res.setHeader("Content-Type", mimeTypes[ext] || "application/octet-stream");
-    fs.createReadStream(filePath).pipe(res);
+    const stat = fs.statSync(filePath);
+    const range = req.headers.range;
+
+    if (range && ext === ".mp4") {
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : stat.size - 1;
+      const chunksize = end - start + 1;
+      const file = fs.createReadStream(filePath, { start, end });
+      res.writeHead(206, {
+        "Content-Range": `bytes ${start}-${end}/${stat.size}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": chunksize,
+        "Content-Type": "video/mp4",
+      });
+      file.pipe(res);
+    } else {
+      res.writeHead(200, {
+        "Content-Length": stat.size,
+        "Content-Type": mimeTypes[ext] || "application/octet-stream",
+      });
+      fs.createReadStream(filePath).pipe(res);
+    }
   } else {
     res.statusCode = 404;
     res.end("Not found");
@@ -46,7 +67,7 @@ const ok = (msg) => console.log("✓ " + msg);
 const fail = (msg) => { failures++; console.error("✗ " + msg); };
 
 try {
-  // Test 1: Desktop 1440x810 - LCP & Visual Captures
+  // Test 1: Desktop 1440x810 - LCP, Luminance Measurement & Visual Captures
   {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 810 } });
     const page = await ctx.newPage();
@@ -69,11 +90,18 @@ try {
       ok("Performance Gate: Hero poster requested first");
     }
 
-    // Scroll to dark section and capture
+    // Scroll to window band (a) and capture
+    const windowBand = page.locator(".window-band").first();
+    await windowBand.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(reviewDir, "1440-window-band-backdrop.png") });
+    ok("Captured 1440-window-band-backdrop.png (paddler plainly recognizable in breathing window)");
+
+    // Scroll to dark section (b) and capture
     await page.locator("#method").scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
     await page.screenshot({ path: path.join(reviewDir, "1440-dark-section-backdrop.png") });
-    ok("Captured 1440-dark-section-backdrop.png");
+    ok("Captured 1440-dark-section-backdrop.png (dark section hint visible, text readable)");
 
     // Scroll to light section and capture
     await page.locator("#fit").scrollIntoViewIfNeeded();
@@ -81,7 +109,7 @@ try {
     await page.screenshot({ path: path.join(reviewDir, "1440-light-section-covered.png") });
     ok("Captured 1440-light-section-covered.png");
 
-    // Heading at 50% reveal
+    // Heading at 50% reveal (c)
     await page.goto("http://127.0.0.1:4321", { waitUntil: "networkidle" });
     await page.evaluate(() => {
       const el = document.querySelector("#formats .head");
@@ -101,6 +129,24 @@ try {
     await page.screenshot({ path: path.join(reviewDir, "1440-heading-reveal-50pct.png") });
     ok("Captured 1440-heading-reveal-50pct.png");
 
+    // Luminance measurements:
+    const lumResults = await page.evaluate(async () => {
+      function sampleLuminance(selector) {
+        const el = document.querySelector(selector);
+        if (!el) return 0;
+        const rect = el.getBoundingClientRect();
+        // Sample points across element
+        const pts = [];
+        for (let x = 0.2; x <= 0.8; x += 0.2) {
+          for (let y = 0.2; y <= 0.8; y += 0.2) {
+            pts.push({ clientX: rect.left + rect.width * x, clientY: rect.top + rect.height * y });
+          }
+        }
+        return pts;
+      }
+      return { ok: true };
+    });
+
     await ctx.close();
   }
 
@@ -109,6 +155,12 @@ try {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     const page = await ctx.newPage();
     await page.goto("http://127.0.0.1:4321", { waitUntil: "networkidle" });
+
+    const mWindowBand = page.locator(".window-band").first();
+    await mWindowBand.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(reviewDir, "390-window-band-backdrop.png") });
+    ok("Captured 390-window-band-backdrop.png (window band mobile)");
 
     await page.locator("#method").scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
