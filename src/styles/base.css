@@ -71,8 +71,14 @@ a { color: inherit; }
   padding-inline: var(--gut);
 }
 
-.section { padding-block: var(--sec); position: relative; z-index: var(--z-media); background: color-mix(in oklab, var(--abyss) 80%, transparent); }
+.section {
+  padding-block: var(--sec);
+  position: relative;
+  z-index: var(--z-media);
+  background: color-mix(in oklab, var(--abyss) 80%, transparent);
+}
 
+/* Tonal alternating section bands: 80% opacity over the backdrop. */
 .section--deep { background: color-mix(in oklab, var(--deep) 80%, transparent); }
 .section--petrol { background: color-mix(in oklab, var(--petrol) 80%, transparent); }
 
@@ -86,21 +92,6 @@ a { color: inherit; }
   position: relative;
   z-index: var(--z-media);
 }
-
-/* The two light bands. Placed where brightness does commercial work rather
-   than on an alternating schedule — alternating every section reads as a
-   template, one band on thirteen sections reads as monotony.
-   Light sections fully cover the backdrop with their own opaque background. */
-.section--light {
-  position: relative;
-  z-index: var(--z-content);
-  background: var(--mist);
-  color: var(--ink);
-}
-.section--light .eyebrow { color: var(--gold-deep); }
-.section--light .sec-idx { color: var(--gold-deep); }
-.section--light .lead { color: color-mix(in oklab, var(--ink) 78%, transparent); }
-.section--light .rule { background: var(--line-ink); }
 
 /* ------------------------------------------------------------ typography */
 
@@ -192,7 +183,6 @@ p { max-width: 68ch; }
   transition: opacity var(--t-base) 80ms var(--ease),
               transform var(--t-base) 80ms var(--ease);
 }
-.section--light .sec-idx { color: var(--gold-deep); }
 
 .head h2, .head .h2, .c-copy h2, .ct-copy h2 {
   margin-bottom: 0.75rem;
@@ -207,14 +197,11 @@ p { max-width: 68ch; }
   height: 1px;
   width: 100%;
   max-width: clamp(14rem, 40vw, 36rem);
-  background: var(--caustic);
+  background: var(--gold);
   margin-bottom: 1.25rem;
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 350ms 180ms var(--ease-overshoot);
-}
-.section--light .waterline-hairline {
-  background: var(--gold);
 }
 
 .head .lead, .ct-copy .lead {
@@ -283,9 +270,6 @@ p { max-width: 68ch; }
   border-color: color-mix(in oklab, var(--foam) 40%, transparent);
 }
 .btn-ghost:hover { border-color: var(--foam); }
-
-.section--light .btn-ghost { color: var(--ink); border-color: var(--line-ink); }
-.section--light .btn-ghost:hover { border-color: var(--ink); }
 
 /* ---------------------------------------------------------------- reveal */
 

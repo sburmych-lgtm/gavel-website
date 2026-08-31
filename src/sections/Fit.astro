@@ -1,7 +1,7 @@
 ---
 import { fit } from "../content";
 ---
-<section class="section section--light" id="fit" aria-labelledby="fit-h">
+<section class="section section--petrol" id="fit" aria-labelledby="fit-h">
   <div class="shell">
     <div class="head" data-reveal>
       <div class="head-kicker">
@@ -29,9 +29,9 @@ import { fit } from "../content";
     gap: clamp(1.5rem, 3vw, 3rem);
     list-style: none; margin: 0; padding: 0;
   }
-  .fit-item { padding-top: 1.25rem; border-top: 1px solid var(--line-ink); }
-  .fit-n { display: block; font-size: 1rem; color: var(--gold-deep); margin-bottom: 1rem; }
-  .fit-t { margin-bottom: 0.625rem; }
-  .fit-b { color: color-mix(in oklab, var(--ink) 74%, transparent); font-size: var(--fs-body); }
+  .fit-item { padding-top: 1.25rem; border-top: 1px solid var(--line-soft); }
+  .fit-n { display: block; font-family: var(--font-mono); font-size: 1rem; color: var(--gold); margin-bottom: 1rem; }
+  .fit-t { margin-bottom: 0.625rem; color: var(--foam); font-size: 1.125rem; font-weight: 600; }
+  .fit-b { color: var(--mute); font-size: var(--fs-body); line-height: 1.6; margin: 0; }
   @media (max-width: 768px) { .fit-list { grid-template-columns: 1fr; gap: 2rem; } }
 </style>

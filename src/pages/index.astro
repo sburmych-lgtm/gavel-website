@@ -193,16 +193,31 @@ import { hero } from "../content";
 
     let video: HTMLVideoElement | null = null;
     let videoInjected = false;
-    let isCovered = false;
     let rate = 0;
-    const V = 1200; // px/s
+    const V_SCROLL = 600; // px/s for full scroll acceleration
+    const V_MOUSE = 800;  // px/s for mouse velocity contribution
     let cachedScrollY = window.scrollY;
     let lastScrollY = window.scrollY;
+    let mouseX = 0;
+    let mouseY = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let mouseVelocity = 0;
     let lastTime = performance.now();
     let rafId = 0;
 
     window.addEventListener("scroll", () => {
       cachedScrollY = window.scrollY;
+    }, { passive: true });
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      mouseVelocity += Math.min(1000, Math.hypot(dx, dy) * 12);
     }, { passive: true });
 
     const injectVideo = () => {
@@ -223,6 +238,7 @@ import { hero } from "../content";
       video.addEventListener("canplay", () => {
         const poster = mediaContainer.querySelector<HTMLElement>(".backdrop-poster");
         if (poster) poster.style.display = "none";
+        video?.play().catch(() => {});
       }, { once: true });
 
       mediaContainer.appendChild(video);
@@ -241,41 +257,32 @@ import { hero } from "../content";
     document.addEventListener("visibilitychange", () => {
       if (document.hidden && video && !video.paused) {
         video.pause();
+      } else if (!document.hidden && video && video.paused) {
+        video.play().catch(() => {});
       }
     });
-
-    // Pause when fully covered by light sections
-    const lightSections = [...document.querySelectorAll<HTMLElement>(".section--light")];
-    if (lightSections.length && "IntersectionObserver" in window) {
-      const lightIo = new IntersectionObserver((entries) => {
-        isCovered = entries.some((e) => e.isIntersecting && e.intersectionRatio > 0.85);
-        if (isCovered && video && !video.paused) {
-          video.pause();
-        }
-      }, { threshold: [0, 0.5, 0.85, 1.0] });
-      lightSections.forEach((s) => lightIo.observe(s));
-    }
 
     function tick(now: number) {
       const dt = Math.max(0.001, (now - lastTime) / 1000);
       lastTime = now;
 
-      const instantVelocity = Math.abs(cachedScrollY - lastScrollY) / dt;
+      // Scroll speed
+      const scrollSpeed = Math.abs(cachedScrollY - lastScrollY) / dt;
       lastScrollY = cachedScrollY;
 
-      const targetRate = Math.min(1, Math.max(0, instantVelocity / V));
-      rate = rate + (targetRate - rate) * 0.08;
+      // Mouse speed decay
+      const instantMouse = mouseVelocity / dt;
+      mouseVelocity *= Math.max(0, 1 - dt * 6);
 
-      if (video && !document.hidden && !isCovered) {
-        if (rate < 0.04) {
-          if (!video.paused) {
-            video.pause();
-          }
-        } else {
-          video.playbackRate = Math.min(2.0, Math.max(0.25, 0.5 + rate * 0.75));
-          if (video.paused) {
-            video.play().catch(() => {});
-          }
+      const targetRate = Math.min(1.5, (scrollSpeed / V_SCROLL) + (instantMouse / V_MOUSE));
+      rate = rate + (targetRate - rate) * 0.12;
+
+      if (video && !document.hidden) {
+        // Base seamless glide at 0.55x, accelerating responsively up to 1.85x
+        const playback = Math.min(1.85, Math.max(0.4, 0.55 + rate * 0.9));
+        video.playbackRate = playback;
+        if (video.paused) {
+          video.play().catch(() => {});
         }
       }
 
@@ -831,34 +838,16 @@ import { hero } from "../content";
           return;
         }
 
+        e.preventDefault();
         const text = composeHandoffMessage(payload);
         if (navigator.clipboard?.writeText) {
-          navigator.clipboard.writeText(text).then(
-            () => {
-              if (status) status.textContent = contact.copied;
-              if (fallback) fallback.hidden = true;
-            },
-            () => {
-              const copied = copyNow(text);
-              if (copied) {
-                if (status) status.textContent = contact.copied;
-                if (fallback) fallback.hidden = true;
-              } else {
-                if (status) status.textContent = contact.copyFailed;
-                if (fallback) { fallback.hidden = false; fallback.value = text; }
-              }
-            },
-          );
+          navigator.clipboard.writeText(text).catch(() => copyNow(text));
         } else {
-          const copied = copyNow(text);
-          if (copied) {
-            if (status) status.textContent = contact.copied;
-            if (fallback) fallback.hidden = true;
-          } else {
-            if (status) status.textContent = contact.copyFailed;
-            if (fallback) { fallback.hidden = false; fallback.value = text; }
-          }
+          copyNow(text);
         }
+        if (status) status.textContent = contact.copied;
+        if (fallback) fallback.hidden = true;
+        window.open(link.href, "_blank");
       });
     });
   })();
