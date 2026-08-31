@@ -304,3 +304,12 @@ hero eyebrow pixels 8.43:1). Lighthouse 13.4.1 mobile, page not overlay:
 accessibility 100, best-practices 100, `color-contrast` pass. `npm run check`
 ok. Production `main` untouched.
 
+---
+
+## Preview — revert mobile cover, keep wash · 2026-08-31
+
+Cover-crop on the phone zoomed the lockup and jumped size at the hand-off.
+Rolled back to a contained 16:9 (same box from first frame through dock).
+The letterbox is a blurred water wash, not empty black. iOS decoder gating
+stays. Session `ig-open-1851-m3`.
+
