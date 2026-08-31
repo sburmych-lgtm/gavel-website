@@ -67,7 +67,46 @@ const ok = (msg) => console.log("✓ " + msg);
 const fail = (msg) => { failures++; console.error("✗ " + msg); };
 
 try {
-  // Test 1: Desktop 1440x810 - LCP, Luminance Measurement & Visual Captures
+  // Test 0: Seamless Loop Seam Verification
+  {
+    const f1B64 = fs.readFileSync("review/loop-seam-frame-a.png").toString("base64");
+    const f2B64 = fs.readFileSync("review/loop-seam-frame-b.png").toString("base64");
+    const testPage = await browser.newPage();
+    const diff = await testPage.evaluate(async ({ f1, f2 }) => {
+      function getLumData(b64) {
+        return new Promise((res) => {
+          const img = new Image();
+          img.src = "data:image/png;base64," + b64;
+          img.onload = () => {
+            const c = document.createElement("canvas");
+            c.width = img.width;
+            c.height = img.height;
+            const cx = c.getContext("2d");
+            cx.drawImage(img, 0, 0);
+            res(cx.getImageData(0, 0, img.width, img.height).data);
+          };
+        });
+      }
+      const d1 = await getLumData(f1);
+      const d2 = await getLumData(f2);
+      let lum1 = 0, lum2 = 0;
+      const total = d1.length / 4;
+      for (let i = 0; i < d1.length; i += 4) {
+        lum1 += 0.2126 * d1[i] + 0.7152 * d1[i+1] + 0.0722 * d1[i+2];
+        lum2 += 0.2126 * d2[i] + 0.7152 * d2[i+1] + 0.0722 * d2[i+2];
+      }
+      return Math.abs((lum1 - lum2) / total);
+    }, { f1: f1B64, f2: f2B64 });
+    await testPage.close();
+
+    if (diff <= 3) {
+      ok(`Loop Gate: seam mean luminance diff is ${diff.toFixed(3)}/255 (<= 3/255)`);
+    } else {
+      fail(`Loop Gate: seam mean luminance diff is ${diff.toFixed(3)}/255 (> 3/255)`);
+    }
+  }
+
+  // Test 1: Desktop 1440x810 - LCP & Visual Captures
   {
     const ctx = await browser.newContext({ viewport: { width: 1440, height: 810 } });
     const page = await ctx.newPage();
@@ -90,24 +129,34 @@ try {
       ok("Performance Gate: Hero poster requested first");
     }
 
-    // Scroll to window band (a) and capture
+    // Capture (a) pricing on dark
+    await page.locator("#pricing").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(reviewDir, "1440-pricing-dark.png") });
+    ok("Captured 1440-pricing-dark.png (pricing redesigned on dark system)");
+
+    // Capture (b) breathing window mid-scroll showing looped backdrop
     const windowBand = page.locator(".window-band").first();
     await windowBand.scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
     await page.screenshot({ path: path.join(reviewDir, "1440-window-band-backdrop.png") });
     ok("Captured 1440-window-band-backdrop.png (paddler plainly recognizable in breathing window)");
 
-    // Scroll to dark section (b) and capture
+    // Scroll to Fit section on dark and capture
+    await page.locator("#fit").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(reviewDir, "1440-fit-dark.png") });
+    ok("Captured 1440-fit-dark.png (fit section on tonal dark)");
+
+    // Scroll to dark section and capture
     await page.locator("#method").scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
     await page.screenshot({ path: path.join(reviewDir, "1440-dark-section-backdrop.png") });
-    ok("Captured 1440-dark-section-backdrop.png (dark section hint visible, text readable)");
+    ok("Captured 1440-dark-section-backdrop.png");
 
-    // Scroll to light section and capture
-    await page.locator("#fit").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(600);
-    await page.screenshot({ path: path.join(reviewDir, "1440-light-section-covered.png") });
-    ok("Captured 1440-light-section-covered.png");
+    // Full page capture at 1440
+    await page.screenshot({ path: path.join(reviewDir, "1440-full-page-dark.png"), fullPage: true });
+    ok("Captured 1440-full-page-dark.png (full-page capture)");
 
     // Heading at 50% reveal (c)
     await page.goto("http://127.0.0.1:4321", { waitUntil: "networkidle" });
@@ -129,24 +178,6 @@ try {
     await page.screenshot({ path: path.join(reviewDir, "1440-heading-reveal-50pct.png") });
     ok("Captured 1440-heading-reveal-50pct.png");
 
-    // Luminance measurements:
-    const lumResults = await page.evaluate(async () => {
-      function sampleLuminance(selector) {
-        const el = document.querySelector(selector);
-        if (!el) return 0;
-        const rect = el.getBoundingClientRect();
-        // Sample points across element
-        const pts = [];
-        for (let x = 0.2; x <= 0.8; x += 0.2) {
-          for (let y = 0.2; y <= 0.8; y += 0.2) {
-            pts.push({ clientX: rect.left + rect.width * x, clientY: rect.top + rect.height * y });
-          }
-        }
-        return pts;
-      }
-      return { ok: true };
-    });
-
     await ctx.close();
   }
 
@@ -156,22 +187,35 @@ try {
     const page = await ctx.newPage();
     await page.goto("http://127.0.0.1:4321", { waitUntil: "networkidle" });
 
+    // (a) Mobile pricing on dark
+    await page.locator("#pricing").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(reviewDir, "390-pricing-dark.png") });
+    ok("Captured 390-pricing-dark.png");
+
+    // (b) Mobile breathing window
     const mWindowBand = page.locator(".window-band").first();
     await mWindowBand.scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
     await page.screenshot({ path: path.join(reviewDir, "390-window-band-backdrop.png") });
-    ok("Captured 390-window-band-backdrop.png (window band mobile)");
+    ok("Captured 390-window-band-backdrop.png");
+
+    // Mobile Fit section on dark
+    await page.locator("#fit").scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: path.join(reviewDir, "390-fit-dark.png") });
+    ok("Captured 390-fit-dark.png");
 
     await page.locator("#method").scrollIntoViewIfNeeded();
     await page.waitForTimeout(600);
     await page.screenshot({ path: path.join(reviewDir, "390-dark-section-backdrop.png") });
     ok("Captured 390-dark-section-backdrop.png");
 
-    await page.locator("#pricing").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(600);
-    await page.screenshot({ path: path.join(reviewDir, "390-light-section-covered.png") });
-    ok("Captured 390-light-section-covered.png");
+    // Full page mobile capture
+    await page.screenshot({ path: path.join(reviewDir, "390-full-page-dark.png"), fullPage: true });
+    ok("Captured 390-full-page-dark.png");
 
+    // Heading reveal mobile
     await page.evaluate(() => {
       const el = document.querySelector("#credentials .head");
       if (el) {

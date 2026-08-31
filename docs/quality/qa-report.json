@@ -127,11 +127,11 @@
     },
     {
       "level": "OK",
-      "m": "slider: sweeps unattended (75.47% → 88.00%)"
+      "m": "slider: sweeps unattended (76.90% → 87.97%)"
     },
     {
       "level": "OK",
-      "m": "slider: clip-path active (inset(0px 12% 0px 0px))"
+      "m": "slider: clip-path active (inset(0px 12.03% 0px 0px))"
     },
     {
       "level": "OK",
@@ -143,15 +143,15 @@
     },
     {
       "level": "OK",
-      "m": "contrast #fit h2: 14.68:1 (needs 3)"
+      "m": "contrast #fit h2: 11.89:1 (needs 3)"
     },
     {
       "level": "OK",
-      "m": "contrast #fit .lead: 8.02:1 (needs 4.5)"
+      "m": "contrast #fit .lead: 5.62:1 (needs 4.5)"
     },
     {
       "level": "OK",
-      "m": "contrast #method .eyebrow: 7.98:1 (needs 4.5)"
+      "m": "contrast #method .eyebrow: 7.28:1 (needs 4.5)"
     },
     {
       "level": "OK",
@@ -163,11 +163,11 @@
     },
     {
       "level": "OK",
-      "m": "contrast #pricing .p-inc: 12.32:1 (needs 4.5)"
+      "m": "contrast #pricing .p-inc: 7.23:1 (needs 4.5)"
     },
     {
       "level": "OK",
-      "m": "contrast #method .m-b: 7.92:1 (needs 4.5)"
+      "m": "contrast #method .m-b: 7.23:1 (needs 4.5)"
     },
     {
       "level": "OK",
@@ -179,7 +179,7 @@
     },
     {
       "level": "OK",
-      "m": "hero eyebrow over video: 8.53:1 measured from rendered pixels"
+      "m": "hero eyebrow over video: 8.44:1 measured from rendered pixels"
     },
     {
       "level": "OK",
