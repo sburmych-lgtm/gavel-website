@@ -194,41 +194,24 @@ import { hero } from "../content";
     let video: HTMLVideoElement | null = null;
     let videoInjected = false;
     const DURATION = 2.39;
-    const PX_PER_CYCLE = 500; // 500px scroll = 1 full canoe stroke cycle
+    const PX_PER_CYCLE = 450; // 450px scroll = 1 full canoe stroke cycle
 
     let targetTime = 0;
     let renderedTime = 0;
-    let virtualScroll = window.scrollY;
+    let lastSeekTime = 0;
     let rafId = 0;
-    let isSeeking = false;
 
-    // Track scroll
     const onScroll = () => {
-      virtualScroll = window.scrollY;
+      // Direct scroll position
     };
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchmove", onScroll, { passive: true });
 
-    // Track mouse wheel for direct responsive frame scrubbing
-    window.addEventListener("wheel", (e) => {
-      virtualScroll += e.deltaY * 0.75;
-    }, { passive: true });
-
-    // Track touchmove for mobile scrubbing
-    let touchStartY = 0;
-    window.addEventListener("touchstart", (e) => {
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-    window.addEventListener("touchmove", (e) => {
-      const delta = touchStartY - e.touches[0].clientY;
-      touchStartY = e.touches[0].clientY;
-      virtualScroll += delta * 0.85;
-    }, { passive: true });
-
-    // Track mouse movement for subtle depth parallax
+    // Track mouse movement for subtle depth parallax (desktop only)
     window.addEventListener("mousemove", (e) => {
-      if (!video) return;
-      const x = (e.clientX / window.innerWidth - 0.5) * 16;
-      const y = (e.clientY / window.innerHeight - 0.5) * 10;
+      if (!video || window.innerWidth < 768) return;
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 8;
       video.style.transform = `translate3d(${-x}px, ${-y}px, 0)`;
     }, { passive: true });
 
@@ -244,33 +227,42 @@ import { hero } from "../content";
       video.loop = true;
       video.playsInline = true;
       video.preload = "auto";
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
+      video.setAttribute("muted", "");
+      video.setAttribute("autoplay", "");
       video.setAttribute("aria-hidden", "true");
       video.tabIndex = -1;
 
-      video.addEventListener("canplay", () => {
+      const onReady = () => {
         const poster = mediaContainer.querySelector<HTMLElement>(".backdrop-poster");
-        if (poster) poster.style.display = "none";
-        if (video) {
-          video.pause();
-          video.currentTime = 0;
+        // Prime WebKit video hardware decoder on iOS/Android
+        const p = video?.play();
+        if (p !== undefined) {
+          p.then(() => {
+            video?.pause();
+            if (poster) poster.style.display = "none";
+          }).catch(() => {
+            if (poster) poster.style.display = "none";
+          });
+        } else {
+          if (poster) poster.style.display = "none";
         }
-      }, { once: true });
+      };
 
-      video.addEventListener("seeked", () => {
-        isSeeking = false;
-      });
+      video.addEventListener("canplay", onReady, { once: true });
+      video.addEventListener("loadedmetadata", onReady, { once: true });
 
       mediaContainer.appendChild(video);
       startLoop();
     };
 
-    // Hero sync: only after hero video is playing (or 3s fallback)
-    const heroVid = document.querySelector<HTMLVideoElement>(".hero [data-autovideo]");
-    if (heroVid) {
-      heroVid.addEventListener("playing", injectVideo, { once: true });
-      heroVid.addEventListener("play", injectVideo, { once: true });
+    // Inject immediately so mobile devices have video primed without waiting
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", injectVideo);
+    } else {
+      injectVideo();
     }
-    setTimeout(injectVideo, 3000);
 
     // Visibility change
     document.addEventListener("visibilitychange", () => {
@@ -279,12 +271,12 @@ import { hero } from "../content";
       }
     });
 
-    function tick() {
-      if (video && !document.hidden && !isSeeking) {
+    function tick(now: number) {
+      if (video && !document.hidden) {
+        const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
         const dur = video.duration || DURATION;
-        // Map virtual scroll position to frame timestamp [0 .. dur)
-        const rawProgress = (virtualScroll / PX_PER_CYCLE) * dur;
-        // Positive modulo for smooth infinite loop in both directions
+        // Map scroll position to frame timestamp [0 .. dur)
+        const rawProgress = (scrollY / PX_PER_CYCLE) * dur;
         targetTime = ((rawProgress % dur) + dur) % dur;
 
         // Smooth shortest-path interpolation across loop seam
@@ -292,10 +284,20 @@ import { hero } from "../content";
         if (diff > dur / 2) diff -= dur;
         if (diff < -dur / 2) diff += dur;
 
-        if (Math.abs(diff) > 0.003) {
-          renderedTime = ((renderedTime + diff * 0.28) + dur) % dur;
-          isSeeking = true;
-          video.currentTime = renderedTime;
+        if (Math.abs(diff) > 0.004) {
+          renderedTime = ((renderedTime + diff * 0.35) + dur) % dur;
+          if (!video.seeking || (now - lastSeekTime > 40)) {
+            lastSeekTime = now;
+            if ("fastSeek" in video && typeof (video as any).fastSeek === "function") {
+              try {
+                (video as any).fastSeek(renderedTime);
+              } catch {
+                video.currentTime = renderedTime;
+              }
+            } else {
+              video.currentTime = renderedTime;
+            }
+          }
         }
       }
 
@@ -305,7 +307,6 @@ import { hero } from "../content";
     function startLoop() {
       if (!rafId) {
         renderedTime = 0;
-        virtualScroll = window.scrollY;
         rafId = requestAnimationFrame(tick);
       }
     }
@@ -851,7 +852,6 @@ import { hero } from "../content";
           return;
         }
 
-        e.preventDefault();
         const text = composeHandoffMessage(payload);
         if (navigator.clipboard?.writeText) {
           navigator.clipboard.writeText(text).catch(() => copyNow(text));
@@ -860,7 +860,6 @@ import { hero } from "../content";
         }
         if (status) status.textContent = contact.copied;
         if (fallback) fallback.hidden = true;
-        window.open(link.href, "_blank");
       });
     });
   })();
