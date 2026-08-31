@@ -28,9 +28,8 @@ See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
 
 - Astro static frontend, media pipeline, fonts, Before/After, SEO/noindex
   preview, contact seam (CP-13–CP-15).
-- First-visit open (session key `ig-open-1851-m4`): landscape film stays
-  contained 16:9. On phones the letterbox is the portrait canoe still
-  (water/sky), not empty black.
+- First-visit open (session key `ig-open-1851-m5`): landscape film contained
+  16:9 on black. No wash, no cover-crop.
 - Hero / section loops do not start until the intro is gone, so iOS is not
   asked to decode two videos at once.
 - QA on the darkened canoe page: 43 checks, 0 fail, 0 warn. Lighthouse 13.4.1

@@ -76,8 +76,7 @@ QA evidence, including screenshots at every reviewed width, is in
 
 On a real phone, incognito visit
 https://motion-lab-intro-preview-production.up.railway.app
-(session `ig-open-1851-m4`). Confirm 16:9 film over the canoe still, not
-black bars.
+(session `ig-open-1851-m5`). Confirm 16:9 film on black.
 
 Do **not** merge to `main`. Do **not** `railway up` the production service.
 The working branch is `claude/scroll-canoe-backdrop`.

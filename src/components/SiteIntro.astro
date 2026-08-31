@@ -2,39 +2,17 @@
 /**
  * One-shot open on the first visit of a session.
  *
- * Film is IMG_1851, always contained (never cover-cropped). On phones the
- * 16:9 sits in the middle over the portrait canoe still. The last 0.6 s
- * the lockup flies into .hdr-brand. Return visits, reduced motion, and
- * no-JS skip it.
+ * Film is IMG_1851, contained 16:9 on black. The last 0.6 s the veil fades
+ * and the lockup flies into .hdr-brand. Return visits, reduced motion,
+ * and no-JS skip it.
  */
 import { intro } from "../content";
 import { videos } from "../content/media";
 
 const open = videos.open;
-const washPortrait = videos.heroMobile.poster;
 ---
 
 <div class="intro" data-intro hidden role="dialog" aria-label={intro.label} aria-modal="true">
-  <img
-    class="intro-wash intro-wash-d"
-    data-intro-wash
-    src={open.poster}
-    alt=""
-    width={open.width}
-    height={open.height}
-    decoding="async"
-    aria-hidden="true"
-  />
-  <img
-    class="intro-wash intro-wash-m"
-    data-intro-wash
-    src={washPortrait}
-    alt=""
-    width={videos.heroMobile.width}
-    height={videos.heroMobile.height}
-    decoding="async"
-    aria-hidden="true"
-  />
   <div class="intro-veil" data-intro-veil></div>
   <div class="intro-slot">
     <video
@@ -76,33 +54,10 @@ const washPortrait = videos.heroMobile.poster;
   }
   :global(html.is-intro) .intro[hidden] { display: block !important; }
 
-  /* Letterbox ground. Desktop: blurred film poster. Phone: the portrait
-     canoe still — otherwise the dark 16:9 poster reads as empty black. */
-  .intro-wash {
-    position: absolute;
-    inset: -8%;
-    width: 116%;
-    height: 116%;
-    max-width: none;
-    object-fit: cover;
-    pointer-events: none;
-  }
-  .intro-wash-d {
-    filter: blur(36px) saturate(1.25) brightness(0.7);
-  }
-  .intro-wash-m {
-    display: none;
-    filter: blur(16px) saturate(1.2) brightness(0.78);
-  }
-  @media (max-width: 768px) {
-    .intro-wash-d { display: none; }
-    .intro-wash-m { display: block; }
-  }
-
   .intro-veil {
     position: absolute;
     inset: 0;
-    background: color-mix(in oklab, var(--abyss) 12%, transparent);
+    background: var(--abyss);
     pointer-events: none;
   }
 
@@ -120,10 +75,6 @@ const washPortrait = videos.heroMobile.poster;
     height: min(100svh, calc(100vw * 9 / 16));
     max-width: none;
     object-fit: fill;
-    border-radius: var(--r);
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--foam) 16%, transparent),
-      0 18px 48px color-mix(in oklab, var(--abyss) 55%, transparent);
   }
 
   .intro-flyer {
@@ -160,7 +111,7 @@ const washPortrait = videos.heroMobile.poster;
 </style>
 
 <script>
-  const KEY = "ig-open-1851-m4";
+  const KEY = "ig-open-1851-m5";
   const FILM_W = 1280;
   const FILM_H = 720;
   const MARK = { x: 293, y: 94, w: 603, h: 484 };
@@ -169,7 +120,6 @@ const washPortrait = videos.heroMobile.poster;
   const root = document.documentElement;
   const stage = document.querySelector<HTMLElement>("[data-intro]");
   const veil = document.querySelector<HTMLElement>("[data-intro-veil]");
-  const washEls = [...document.querySelectorAll<HTMLElement>("[data-intro-wash]")];
   const film = document.querySelector<HTMLVideoElement>("[data-intro-film]");
   const flyer = document.querySelector<HTMLImageElement>("[data-intro-flyer]");
   const skip = document.querySelector<HTMLButtonElement>("[data-intro-skip]");
@@ -251,7 +201,6 @@ const washPortrait = videos.heroMobile.poster;
       );
       fadeOut(film, REVEAL_S * 1000);
       fadeOut(veil, REVEAL_S * 1000);
-      for (const el of washEls) fadeOut(el, REVEAL_S * 1000);
       fadeOut(skip, 220);
       skip.style.pointerEvents = "none";
     };
@@ -263,7 +212,7 @@ const washPortrait = videos.heroMobile.poster;
       skip.style.opacity = "0";
       skip.style.pointerEvents = "none";
       try { film.pause(); } catch { /* ignore */ }
-      const animEls = [film, veil, flyer, skip, ...washEls];
+      const animEls = [film, veil, flyer, skip];
       for (const el of animEls) {
         for (const a of el.getAnimations()) a.cancel();
       }
@@ -273,7 +222,6 @@ const washPortrait = videos.heroMobile.poster;
       flyer.style.opacity = "1";
       film.style.opacity = "0";
       veil.style.opacity = "0";
-      for (const el of washEls) el.style.opacity = "0";
 
       const to = brand.getBoundingClientRect();
       if (from.width < 8 || to.height < 8) { abort(); return; }
@@ -309,7 +257,6 @@ const washPortrait = videos.heroMobile.poster;
       flyer.style.opacity = "0";
       film.style.opacity = "0";
       veil.style.opacity = "0";
-      for (const el of washEls) el.style.opacity = "0";
       finish();
     };
 

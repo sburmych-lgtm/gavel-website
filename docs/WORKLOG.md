@@ -320,3 +320,10 @@ stays. Session `ig-open-1851-m3`.
 The film-poster wash was too dark to tell from black. Phones now use the
 portrait canoe still behind the 16:9 open. Session `ig-open-1851-m4`.
 
+---
+
+## Preview — black letterbox again · 2026-08-31
+
+Wash looked like a circus. Contained 16:9 on solid `--abyss`. Session
+`ig-open-1851-m5`.
+
