@@ -58,6 +58,15 @@ say "footer easter egg — canoe dog"
 enc "$A/Video/FUN!!!Canoe-Dog.mp4" "$OUT/video/dog.mp4" 0 3.6 \
     "scale=640:360:flags=lanczos" 27
 
+say "scroll-driven canoe backdrop — Canoe.mov in repo root"
+ffmpeg -y -v error -i "Canoe.mov" -vframes 86 \
+  -an -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 23 -preset slow -movflags +faststart \
+  "$OUT/canoe-stroke.mp4"
+cp "$OUT/canoe-stroke.mp4" "$OUT/video/canoe-stroke.mp4"
+ffmpeg -y -v error -i "$OUT/canoe-stroke.mp4" -frames:v 1 -c:v libwebp -quality 82 \
+  "$OUT/canoe-stroke-poster.webp"
+cp "$OUT/canoe-stroke-poster.webp" "$OUT/image/canoe-stroke-poster.webp"
+
 # ---------------------------------------------------------------- posters
 # Every poster is pulled from the ENCODED file, not the source, so frame 0 of
 # the poster and frame 0 of the video are pixel-identical and there is no flash

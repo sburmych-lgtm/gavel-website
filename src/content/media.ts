@@ -118,6 +118,13 @@ export const videos = {
     height: 360,
     label: "Пес у каное",
   },
+  canoeStroke: {
+    src: "/media/canoe-stroke.mp4",
+    poster: "/media/canoe-stroke-poster.webp",
+    width: 1024,
+    height: 576,
+    label: "Ігор Гаврилейко веслує на каное",
+  },
 } as const;
 
 /* Every case is a real before/after pair.
