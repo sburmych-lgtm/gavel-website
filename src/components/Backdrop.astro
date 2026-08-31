@@ -2,11 +2,12 @@
 ---
 <div class="backdrop" data-backdrop aria-hidden="true">
   <div class="backdrop-media" data-backdrop-media>
+    <canvas class="backdrop-canvas" width="800" height="450"></canvas>
     <img
       src="/media/canoe-stroke-poster.webp"
       alt=""
       class="backdrop-poster"
-      loading="lazy"
+      loading="eager"
       decoding="async"
       width="1024"
       height="576"
@@ -23,8 +24,8 @@
     pointer-events: none;
     overflow: hidden;
     opacity: 1;
-    mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 1) 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 1) 85%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 1) 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 1) 85%, transparent 100%);
     will-change: transform;
   }
 
@@ -36,6 +37,7 @@
   }
 
   .backdrop-poster,
+  .backdrop-canvas,
   :global(.backdrop-video) {
     position: absolute;
     inset: 0;
@@ -58,6 +60,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .backdrop-canvas,
     :global(.backdrop-video) {
       display: none !important;
     }
