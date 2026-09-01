@@ -207,14 +207,14 @@ import { hero } from "../content";
       return;
     }
 
-    const ctx = canvas.getContext("2d", { alpha: true, desynchronized: true });
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     const TOTAL_FRAMES = 72;
-    const LERP = 0.18;
+    const LERP = 0.25;
     const MAX_DPR = 2;
-    const STROKE_VIEWPORTS = 1.35;
-    const STROKE_VIEWPORTS_MOBILE = 1.8;
+    const STROKE_VIEWPORTS = 1.1;
+    const STROKE_VIEWPORTS_MOBILE = 1.4;
     const calcPxPerCycle = () => window.innerHeight * (window.innerWidth < 768 ? STROKE_VIEWPORTS_MOBILE : STROKE_VIEWPORTS);
     let pxPerCycle = calcPxPerCycle();
     let dirty = true;
@@ -265,8 +265,7 @@ import { hero } from "../content";
 
     const frames: HTMLImageElement[] = [];
     let loadedCount = 0;
-    let targetFrame = 0;
-    let smoothFrame = 0;
+    let smoothProgress = 0;
     let rafId = 0;
 
     const hidePoster = () => {
@@ -288,7 +287,6 @@ import { hero } from "../content";
           loadedCount++;
           dirty = true;
           if (loadedCount === 1) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawCover(ctx, img);
           }
           if (loadedCount >= 8) {
@@ -318,25 +316,19 @@ import { hero } from "../content";
       }
       if (!document.hidden && loadedCount > 0) {
         const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-        // Continuous cycle index
-        const rawIndex = (scrollY / pxPerCycle) * TOTAL_FRAMES;
-        targetFrame = ((rawIndex % TOTAL_FRAMES) + TOTAL_FRAMES) % TOTAL_FRAMES;
-
-        // Smooth shortest-path interpolation across loop seam
-        let diff = targetFrame - smoothFrame;
-        if (diff > TOTAL_FRAMES / 2) diff -= TOTAL_FRAMES;
-        if (diff < -TOTAL_FRAMES / 2) diff += TOTAL_FRAMES;
+        const targetProgress = scrollY / pxPerCycle;
+        const progressDiff = targetProgress - smoothProgress;
 
         const movingParallax = finePointer.matches && !reduced.matches && (Math.abs(tx - px) > 0.01 || Math.abs(ty - py) > 0.01);
-        if (Math.abs(diff) < 0.002 && !dirty && !movingParallax) {
+        if (Math.abs(progressDiff) < 0.0001 && !dirty && !movingParallax) {
           rafId = requestAnimationFrame(tick);
           return;
         }
         dirty = false;
 
         if (finePointer.matches && !reduced.matches) {
-          px += (tx - px) * 0.06;
-          py += (ty - py) * 0.06;
+          px += (tx - px) * 0.08;
+          py += (ty - py) * 0.08;
           canvas.style.transform = `translate3d(${px.toFixed(2)}px, ${py.toFixed(2)}px, 0)`;
         }
 
@@ -350,22 +342,23 @@ import { hero } from "../content";
           }
         }
 
-        smoothFrame = ((smoothFrame + diff * LERP) + TOTAL_FRAMES) % TOTAL_FRAMES;
+        smoothProgress += progressDiff * LERP;
 
-        const i0 = Math.floor(smoothFrame) % TOTAL_FRAMES;
+        // Continuous monotonic progress -> cyclic frame float (0..72)
+        const cycle = ((smoothProgress % 1) + 1) % 1;
+        const frameFloat = cycle * TOTAL_FRAMES;
+        const i0 = Math.floor(frameFloat) % TOTAL_FRAMES;
         const i1 = (i0 + 1) % TOTAL_FRAMES;
-        const t = smoothFrame - Math.floor(smoothFrame);
+        const t = frameFloat - Math.floor(frameFloat);
 
         const a = frames[i0];
         const b = frames[i1];
         if (a?.complete && a.naturalWidth > 0) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1;
           drawCover(ctx, a);
           if (t > 0.01 && b?.complete && b.naturalWidth > 0) {
             ctx.globalAlpha = t;
             drawCover(ctx, b);
-            ctx.globalAlpha = 1;
           }
           if (loadedCount >= 8) {
             hidePoster();
