@@ -757,3 +757,63 @@ the headroom tight.
 Verified in the browser at 430×932 and 1440×900: computed `object-position`
 `50% 60%` on both, rendered box 390×488 and 381×476. One CSS line; no layout
 change.
+
+---
+
+## CP-20 — «Дзеркало»: heading reveal with a water reflection · 2026-09-02
+
+Branch: `main`
+
+**Why**
+
+Owner wanted the section headings to animate on first scroll — with authorship,
+not a stock fade. What was there already had the right vocabulary (`clip-path`
+rising through a `.waterline-hairline`) but everything moved in one direction
+within ~150 ms, so it read as a generic reveal.
+
+**The idea**
+
+The one visual fact this site repeats everywhere — hero, backdrop, the portrait
+in Formats — is a subject doubled by still water. So: the heading breaks the
+surface, and its reflection surfaces with it.
+
+- The hairline **leads** instead of trailing. It used to start 180 ms after the
+  heading; a surface has to exist before anything can break it.
+- Both run one curve, `cubic-bezier(0.16, 0.84, 0.24, 1)` — hard catch, long
+  drive, soft exit. That is the stroke the whole site is built on.
+- The reflection falls while the text rises, arrives 340 ms later and settles
+  over 900 ms on a slacker curve, because water settles slower than air. The
+  counterpoint is what makes the hairline read as a surface rather than a rule.
+
+**Done**
+
+- Mirror styles in `base.css`, twin built by the reveal island in
+  `index.astro`. Applied to all ten heading blocks — eight `.head`, plus
+  `.c-copy` (Coach) and `.ct-copy` (Contact). The hero `h1` is untouched: it
+  has its own choreography.
+- Anchored under the waterline where a section has one (Contact, Fit, Pricing,
+  Results); under the heading's own baseline in the six that do not.
+- Opacity **0.25**.
+- Mask dies at 44% of the letterforms rather than 72%. The lead paragraph sits
+  directly under the waterline, and a reflection reading further down washes
+  over live copy; this leaves only the tips catching the water.
+- `opacity` and `transform` only, per CLAUDE.md. The mask is static.
+
+**Two things worth recording**
+
+The twin is an `h2` inside `.head`, so `.head h2` (0,1,1) outranks a bare
+`.mirror` (0,1,0) and handed it the heading's own `clip-path: inset(100%)` —
+the reflection existed and was clipped to nothing. Every mirror rule is
+written at `.head h2.mirror` (0,2,1).
+
+The twin is built client-side, so the served HTML carries each heading exactly
+once: **0** `.mirror` nodes and 11 `<h2>` in `dist/index.html`, against 21 in
+the live DOM. Crawlers and no-JS readers never meet a duplicate.
+
+**Verification**
+
+Ten heads, ten mirrors, all `aria-hidden="true"`, no duplicated `id`, all at
+computed opacity 0.25, one shared transform. `prefers-reduced-motion: reduce`
+builds none at all and headings stay visible. No horizontal overflow.
+`verify-backdrop-motion.mjs` — 0 failures. No console errors on a full scroll
+of the page.

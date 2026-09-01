@@ -17,6 +17,12 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-20 (2026-09-02) — «Дзеркало» heading reveal.** Section headings now
+surface through the waterline with a reflection falling as the text rises;
+hairline leads, both on the stroke curve. All ten heading blocks, reflection
+at 0.25, twin built client-side so the served HTML keeps one heading. See
+`WORKLOG.md` CP-20.
+
 **CP-19 (2026-09-02) — co-operation portrait recropped.** `object-position`
 `50% 12%` → `50% 60%`, moving the visible window from 2%–85% of the plate to
 10%–93% so the wrists clear the bottom edge. See `WORKLOG.md` CP-19.

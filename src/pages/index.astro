@@ -187,6 +187,39 @@ import { hero } from "../content";
       { threshold: 0.15, rootMargin: "0px 0px -5% 0px" },
     );
     items.forEach((el) => io.observe(el));
+
+    /* --- heading water mirror ---------------------------------------- *
+     * Build the reflected twin here rather than in markup: the served HTML
+     * then carries each heading exactly once, so crawlers and no-JS readers
+     * never meet a duplicate. Decorative, hence aria-hidden and inert.
+     * Anchored under the waterline where a section has one, otherwise under
+     * the heading's own baseline — the type is its own waterline then. */
+    if (!reduced.matches) {
+      const heads = [...document.querySelectorAll<HTMLElement>(".head, .c-copy, .ct-copy")];
+      const placers: Array<() => void> = [];
+      for (const head of heads) {
+        const h = head.querySelector<HTMLElement>("h2");
+        if (!h || head.querySelector(".mirror")) continue;
+        const line = head.querySelector<HTMLElement>(".waterline-hairline");
+        const twin = h.cloneNode(true) as HTMLElement;
+        twin.removeAttribute("id");
+        twin.setAttribute("aria-hidden", "true");
+        twin.classList.add("mirror");
+        head.appendChild(twin);
+        const place = () => {
+          const top = head.getBoundingClientRect().top;
+          const anchorEl = line ?? h;
+          twin.style.top = `${anchorEl.getBoundingClientRect().bottom - top}px`;
+        };
+        placers.push(place);
+        place();
+      }
+      if (placers.length) {
+        const replace = () => placers.forEach((p) => p());
+        window.addEventListener("resize", replace, { passive: true });
+        if (document.fonts) document.fonts.ready.then(replace).catch(() => {});
+      }
+    }
   })();
 
   /* --- backdrop: scroll-driven canvas frame animation --------------- *

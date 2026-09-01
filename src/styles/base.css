@@ -238,6 +238,67 @@ p { max-width: 68ch; }
   transform: none;
 }
 
+/* ------------------------------------------------- heading water mirror
+
+   The section headings surface through the waterline, and their reflection
+   surfaces with them: inverted, dimmer, a beat behind, settling on a longer
+   curve because water settles slower than air. Text rises, reflection falls,
+   and the hairline between them stops reading as a rule and starts reading
+   as a surface.
+
+   Order matters. The hairline used to trail the heading by 180ms; it now
+   leads, because a surface has to exist before anything can break it. Both
+   run on one curve — hard catch, long drive, soft exit, which is the stroke
+   this whole site is about.
+
+   The twin is built by JS (see the reveal island in index.astro), so the
+   served HTML carries each heading exactly once and no-JS readers and
+   crawlers never see a duplicate. */
+
+.head .waterline-hairline,
+.c-copy .waterline-hairline,
+.ct-copy .waterline-hairline {
+  transition: transform 560ms 40ms cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+.head h2, .head .h2, .c-copy h2, .ct-copy h2 {
+  transition: clip-path 620ms 200ms cubic-bezier(0.16, 0.84, 0.24, 1),
+              transform 620ms 200ms cubic-bezier(0.16, 0.84, 0.24, 1);
+}
+
+.head, .c-copy, .ct-copy { position: relative; }
+
+/* The twin is an h2 inside .head, so `.head h2` (0,1,1) outranks a bare
+   `.mirror` (0,1,0) and would hand it the heading's own clip-path — which
+   clips it out of existence. Every rule below is written one class higher. */
+.head h2.mirror,
+.c-copy h2.mirror,
+.ct-copy h2.mirror {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0;
+  pointer-events: none;
+  user-select: none;
+  clip-path: none;
+  transform-origin: 50% 0;
+  /* Dead by 44% of the letterforms. The lead paragraph sits directly under
+     the waterline, so a reflection that reads further down washes over live
+     copy; this leaves only the tips catching the water. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 20%, transparent 44%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.4) 20%, transparent 44%);
+  opacity: 0;
+  transform: scaleY(-1) translateY(14px);
+  transition: opacity 760ms 340ms linear,
+              transform 900ms 340ms cubic-bezier(0.12, 0.72, 0.2, 1);
+}
+.head.is-in h2.mirror,
+.c-copy.is-in h2.mirror,
+.ct-copy.is-in h2.mirror {
+  clip-path: none;
+  opacity: 0.25;
+  transform: scaleY(-1) translateY(0);
+}
+
 /* -------------------------------------------------------------- buttons */
 
 .btn {
@@ -338,6 +399,7 @@ html.is-intro:not(.is-intro-landed) .hdr-brand img { opacity: 0; }
     transition-duration: 0.01ms !important;
   }
   [data-reveal] { opacity: 1; transform: none; }
+  h2.mirror { display: none; }
   .head .eyebrow,
   .head .sec-idx,
   .head h2,
