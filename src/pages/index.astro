@@ -261,12 +261,15 @@ import { hero } from "../content";
     whenIntroIdle(preloadFrames);
 
     // Parallax mouse depth on desktop
-    window.addEventListener("mousemove", (e) => {
-      if (window.innerWidth < 768) return;
-      const x = (e.clientX / window.innerWidth - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 8;
-      canvas.style.transform = `translate3d(${-x}px, ${-y}px, 0)`;
-    }, { passive: true });
+    const finePointer = window.matchMedia("(pointer: fine)");
+    let px = 0, py = 0, tx = 0, ty = 0;
+
+    if (finePointer.matches && !reduced.matches) {
+      window.addEventListener("mousemove", (e) => {
+        tx = (e.clientX / window.innerWidth - 0.5) * -14;
+        ty = (e.clientY / window.innerHeight - 0.5) * -8;
+      }, { passive: true });
+    }
 
     function tick() {
       if (document.documentElement.classList.contains("is-intro")) {
@@ -284,11 +287,18 @@ import { hero } from "../content";
         if (diff > TOTAL_FRAMES / 2) diff -= TOTAL_FRAMES;
         if (diff < -TOTAL_FRAMES / 2) diff += TOTAL_FRAMES;
 
-        if (Math.abs(diff) < 0.002 && !dirty) {
+        const movingParallax = finePointer.matches && !reduced.matches && (Math.abs(tx - px) > 0.01 || Math.abs(ty - py) > 0.01);
+        if (Math.abs(diff) < 0.002 && !dirty && !movingParallax) {
           rafId = requestAnimationFrame(tick);
           return;
         }
         dirty = false;
+
+        if (finePointer.matches && !reduced.matches) {
+          px += (tx - px) * 0.06;
+          py += (ty - py) * 0.06;
+          canvas.style.transform = `translate3d(${px.toFixed(2)}px, ${py.toFixed(2)}px, 0)`;
+        }
 
         smoothFrame = ((smoothFrame + diff * LERP) + TOTAL_FRAMES) % TOTAL_FRAMES;
 
