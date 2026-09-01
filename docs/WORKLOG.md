@@ -502,3 +502,68 @@ Screenshot at `ct = 0.32` s, 1600×900, scanned at y = 120 / 405 / 760:
 35,39,41 — the plate's own soft edge, no step. Landing unaffected: brand
 layer `[168.5, 10, 53.7, 52]` against header `[168.5, 10, 53.73, 52]`;
 portrait still `[23, 13, 42, 46]`.
+
+---
+
+## CP-15 — the open runs edge to edge · 2026-09-01
+
+Branch: `version-2`
+
+**Why**
+
+Owner: the film sits in a box, it is 16:9, it should fill the window. CP-14
+made both side bands the same black, which stopped them reading as a border,
+but the picture still did not reach the edges.
+
+**Done**
+
+- `build-media.sh`: the landscape open is now **cropped to its own picture**,
+  `crop=1128:720:72:0`. Measuring every column of every frame, the master's
+  water plate runs x=70 to x=1202 and everything outside is matte; the cut
+  takes 72..1199, two px inside the plate's soft edge. Horizontal only —
+  keeping all 720 rows lets the browser decide how much to crop for the window
+  it is in, rather than baking one choice in. Residual matte after the crop:
+  **0 px** on every frame (frame 001 reads 16 px only because it is a fade-in
+  from black and the whole row sits at brightness 2). Mark crop follows to
+  `518:395:309:197`; the produced mark is byte-for-byte the same 518×395 with
+  its monogram still at `(26, 4, 465, 325)`, so `BRAND_AT` is unchanged.
+- `.intro-film` now always fills the stage, with `object-fit` deciding the
+  rest: `contain` as the floor, `cover` between 5/4 and 9/4. The wordmark sits
+  at 0.82 of the frame height and the mark at 0.79 of its width, so past 9/4
+  the crop starts eating the wordmark off the bottom and below 5/4 it eats the
+  mark off the side; outside that band the film letterboxes on black instead.
+- `.intro-slot` gained `grid-template: 100% / 100%`. Its implicit auto row left
+  the film's `height: 100%` resolving against an indefinite size, so it fell
+  back to `auto` and the element took the film's aspect instead of the stage's
+  box — 1905×1216 inside a 1905×920 stage.
+- `flyerBox()` resolves the drawn picture from the computed `object-fit`
+  rather than assuming the element box is the picture: `cover` scales by max
+  and crops, `contain` by min and pads, `fill` per axis. MARK is in film
+  pixels either way.
+- **Dropped `scrollbar-gutter: stable`** (CP-12) for a flow compensation. The
+  gutter kept the header still but cost more than it saved: the stage is
+  `position: fixed` and Chrome clips it to the scrollport, so the film stopped
+  15 px short of the right edge for the whole intro. Now the scrollbar simply
+  goes with the lock and the same width is handed back as `padding-right` on
+  `body` and on the fixed `.hdr`, from a `--sbw` measured by a probe before
+  first paint in `Base.astro`.
+
+**Verification**
+
+With real 15 px scrollbars, holding the water frame at `ct = 0.32`:
+
+| viewport | fit | extreme-left px | extreme-right px | header shift |
+|---|---|---|---|---|
+| 1920×920 | cover | 102, 98, 60 | 111, 125, 111 | 0.00 px |
+| 1600×900 | cover | 191, 98, 78 | 156, 125, 144 | 0.00 px |
+| 1440×900 | cover | 191, 98, 75 | 149, 125, 197 | 0.00 px |
+| 2560×1080 | contain | 0, 0, 0 | 0, 0, 0 | 0.00 px |
+
+Picture at both physical edges, no band. 2560×1080 is past 9/4 and letterboxes
+by design — black on black.
+
+Lockup never clipped: checked at 1920×920, 2560×1080, 1600×900, 1440×900,
+1280×800, 3440×1300, 1000×800 and 390×844 — the mark rect is inside the
+viewport on every one. Landing: `[416, 10, 53.7, 52]` against header
+`[416, 10, 54, 52]` at 1920×920, `[176, 10, 53.7, 52]` against
+`[176, 10, 54, 52]` at 1440×900. Portrait untouched at `[23, 13, 42, 46]`.

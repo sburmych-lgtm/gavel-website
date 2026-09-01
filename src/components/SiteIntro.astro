@@ -2,7 +2,8 @@
 /**
  * One-shot open on the first visit of a session.
  *
- * Film is IMG_1865, contained 16:9 on black. The last stretch of it the veil
+ * Film is IMG_1865, cropped to its own picture and run edge to edge on
+ * black. The last stretch of it the veil
  * fades and the lockup flies into .hdr-brand. Return visits, reduced motion,
  * and no-JS skip it.
  *
@@ -97,22 +98,40 @@ const openMobile = videos.openMobile;
     position: absolute;
     inset: 0;
     display: grid;
+    /* Definite tracks. The implicit auto row left the film's height:100%
+       resolving against an indefinite size, so it fell back to auto and the
+       element took the film's own aspect instead of the stage's box —
+       1905x1216 inside a 1905x920 stage. */
+    grid-template: 100% / 100%;
     place-items: center;
     pointer-events: none;
   }
 
+  /* The film is cropped to its own picture, so it can run edge to edge. The
+     element always fills the stage and object-fit decides the rest; contain
+     is the floor, because it never crops the lockup. */
   .intro-film {
     display: block;
-    width: min(100vw, calc(100svh * 16 / 9));
-    height: min(100svh, calc(100vw * 9 / 16));
+    width: 100%;
+    height: 100%;
     max-width: none;
-    object-fit: fill;
+    object-fit: contain;
+  }
+
+  /* Fill the window wherever cover cannot reach the lockup. The wordmark sits
+     at 0.82 of the frame height and the mark at 0.79 of its width, so past
+     9/4 the crop starts eating the wordmark off the bottom and below 5/4 it
+     eats the mark off the side. Outside that band the film letterboxes — on a
+     black stage that reads as the picture being smaller, not as a border. */
+  @media (min-aspect-ratio: 5 / 4) and (max-aspect-ratio: 9 / 4) {
+    .intro-film { object-fit: cover; }
   }
 
   @media (max-width: 768px), (orientation: portrait) {
     .intro-film {
       width: min(100vw, calc(100svh * 9 / 16));
       height: min(100svh, calc(100vw * 16 / 9));
+      object-fit: fill;
     }
   }
 
@@ -215,9 +234,9 @@ const openMobile = videos.openMobile;
           mark: film.dataset.markMobile || film.dataset.markDesktop || "",
         }
       : {
-          FILM_W: 1280,
+          FILM_W: 1128,
           FILM_H: 720,
-          MARK: { x: 381, y: 197, w: 518, h: 395 },
+          MARK: { x: 309, y: 197, w: 518, h: 395 },
           BRAND_AT: { x: 0.01985, y: -0.06534, w: 0.94878, h: 1.20397 } as Rect | null,
           REVEAL_S: 0.50,
           src: film.dataset.srcDesktop || "",
@@ -228,18 +247,40 @@ const openMobile = videos.openMobile;
     if (cfg.poster) film.poster = cfg.poster;
     if (cfg.mark) flyerMark.src = cfg.mark;
 
-    /* Same box as CSS contain: the <video> is sized by the slot, never
-       rewritten per frame (iOS stalls if the playing element's box changes). */
+    /* Where MARK actually lands on screen. The <video> element always fills
+       the stage — its box is never rewritten per frame, which is what iOS
+       stalls on — so the drawn picture is the element box only under `fill`.
+       Under cover it is larger and cropped, under contain smaller and padded,
+       and MARK is measured in film pixels either way. */
     const flyerBox = () => {
       const r = film.getBoundingClientRect();
-      const k = r.width > 8 ? r.width / cfg.FILM_W : Math.min(innerWidth / cfg.FILM_W, innerHeight / cfg.FILM_H);
-      const left = r.width > 8 ? r.left : (innerWidth - cfg.FILM_W * k) / 2;
-      const top = r.width > 8 ? r.top : (innerHeight - cfg.FILM_H * k) / 2;
+      if (r.width < 8 || r.height < 8) {
+        const k = Math.min(innerWidth / cfg.FILM_W, innerHeight / cfg.FILM_H);
+        return {
+          left: (innerWidth - cfg.FILM_W * k) / 2 + cfg.MARK.x * k,
+          top: (innerHeight - cfg.FILM_H * k) / 2 + cfg.MARK.y * k,
+          width: cfg.MARK.w * k,
+          height: cfg.MARK.h * k,
+        };
+      }
+      const fit = getComputedStyle(film).objectFit;
+      let kx: number;
+      let ky: number;
+      if (fit === "fill") {
+        kx = r.width / cfg.FILM_W;
+        ky = r.height / cfg.FILM_H;
+      } else {
+        kx = ky = fit === "cover"
+          ? Math.max(r.width / cfg.FILM_W, r.height / cfg.FILM_H)
+          : Math.min(r.width / cfg.FILM_W, r.height / cfg.FILM_H);
+      }
+      const left = r.left + (r.width - cfg.FILM_W * kx) / 2;
+      const top = r.top + (r.height - cfg.FILM_H * ky) / 2;
       return {
-        left: left + cfg.MARK.x * k,
-        top: top + cfg.MARK.y * k,
-        width: cfg.MARK.w * k,
-        height: cfg.MARK.h * k,
+        left: left + cfg.MARK.x * kx,
+        top: top + cfg.MARK.y * ky,
+        width: cfg.MARK.w * kx,
+        height: cfg.MARK.h * ky,
       };
     };
 

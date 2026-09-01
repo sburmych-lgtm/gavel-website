@@ -80,6 +80,21 @@ const schema = buildSchema(siteUrl, ogImage);
           !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
           !(navigator.connection && navigator.connection.saveData === true)
         ) {
+          /* Measure the classic scrollbar before locking the page, and hand
+             that width back to the flow as padding (see base.css). Probing a
+             detached-looking div works before <body> exists, which the
+             is-intro class has to beat. Overlay-scrollbar platforms measure
+             0 and the padding is a no-op. */
+          var probe = document.createElement("div");
+          probe.style.cssText =
+            "position:absolute;top:-9999px;left:-9999px;width:100px;height:100px;overflow:scroll;visibility:hidden";
+          document.documentElement.appendChild(probe);
+          var sbw = probe.offsetWidth - probe.clientWidth;
+          probe.parentNode.removeChild(probe);
+          if (sbw > 0 && sbw < 40) {
+            document.documentElement.style.setProperty("--sbw", sbw + "px");
+          }
+
           document.documentElement.classList.add("is-intro");
           /* If the intro script never marks itself live, do not leave the
              page locked behind a black overlay. Same watchdog as the

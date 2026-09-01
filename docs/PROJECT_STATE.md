@@ -17,6 +17,12 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-15 (2026-09-01) — the open runs edge to edge.** The landscape film is
+cropped to its own picture and fills the window (`cover` between 5/4 and 9/4,
+`contain` outside it so the lockup is never clipped). `scrollbar-gutter:
+stable` gave way to a `--sbw` flow compensation, which keeps the header still
+*and* lets the film reach the right edge. See `WORKLOG.md` CP-15.
+
 **CP-14 (2026-09-01) — dark seams down the sides of the open closed.** The
 film mattes its water plate to `#000` while the stage was `--abyss`, and
 `scrollbar-gutter: stable` left the reserved gutter showing the page ground
