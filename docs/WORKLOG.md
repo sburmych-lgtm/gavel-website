@@ -733,3 +733,27 @@ and scrubbing through the cycle, no 4xx/5xx on any request.
 The 01.09 17:38 cadence commit (`572b928`: LERP 0.32 → 0.18, cycle ~1.35 → ~2
 viewports) is left alone — the ask was about the footage. Reverting it would
 make the stroke roughly twice as fast against scroll again.
+
+---
+
+## CP-19 — the co-operation portrait no longer cuts the wrists · 2026-09-02
+
+Branch: `main`
+
+Owner, from a phone: the photo above «Що входить у співпрацю» should show the
+wrists.
+
+`formats-portrait.jpg` is 853×1280 (0.666) inside a `4 / 5` box under
+`object-fit: cover`, so 16.7% of its height is dropped. At
+`object-position: 50% 12%` the visible window ran **2%–85%** of the plate, and
+the hands rest on the hips at **82–90%** — the crop landed straight through
+them, with the watch clipped at the very edge.
+
+Moved to `50% 60%`: window **10%–93%**. Watch, bracelet and ring are all in,
+and 8% of the plate is still above the crown. Checked 12 / 46 / 52 / 60 / 68 /
+70% against the plate before choosing — 52% still grazed the watch, 68% pulled
+the headroom tight.
+
+Verified in the browser at 430×932 and 1440×900: computed `object-position`
+`50% 60%` on both, rendered box 390×488 and 381×476. One CSS line; no layout
+change.

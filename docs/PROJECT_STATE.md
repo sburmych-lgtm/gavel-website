@@ -17,6 +17,10 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-19 (2026-09-02) — co-operation portrait recropped.** `object-position`
+`50% 12%` → `50% 60%`, moving the visible window from 2%–85% of the plate to
+10%–93% so the wrists clear the bottom edge. See `WORKLOG.md` CP-19.
+
 **CP-18 (2026-09-02) — scroll backdrop back on `Canoe.mov`.** The warmer, hazier
 take that ran until 01.09 17:17, with its 47 px letterbox cropped off rather
 than restored. 88 frames, loop seam 0.099/255. See `WORKLOG.md` CP-18.

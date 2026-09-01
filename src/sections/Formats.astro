@@ -62,9 +62,13 @@ import { Image } from "astro:assets";
     letter-spacing: 0.1em; text-transform: uppercase; color: var(--caustic);
   }
   .f-row-b { color: var(--mute); }
+  /* The plate is 853x1280 (0.666) inside a 4/5 box, so cover drops 16.7% of
+     its height. At 12% the window ran 2%-85% and cut straight through the
+     wrists — the hands rest on the hips at 82-90%. 60% runs it 10%-93%: watch,
+     bracelet and ring all in, and still 8% of headroom above the crown. */
   .f-img {
     width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
-    object-position: 50% 12%;
+    object-position: 50% 60%;
     border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 1.75rem;
   }
   .f-inc-h { margin-bottom: 1rem; }
