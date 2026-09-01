@@ -72,6 +72,13 @@ export const videos = {
     width: 1280,
     height: 720,
   },
+  openMobile: {
+    src: "/media/video/open-mobile.mp4",
+    poster: "/media/image/open-mobile-poster.jpg",
+    mark: "/media/image/open-mark-mobile.webp",
+    width: 720,
+    height: 1280,
+  },
   /* The client's own finished edit. The only video on the site with an audio
      track, which is why this panel carries a sound toggle instead of a pause
      button. It still autoplays muted — browsers allow nothing else. */

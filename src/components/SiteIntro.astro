@@ -10,6 +10,7 @@ import { intro } from "../content";
 import { videos } from "../content/media";
 
 const open = videos.open;
+const openMobile = videos.openMobile;
 ---
 
 <div class="intro" data-intro hidden role="dialog" aria-label={intro.label} aria-modal="true">
@@ -25,7 +26,12 @@ const open = videos.open;
       x-webkit-airplay="deny"
       preload="auto"
       poster={open.poster}
-      data-src={open.src}
+      data-src-desktop={open.src}
+      data-src-mobile={openMobile.src}
+      data-poster-desktop={open.poster}
+      data-poster-mobile={openMobile.poster}
+      data-mark-desktop={open.mark}
+      data-mark-mobile={openMobile.mark}
       width={open.width}
       height={open.height}
       aria-hidden="true"
@@ -78,6 +84,13 @@ const open = videos.open;
     object-fit: fill;
   }
 
+  @media (max-width: 768px), (orientation: portrait) {
+    .intro-film {
+      width: min(100vw, calc(100svh * 9 / 16));
+      height: min(100svh, calc(100vw * 16 / 9));
+    }
+  }
+
   .intro-flyer {
     position: fixed;
     left: 0;
@@ -112,11 +125,7 @@ const open = videos.open;
 </style>
 
 <script>
-  const KEY = "ig-open-1851-m5";
-  const FILM_W = 1280;
-  const FILM_H = 720;
-  const MARK = { x: 293, y: 94, w: 603, h: 484 };
-  const REVEAL_S = 0.62;
+  const KEY = "ig-open-1851-m6";
 
   const root = document.documentElement;
   const stage = document.querySelector<HTMLElement>("[data-intro]");
@@ -125,6 +134,7 @@ const open = videos.open;
   const flyer = document.querySelector<HTMLImageElement>("[data-intro-flyer]");
   const skip = document.querySelector<HTMLButtonElement>("[data-intro-skip]");
   const brand = document.querySelector<HTMLElement>("[data-hdr-brand] img");
+  const burger = document.querySelector<HTMLElement>("[data-hdr-toggle]");
 
   const seen = () => {
     try { return sessionStorage.getItem(KEY) === "1"; }
@@ -137,25 +147,49 @@ const open = videos.open;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const saveData = (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
-  if (!stage || !veil || !film || !flyer || !skip || !brand) {
+  if (!stage || !veil || !film || !flyer || !skip || (!brand && !burger)) {
     root.classList.remove("is-intro");
   } else if (!root.classList.contains("is-intro") || seen() || reduced || saveData) {
     root.classList.remove("is-intro");
   } else {
     root.setAttribute("data-intro-live", "1");
 
+    const isPortraitMobile = window.matchMedia("(max-width: 768px), (orientation: portrait)").matches;
+    const cfg = isPortraitMobile
+      ? {
+          FILM_W: 720,
+          FILM_H: 1280,
+          MARK: { x: 114, y: 362, w: 536, h: 592 },
+          REVEAL_S: 0.50,
+          src: film.dataset.srcMobile || film.dataset.srcDesktop || "",
+          poster: film.dataset.posterMobile || film.dataset.posterDesktop || "",
+          mark: film.dataset.markMobile || film.dataset.markDesktop || "",
+        }
+      : {
+          FILM_W: 1280,
+          FILM_H: 720,
+          MARK: { x: 293, y: 94, w: 603, h: 484 },
+          REVEAL_S: 0.62,
+          src: film.dataset.srcDesktop || "",
+          poster: film.dataset.posterDesktop || "",
+          mark: film.dataset.markDesktop || "",
+        };
+
+    if (cfg.poster) film.poster = cfg.poster;
+    if (cfg.mark) flyer.src = cfg.mark;
+
     /* Same box as CSS contain: the <video> is sized by the slot, never
        rewritten per frame (iOS stalls if the playing element's box changes). */
     const flyerBox = () => {
       const r = film.getBoundingClientRect();
-      const k = r.width > 8 ? r.width / FILM_W : Math.min(innerWidth / FILM_W, innerHeight / FILM_H);
-      const left = r.width > 8 ? r.left : (innerWidth - FILM_W * k) / 2;
-      const top = r.width > 8 ? r.top : (innerHeight - FILM_H * k) / 2;
+      const k = r.width > 8 ? r.width / cfg.FILM_W : Math.min(innerWidth / cfg.FILM_W, innerHeight / cfg.FILM_H);
+      const left = r.width > 8 ? r.left : (innerWidth - cfg.FILM_W * k) / 2;
+      const top = r.width > 8 ? r.top : (innerHeight - cfg.FILM_H * k) / 2;
       return {
-        left: left + MARK.x * k,
-        top: top + MARK.y * k,
-        width: MARK.w * k,
-        height: MARK.h * k,
+        left: left + cfg.MARK.x * k,
+        top: top + cfg.MARK.y * k,
+        width: cfg.MARK.w * k,
+        height: cfg.MARK.h * k,
       };
     };
 
@@ -203,8 +237,8 @@ const open = videos.open;
         [{ opacity: 0 }, { opacity: 1 }],
         { duration: 240, easing: "linear", fill: "forwards" },
       );
-      fadeOut(film, REVEAL_S * 1000);
-      fadeOut(veil, REVEAL_S * 1000);
+      fadeOut(film, cfg.REVEAL_S * 1000);
+      fadeOut(veil, cfg.REVEAL_S * 1000);
       fadeOut(skip, 220);
       skip.style.pointerEvents = "none";
     };
@@ -227,7 +261,9 @@ const open = videos.open;
       film.style.opacity = "0";
       veil.style.opacity = "0";
 
-      const to = brand.getBoundingClientRect();
+      const targetEl = brand || burger;
+      if (!targetEl) { abort(); return; }
+      const to = targetEl.getBoundingClientRect();
       if (from.width < 8 || to.height < 8) { abort(); return; }
       const s = to.height / from.height;
       const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
@@ -274,7 +310,7 @@ const open = videos.open;
       dock();
     };
 
-    const src = film.dataset.src;
+    const src = cfg.src;
     if (!src) {
       abort();
     } else {
@@ -311,7 +347,7 @@ const open = videos.open;
 
       film.addEventListener("timeupdate", () => {
         if (revealing || docking) return;
-        if (film.duration && film.currentTime >= film.duration - REVEAL_S) {
+        if (film.duration && film.currentTime >= film.duration - cfg.REVEAL_S) {
           startReveal();
         }
       });
@@ -326,8 +362,6 @@ const open = videos.open;
         dock();
       };
       skip.addEventListener("click", skipToDock);
-      /* First tap on iOS often has to unlock playback. Don't skip until
-         the film is actually moving. */
       stage.addEventListener("click", (e) => {
         if (film.paused || film.currentTime < 0.08) {
           e.preventDefault();

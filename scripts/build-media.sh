@@ -182,5 +182,20 @@ if [ -f "$OPEN_SRC" ]; then
     "$OUT/image/open-mark.webp"
 fi
 
+say "one-shot open mobile — Mobile_Prewiew.MOV (720x1280 portrait)"
+OPEN_MOBILE_SRC="Mobile_Prewiew.MOV"
+if [ -f "$OPEN_MOBILE_SRC" ]; then
+  ffmpeg -y -v error -i "$OPEN_MOBILE_SRC" -an \
+    -c:v libx264 -profile:v high -pix_fmt yuv420p \
+    -crf 22 -preset slow -movflags +faststart \
+    "$OUT/video/open-mobile.mp4"
+  ffmpeg -y -v error -ss 0.08 -i "$OUT/video/open-mobile.mp4" -frames:v 1 -q:v 3 \
+    "$OUT/image/open-mobile-poster.jpg"
+  ffmpeg -y -v error -ss 2.55 -i "$OUT/video/open-mobile.mp4" -frames:v 1 \
+    -vf "crop=536:592:114:362,colorkey=0x000000:0.18:0.25,format=rgba" \
+    -c:v libwebp -quality 88 \
+    "$OUT/image/open-mark-mobile.webp"
+fi
+
 say "done"
 ls -la "$OUT/video" "$OUT/image"
