@@ -81,7 +81,12 @@ const igDirect = instagramDirectUrl(site.instagramHandle);
   </div>
 </section>
 <style>
-  .ct { position: relative; overflow: hidden; background: var(--abyss); }
+  .ct {
+    position: relative;
+    overflow: hidden;
+    background: var(--abyss);
+    padding-bottom: clamp(2rem, 3.5vw, 3.5rem);
+  }
   .ct-media { position: absolute; inset: 0; z-index: var(--z-media); opacity: 0.5; }
   .ct-scrim {
     position: absolute; inset: 0;

@@ -207,18 +207,16 @@ import { hero } from "../content";
       return;
     }
 
-    const ctx = canvas.getContext("2d", { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    const TOTAL_FRAMES = 72;
-    const LERP = 0.25;
+    const TOTAL_FRAMES = 120;
+    const LERP = 0.32;
     const MAX_DPR = 2;
-    const STROKE_VIEWPORTS = 1.1;
-    const STROKE_VIEWPORTS_MOBILE = 1.4;
-    const calcPxPerCycle = () => window.innerHeight * (window.innerWidth < 768 ? STROKE_VIEWPORTS_MOBILE : STROKE_VIEWPORTS);
-    let pxPerCycle = calcPxPerCycle();
+    const PX_PER_CYCLE = 480;
     let dirty = true;
     let lastGrade = -1;
+    let currentFrame = -1;
 
     function sizeCanvas() {
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
@@ -230,6 +228,7 @@ import { hero } from "../content";
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
       dirty = true;
+      currentFrame = -1;
     }
 
     function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
@@ -248,14 +247,12 @@ import { hero } from "../content";
     const onResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
-        pxPerCycle = calcPxPerCycle();
         sizeCanvas();
         dirty = true;
       }, 150);
     };
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("orientationchange", () => {
-      pxPerCycle = calcPxPerCycle();
       sizeCanvas();
       dirty = true;
     }, { passive: true });
@@ -288,6 +285,7 @@ import { hero } from "../content";
           dirty = true;
           if (loadedCount === 1) {
             drawCover(ctx, img);
+            currentFrame = 0;
           }
           if (loadedCount >= 8) {
             hidePoster();
@@ -316,7 +314,7 @@ import { hero } from "../content";
       }
       if (!document.hidden && loadedCount > 0) {
         const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-        const targetProgress = scrollY / pxPerCycle;
+        const targetProgress = scrollY / PX_PER_CYCLE;
         const progressDiff = targetProgress - smoothProgress;
 
         const movingParallax = finePointer.matches && !reduced.matches && (Math.abs(tx - px) > 0.01 || Math.abs(ty - py) > 0.01);
@@ -344,24 +342,18 @@ import { hero } from "../content";
 
         smoothProgress += progressDiff * LERP;
 
-        // Continuous monotonic progress -> cyclic frame float (0..72)
+        // Continuous monotonic progress -> cyclic frame index (0..119)
         const cycle = ((smoothProgress % 1) + 1) % 1;
-        const frameFloat = cycle * TOTAL_FRAMES;
-        const i0 = Math.floor(frameFloat) % TOTAL_FRAMES;
-        const i1 = (i0 + 1) % TOTAL_FRAMES;
-        const t = frameFloat - Math.floor(frameFloat);
+        const frameIdx = Math.floor(cycle * TOTAL_FRAMES) % TOTAL_FRAMES;
 
-        const a = frames[i0];
-        const b = frames[i1];
-        if (a?.complete && a.naturalWidth > 0) {
-          ctx.globalAlpha = 1;
-          drawCover(ctx, a);
-          if (t > 0.01 && b?.complete && b.naturalWidth > 0) {
-            ctx.globalAlpha = t;
-            drawCover(ctx, b);
-          }
-          if (loadedCount >= 8) {
-            hidePoster();
+        if (frameIdx !== currentFrame) {
+          const img = frames[frameIdx];
+          if (img && img.complete && img.naturalWidth > 0) {
+            drawCover(ctx, img);
+            currentFrame = frameIdx;
+            if (loadedCount >= 8) {
+              hidePoster();
+            }
           }
         }
       }
