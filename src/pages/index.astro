@@ -414,7 +414,7 @@ import { hero } from "../content";
         snd.addEventListener("click", () => {
           v.muted = !v.muted;
           snd.setAttribute("aria-pressed", String(!v.muted));
-          sLabel.textContent = v.muted ? "Звук" : "Без звуку";
+          sLabel.textContent = v.muted ? "Звук" : "Вимкнути";
           sIcon.textContent = v.muted ? "♪" : "✕";
           // unmuting is also an invitation to actually watch it
           if (!v.muted) v.play().catch(() => {});
@@ -470,7 +470,7 @@ import { hero } from "../content";
       snd.setAttribute("aria-pressed", String(!v.muted));
       const sLabel = snd.querySelector<HTMLElement>("[data-av-label]");
       const sIcon = snd.querySelector<HTMLElement>("[data-av-ic]");
-      if (sLabel) sLabel.textContent = v.muted ? "Звук" : "Без звуку";
+      if (sLabel) sLabel.textContent = v.muted ? "Звук" : "Вимкнути";
       if (sIcon) sIcon.textContent = v.muted ? "♪" : "✕";
     };
 
@@ -587,7 +587,7 @@ import { hero } from "../content";
         inView = e.isIntersecting;
         if (inView) {
           videos.forEach((v) => { if (v) loadPoster(v); });
-          applyActive(active);
+          applyActive(active, false);
         } else videos.forEach((_, i) => pauseAt(i));
       },
       { threshold: 0, rootMargin: "0px 0px -12% 0px" },
@@ -606,8 +606,10 @@ import { hero } from "../content";
         e.preventDefault();
         e.stopPropagation();
         const v = videos[i];
-        const nextUnmute = i === active ? !!v?.muted : true;
-        applyActive(i, nextUnmute, true);
+        if (!v) return;
+        v.muted = !v.muted;
+        paintSound(v);
+        if (!v.muted && v.paused) v.play().catch(() => {});
         return;
       }
 
@@ -628,7 +630,7 @@ import { hero } from "../content";
       }
 
       if (i === active) return;
-      setActive(i, false, true);
+      setActive(i, true, true);
     });
   })();
 
