@@ -322,8 +322,41 @@ portrait canoe still behind the 16:9 open. Session `ig-open-1851-m4`.
 
 ---
 
-## Preview — black letterbox again · 2026-08-31
+---
 
-Wash looked like a circus. Contained 16:9 on solid `--abyss`. Session
-`ig-open-1851-m5`.
+## CP-16 (Version 2) — Scroll Upgrade & Audit Polish · 2026-09-01
+
+Branch: `version-2`
+
+**Done:**
+- **Phase A — Scroll Mechanics (§1–§6):**
+  - `77f7ad6`: Viewport-relative stroke cycle length (`STROKE_VIEWPORTS = 1.35`, mobile `1.8`, debounced resize/orientation handler).
+  - `938f478`: Two-frame alpha interpolation with `LERP = 0.18`, `{ alpha: true, desynchronized: true }`, idle threshold `< 0.002`.
+  - `d98e740`: Parallax overscan `inset: -20px`, `calc(100% + 40px)`, fine-pointer gating, damped `0.06` inertia in `tick()`.
+  - `5689771`: Added 72-frame Lanczos 1024×576 extraction in `build-media.sh`, generated high-res frames, implemented DPR backing store (`sizeCanvas()`, `drawCover()`, `MAX_DPR = 2`), removed canvas fixed width/height and CSS `object-fit: cover`.
+  - `fcff945`: Added smooth poster fade (`transition: opacity 600ms`) triggered on `loadedCount >= 8`.
+  - `ee8ab8e`: Fixed `rgba(0, 0, 1)` typo to `rgba(0, 0, 0, 1)` in `mask-image` and `-webkit-mask-image`.
+- **Phase B — Dramatic Arc (§7a):**
+  - `35b769e`: Added `<div class="backdrop-grade" aria-hidden="true"></div>` overlay and scroll-progress opacity drive (`0..0.85`, throttled to `|delta| >= 0.01`).
+- **Phase C — Technical Fixes (DESIGN_AUDIT Section B):**
+  - `c9c3ff5`: Recompressed `water-primary.mp4` via ffmpeg (CRF 31, no audio, 1.53MB) and configured lazy loading.
+  - `3609a8d`: One-shot intro session gate + instant skip on reduced-motion / save-data + z-index 10 skip button.
+  - `b8b95b1`: Audit and full coverage for `alt=""` and `aria-hidden="true"` across images.
+  - `54c27d2`: Accessible keyboard slider handle with visible focus outline.
+  - `2bc57ab`: Polish FAQ focus state, smooth expand animation, and remove trailing period from FAQ H2.
+  - `c99367a`: Hide mobile sticky CTA when `#contact` is in viewport.
+  - `a5e377f`: Add `aria-pressed` and high-contrast scrim shadow to video controls.
+- **Phase D — Design Proposals (DESIGN_AUDIT Section A):**
+  - `e3312f3`: `proposal: drop NN/11 section counters, ration eyebrows` (A1).
+  - `2c8633b`: `proposal: vary section header scaffold` (A2).
+  - `3cdc003`: `proposal: de-number Fit pains, reflow Athlete bonuses` (A3).
+  - `9af0865`: `proposal: drop 01/05 counter and media number chips` (A4).
+
+**Verification Results:**
+- Facts guard: 26 files passed.
+- Assets check: 11 video derivatives passed.
+- Fonts check: all woff2 fonts passed.
+- Seam Gate: RMSE = 0.000 / 255 (<= 3/255).
+- Horizontal overflow: 0 across 320px, 375px, 390px, 768px, 1440px.
+- Review screenshots captured in `review/version-2/`.
 

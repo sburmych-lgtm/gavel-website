@@ -1,68 +1,41 @@
 # PROJECT STATE
 
-_Last updated: 2026-08-31 · preview: mobile intro + darkened-page QA_
+_Last updated: 2026-09-01 · Version 2 Release Candidate (`version-2`)_
 
 ## Current stage
 
-Preview of **IMG_1851 intro + canoe-scroll backdrop** on branch
-`claude/scroll-canoe-backdrop`. Production `main` is untouched. The Railway
-service `motion-lab-intro-preview` is the only deploy target for this work.
-
-CP-15 (`production/frontend-v1-grok`) remains the production-frontend
-candidate. Do not merge either branch to `main` without a human.
+Version 2 implementation on branch `version-2` in repository `sburmych-lgtm/gavel-website`.
+Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Last completed checkpoint
 
-CP-15 — client-requested production frontend changes on
-`production/frontend-v1-grok`. Approved prototype baseline: tag
-`client-approved-prototype-v1` @ `cac608a`.
-
-This preview line (canoe backdrop → IMG_1851 open → mobile playback) is
-separate from that candidate.
+**Version 2 upgrade completed across Phases A–D:**
+- **Phase A (§1–§6):** Viewport-relative stroke cycle (1.35 desktop / 1.8 mobile), dual-frame alpha interpolation crossfade (LERP = 0.18, desynchronized, zero dead zone), 1024×576 Lanczos 72-frame extraction with DPR backing store (MAX_DPR = 2) & drawCover, pointer:fine damped parallax overscan (inset -20px, 0.06 damping), smooth poster crossfade on ≥8 loaded frames, mask rgba typo fix.
+- **Phase B (§7a):** `.backdrop-grade` overlay driven by scroll progress (opacity 0..0.85).
+- **Phase C (B1–B9):** Recompressed water-primary (CRF 31, -an, 1.53MB) + lazy loading backdrops, intro once per session + reduced-motion / save-data skip + z-index 10 skip button, full alt/aria-hidden image coverage, keyboard-accessible Before/After slider with visible focus ring, FAQ smooth expand + 45deg rotate + title punctuation fix, mobile sticky CTA hide on #contact, video toggle aria-pressed + high-contrast scrim shadow, seam band verified (RMSE 0.000/255), JSON-LD verified for LocalBusiness & FAQPage.
+- **Phase D (Proposals A1–A4):** Dropped section counters `NN / 11` & rationed eyebrows (A1), varied header scaffold & centered Credentials H2 (A2), de-numbered Fit pains & reflowed Athlete bonuses into tonal cards (A3), dropped 01/05 counter & video tile number chips (A4).
 
 ## Latest commit SHA
 
-See `git log -1 --format=%H`. Recorded per checkpoint in `WORKLOG.md`.
+See `git log -1 --format=%H`. Recorded in `WORKLOG.md`.
 
 ## What works
 
-- Astro static frontend, media pipeline, fonts, Before/After, SEO/noindex
-  preview, contact seam (CP-13–CP-15).
-- First-visit open (session key `ig-open-1851-m5`): landscape film contained
-  16:9 on black. No wash, no cover-crop.
-- Hero / section loops do not start until the intro is gone, so iOS is not
-  asked to decode two videos at once.
-- QA on the darkened canoe page: 43 checks, 0 fail, 0 warn. Lighthouse 13.4.1
-  mobile accessibility 100, best-practices 100, `color-contrast` pass
-  (`?skipintro=1` so the overlay is not what gets measured).
+- Static Astro build with zero runtime motion dependencies (no GSAP/Motion/Lenis).
+- 60/120fps hardware-accelerated canvas backdrop scroll scrub on desktop & mobile.
+- Tiered accessibility: `prefers-reduced-motion` and `Save-Data` fallbacks preserve layout and static poster without downloading video sequences.
+- 0 horizontal overflow @ 320px, 375px, 390px, 768px, 1024px, 1440px, 1920px.
+- Verified seam diff RMSE = 0.000/255 (<= 3/255).
+- QA and facts guards pass (26 files, 11 video derivatives, all fonts resolving).
 
-## What is incomplete
+## Open human decisions (for site owner)
 
-Not in this pass: production backend, CRM, booking, shop, payments, real-domain
-configuration, merge to `main`, production hosting cutover.
+1. **1080p Canoe.mov original source:** Current repo assets provide 1024×576 `Canoe.mov`. If a native 1080p/4K master file exists, rerunning `build-media.sh` will extract 1920×1080 frames.
+2. **A5 — Navbar logo:** 3D bevel vs flat monochrome icon for header.
+3. **A6 — Case order in Results:** Editorial order of client transformations.
+4. **A7 — Pricing card highlight:** Selecting target priority tier in pricing.
 
-## Blockers
+## Verification & Review Evidence
 
-None for preview. Merge and production deploy require a human.
-
-## Open human decisions
-
-1. **`3_before-after.jpg`** shows an identifiable face and ships as supporting
-   proof; it carries burnt-in «ДО»/«ПІСЛЯ» marketing labels. Confirm consent
-   covers web use.
-2. **Real domain** — canonical URL, sitemap host and OG absolute URLs are
-   config placeholders until a domain exists.
-3. **Preview noindex** — keep until human approval (meta + title + robots.txt).
-4. **Pricing currency** — the dataset still mixes ₴ and $. Published as
-   supplied; no conversion invented.
-5. **Instagram Direct** — form handoff uses `https://ig.me/m/gavel_man`. Native
-   app behaviour should be checked on a real phone; clipboard paste is the
-   reliable fallback.
-
-## Exact next action
-
-On a real phone, open an **incognito / new-tab** visit to
-https://motion-lab-intro-preview-production.up.railway.app
-(session key `ig-open-1851-m3`).
-
-Do **not** merge to `main`. Do **not** `railway up` the production service.
+Full-page and per-section high-res review captures saved in `review/version-2/`.
+Preview deployed on Vercel.
