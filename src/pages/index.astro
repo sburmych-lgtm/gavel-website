@@ -939,4 +939,13 @@ import { hero } from "../content";
           const copied = copyNow(text);
           if (copied) {
             if (status) status.textContent = contact.copied;
-            if
+            if (fallback) fallback.hidden = true;
+          } else {
+            if (status) status.textContent = contact.copyFailed;
+            if (fallback) { fallback.hidden = false; fallback.value = text; }
+          }
+        }
+      });
+    });
+  })();
+</script>

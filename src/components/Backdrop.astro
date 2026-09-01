@@ -74,4 +74,16 @@
     inset: 0;
     background: linear-gradient(
       135deg,
-      color-mi
+      color-mix(in oklab, var(--abyss) 38%, transparent) 0%,
+      color-mix(in oklab, var(--petrol) 38%, transparent) 100%
+    );
+    mix-blend-mode: multiply;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .backdrop-canvas,
+    :global(.backdrop-video) {
+      display: none !important;
+    }
+  }
+</style>
