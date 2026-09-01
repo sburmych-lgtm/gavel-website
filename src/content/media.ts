@@ -82,9 +82,11 @@ export const videos = {
     width: 720,
     height: 1280,
   },
-  /* One-shot open: IMG_1851 (water → gold lockup, ~3.83 s). The last 0.6 s
-     the page fades the black so the hero shows through, then the lockup
-     flies into .hdr-brand. No audio — decorative, like every loop. */
+  /* One-shot open: IMG_1865 (paddle strike → ring of liquid gold → forge →
+     lockup, 2.83 s). Replaced IMG_1851 on 2026-09-01: same beats, stronger
+     execution, and a full second shorter. The last 0.50 s the page fades the
+     black so the hero shows through, then the lockup flies into .hdr-brand.
+     No audio — decorative, like every loop. */
   open: {
     src: "/media/video/open.mp4",
     poster: "/media/image/open-poster.jpg",

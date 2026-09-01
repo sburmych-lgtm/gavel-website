@@ -17,6 +17,13 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-13 (2026-09-01) — new open film on the landscape cut.** `IMG_1865`
+replaces `IMG_1851`: liquid-gold splash out of the water, centred front-on
+lockup on clean black, 2.83 s instead of 3.83 s. The mid-flight morph stays —
+the wordmark is still one line against the header's two — but the swap now
+runs at ~140 px rather than ~480 px. Portrait untouched. See `WORKLOG.md`
+CP-13.
+
 **CP-12 (2026-09-01) — landscape open now docks like the portrait one.** The
 landscape film ends on the wide one-line lockup, the header carries the compact
 two-line one, so the flight cross-dissolves between them mid-air with the IG

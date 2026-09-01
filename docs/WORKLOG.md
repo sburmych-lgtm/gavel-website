@@ -417,3 +417,51 @@ geometry log) gave three separate causes, none of them the easing:
 - `npm run build` — exit 0 (facts 26 files, assets 11 derivatives, fonts OK).
 - Screencast of the full open re-captured at 1440×900 and 390×844: landing
   pixel-exact on desktop, portrait unchanged.
+
+---
+
+## CP-13 — new open film (IMG_1865) on the landscape cut · 2026-09-01
+
+Branch: `version-2`
+
+**Why**
+
+Client supplied a better cut of the same intro. Same beats, stronger
+execution: the paddle strike throws a ring of **liquid gold** out of the water
+instead of drawing a wireframe outline of the logo on it, and it resolves to a
+centred, front-on, evenly lit lockup on clean black rather than an off-centre
+one under a lens flare. HEVC master, no Kling watermark, and **2.83 s against
+3.83 s** — a full second less before the hero. Encoded output is 776 KB at
+2.19 Mbit/s, against 780 KB at 1.63 Mbit/s: same weight, more bits per frame,
+one second shorter.
+
+It does **not** solve the composition mismatch — the wordmark is still set on
+one line against the header's two — so the mid-flight morph from CP-12 stays.
+Portrait is untouched and still plays the IMG_1851 cut.
+
+**Done**
+
+- `build-media.sh`: desktop open now derives from `IMG_1865.MOV`. Dropped the
+  `delogo` pass — verified by boosting the last frames 4× that this master
+  carries no watermark. Mark crop re-measured: gold ink box on the last frame
+  is `(385,201,510,387)`, taken with a 4 px margin as `crop=518:395:381:197`.
+- `SiteIntro.astro`: `MARK` follows that crop; `REVEAL_S` 0.62 → 0.50 (the
+  flare is gone and the lockup has stopped moving by frame 70 of 85).
+- Replaced the derived `MONO` / `BRAND.mono` pair with a single measured
+  `BRAND_AT` — where the header artwork has to sit inside the mark for the two
+  monograms to coincide, fitted by maximising mask overlap over uniform scale
+  and offset. Best IoU **0.693**; an independent-axis fit only reached 0.694,
+  so the uniform anchor is kept and no corrective stretch is needed.
+- Moved the cross-dissolve from 0.14–0.58 of the flight to **0.46–0.68**. At
+  the old offsets the swap happened at ~480 px, where both wordmarks are
+  legible at once and it reads as a smear. It now runs from ~140 px down to
+  ~80 px, where the wordmark is a gold hairline either way.
+
+**Verification**
+
+- Landing on the new film, 1440×900: brand layer `[168.5, 10, 53.7, 52]`
+  against header `[168.5, 10, 53.73, 52]`. Flight 798 ms.
+- Largest single-frame film-opacity drop through the reveal: 0.087.
+- Portrait unchanged: flyer `[23, 13, 42, 46]`, header `[20, 13, 48, 46]`,
+  film still 2.667 s.
+- `check-assets` 12 derivatives, `check-facts` 26 files, `check-fonts` ok.

@@ -160,25 +160,35 @@ ffmpeg -y -v error -i "$OUT/image/logo-gold.png"   -vf "scale=340:-1:flags=lancz
 
 post "$OUT/video/dog.mp4" "$OUT/image/dog-poster.jpg"
 
-say "one-shot open — client film IMG_1851 (water + lockup)"
+say "one-shot open — client film IMG_1865 (water + gold splash + lockup)"
 # Inbox drop, not the Assets library. Skip quietly if it is missing so a
 # media rebuild elsewhere does not fail the rest of the pipeline.
-# Full clip (~3.83 s). Kling star is delogo'd. The page fades the black
-# in the last 0.6 s and flies the lockup into .hdr-brand.
-OPEN_SRC="G:/99_INBOX/Telegram Desktop/IMG_1851.MOV"
+#
+# Replaces IMG_1851 (2026-09-01). Same beat list, stronger execution: the
+# paddle strike throws a ring of LIQUID GOLD out of the water instead of
+# drawing a wireframe outline of the logo on it, and it resolves to a
+# centred, front-on, evenly lit lockup on clean black rather than an
+# off-centre one under a lens flare. HEVC master at 3.8 Mbit/s with no Kling
+# watermark, so no delogo pass. 2.83 s against the old 3.83 s — a full
+# second less before the hero.
+#
+# The page fades the black over the last 0.50 s and flies the lockup into
+# .hdr-brand. That window opens at frame 70 of 85, by which point the flare
+# has gone and the lockup has stopped moving.
+OPEN_SRC="G:/99_INBOX/Telegram Desktop/IMG_1865.MOV"
 if [ -f "$OPEN_SRC" ]; then
   ffmpeg -y -v error -i "$OPEN_SRC" -an \
     -c:v libx264 -profile:v high -pix_fmt yuv420p \
-    -vf "delogo=x=1100:y=555:w=170:h=160:show=0" \
     -crf 22 -preset slow -movflags +faststart \
     "$OUT/video/open.mp4"
   ffmpeg -y -v error -ss 0.08 -i "$OUT/video/open.mp4" -frames:v 1 -q:v 3 \
     "$OUT/image/open-poster.jpg"
   # Ink box of IG + wordmark on the last frame, measured from gold pixels
-  # (293,94,603,484). Black keyed out so the flyer can sit over the hero
-  # while the film and veil fade in the last 0.6 s.
+  # (385,201,510,387) and given a 4 px margin for the soft edge. Black keyed
+  # out so the flyer can sit over the hero while the film and veil fade.
+  # SiteIntro.astro's MARK rect must match this crop exactly.
   ffmpeg -y -v error -sseof -0.04 -i "$OUT/video/open.mp4" -frames:v 1 \
-    -vf "crop=603:484:293:94,colorkey=0x000000:0.12:0.22,format=rgba" \
+    -vf "crop=518:395:381:197,colorkey=0x000000:0.12:0.22,format=rgba" \
     -c:v libwebp -quality 86 \
     "$OUT/image/open-mark.webp"
 fi
