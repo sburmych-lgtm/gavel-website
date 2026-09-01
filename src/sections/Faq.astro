@@ -16,7 +16,7 @@ import { faq } from "../content";
       {faq.items.map((it) => (
         <details class="q" data-reveal>
           <summary class="q-s"><h3 class="q-h">{it.q}</h3></summary>
-          <div class="q-a"><p>{it.a}</p></div>
+          <div class="q-a"><div class="q-a-in"><p>{it.a}</p></div></div>
         </details>
       ))}
     </div>
@@ -30,10 +30,16 @@ import { faq } from "../content";
     display: flex; align-items: center; justify-content: space-between;
     gap: 1.5rem; padding: 1.25rem 0; min-height: 44px;
     cursor: pointer; list-style: none;
+    transition: color var(--t-fast) var(--ease);
+  }
+  .q-s:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 4px;
+    border-radius: var(--r);
   }
   .q-s::-webkit-details-marker { display: none; }
   .q-h { margin: 0; font-size: var(--fs-h3); font-weight: 600; }
-  /* a plus that becomes a minus — drawn, not an icon set */
+  /* a plus that turns 45deg to an x when open — drawn, not an icon set */
   .q-s::after {
     content: ""; flex: none; width: 14px; height: 14px;
     background:
@@ -42,9 +48,20 @@ import { faq } from "../content";
     transition: transform var(--t-base) var(--ease);
   }
   .q[open] .q-s::after {
-    background: linear-gradient(var(--caustic), var(--caustic)) center / 14px 1.5px no-repeat;
-    transform: rotate(180deg);
+    transform: rotate(45deg);
   }
-  .q-a { padding-bottom: 1.5rem; }
-  .q-a p { color: var(--mute); max-width: 62ch; }
+  .q-a {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--t-base) var(--ease), padding-bottom var(--t-base) var(--ease);
+    padding-bottom: 0;
+  }
+  .q[open] .q-a {
+    grid-template-rows: 1fr;
+    padding-bottom: 1.5rem;
+  }
+  .q-a-in {
+    overflow: hidden;
+  }
+  .q-a p { color: var(--mute); max-width: 62ch; margin: 0; }
 </style>
