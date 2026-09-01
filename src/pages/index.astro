@@ -845,16 +845,13 @@ import { hero } from "../content";
     let pastHero = false;
     let atContact = false;
 
-    const nearBottom = () => {
-      const doc = document.documentElement;
-      const footer = document.querySelector<HTMLElement>(".ft");
-      // hide as soon as the footer starts to appear, not only at the very end
-      const reserve = (footer?.offsetHeight ?? 0) + 80;
-      return window.scrollY + window.innerHeight >= doc.scrollHeight - reserve;
+    const inContactOrBelow = () => {
+      const r = contactSec.getBoundingClientRect();
+      return r.top < window.innerHeight;
     };
 
     const sync = () => {
-      bar.classList.toggle("is-in", pastHero && !atContact && !nearBottom());
+      bar.classList.toggle("is-in", pastHero && !inContactOrBelow());
     };
 
     new IntersectionObserver(
@@ -863,8 +860,8 @@ import { hero } from "../content";
     ).observe(heroCta);
 
     new IntersectionObserver(
-      ([e]) => { atContact = e.isIntersecting; sync(); },
-      { threshold: 0.05 },
+      () => { sync(); },
+      { threshold: [0, 0.1, 0.5, 1] },
     ).observe(contactSec);
 
     // the observers only fire on threshold crossings; this catches everything
