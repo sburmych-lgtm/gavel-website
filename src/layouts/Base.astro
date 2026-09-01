@@ -76,7 +76,8 @@ const schema = buildSchema(siteUrl, ogImage);
         if (
           !/[?&]skipintro=1(?:&|$)/.test(location.search) &&
           !sessionStorage.getItem("ig-open-1851-m5") &&
-          !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+          !(navigator.connection && navigator.connection.saveData === true)
         ) {
           document.documentElement.classList.add("is-intro");
           /* If the intro script never marks itself live, do not leave the

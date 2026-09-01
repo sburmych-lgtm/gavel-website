@@ -94,7 +94,7 @@ const open = videos.open;
     position: absolute;
     right: var(--gut);
     bottom: calc(var(--gut) + env(safe-area-inset-bottom));
-    z-index: 1;
+    z-index: 10;
     font-family: var(--font-mono);
     font-size: var(--fs-mono);
     letter-spacing: 0.1em;
@@ -133,9 +133,12 @@ const open = videos.open;
     try { sessionStorage.setItem(KEY, "1"); } catch { /* ignore */ }
   };
 
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const saveData = (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData === true;
+
   if (!stage || !veil || !film || !flyer || !skip || !brand) {
     root.classList.remove("is-intro");
-  } else if (!root.classList.contains("is-intro") || seen()) {
+  } else if (!root.classList.contains("is-intro") || seen() || reduced || saveData) {
     root.classList.remove("is-intro");
   } else {
     root.setAttribute("data-intro-live", "1");
