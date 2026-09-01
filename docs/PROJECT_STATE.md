@@ -17,6 +17,10 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-18 (2026-09-02) — scroll backdrop back on `Canoe.mov`.** The warmer, hazier
+take that ran until 01.09 17:17, with its 47 px letterbox cropped off rather
+than restored. 88 frames, loop seam 0.099/255. See `WORKLOG.md` CP-18.
+
 **CP-17 (2026-09-02) — live on gavel.in.ua.** Netlify has production deploys
 paused (team out of credits for the billing cycle), so the build was uploaded
 as a draft and promoted with `restoreSiteDeploy`. Production now matches

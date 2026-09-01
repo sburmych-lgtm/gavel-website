@@ -686,3 +686,50 @@ from the test harness re-seeking the video every 25 ms, not from the site.
 `main` is four commits ahead of what the Git build last published, but the
 content on production matches `937f58d` exactly because it was uploaded from
 that build. When credits reset, one `Trigger deploy` reconciles the two.
+
+---
+
+## CP-18 — backdrop back to Canoe.mov · 2026-09-02
+
+Branch: `main`
+
+**Why**
+
+Owner asked for the scroll backdrop from the day before yesterday. Checked
+first: the backdrop had **not** changed today — production frames were
+byte-identical to the repo and no commit touched `public/media/frames` on
+02.09. Yesterday's two source switches (`5dd26c6` 17:17, `7be23ca` 17:32) were
+between two near-identical takes: mean difference 1–5 of 255 across the
+sampled frames, invisible either way. The footage that actually looks
+different is the one that ran until 01.09 17:17 — `Canoe.mov`, warmer and
+hazier with a washed sky, against the crisp blue of
+`Athlete_canoeing_on_calm_water`.
+
+**Done**
+
+- `build-media.sh`: backdrop frames, `canoe-stroke.mp4` and its poster all
+  derive from `Canoe.mov` again.
+- **Letterbox cropped rather than restored.** The source is matted 2.13:1
+  inside its 16:9 frame — measured over all 88 frames, 47 px top and bottom,
+  0 px at the sides. Shipping that would put a black band across a full-bleed
+  background, which is the thing the last four checkpoints were spent
+  removing. Cropped `1024:480:0:48` (48 rather than 47 to land on an even
+  480); residual bars measured at **0 px top and bottom** on every frame.
+- `TOTAL_FRAMES` 192 → 88 in `src/pages/index.astro`, matching what the source
+  yields. Stroke speed is unaffected — it is driven by `pxPerCycle` against
+  scroll, not by the frame count.
+- Frame directory 1.5 MB against the previous 192-frame set.
+
+**Verification**
+
+`scripts/verify-backdrop-motion.mjs` — **0 failures**, including
+Loop Gate seam luminance diff **0.099/255** (limit 3/255), hero-poster-first
+performance gate, and no horizontal overflow at 390/768/1440. Live check at
+1440×900: canvas backs at 1440×900 for a 1480×940 CSS box, paddler visible
+and scrubbing through the cycle, no 4xx/5xx on any request.
+
+**Not changed**
+
+The 01.09 17:38 cadence commit (`572b928`: LERP 0.32 → 0.18, cycle ~1.35 → ~2
+viewports) is left alone — the ask was about the footage. Reverting it would
+make the stroke roughly twice as fast against scroll again.

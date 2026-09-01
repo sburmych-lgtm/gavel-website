@@ -58,13 +58,27 @@ say "footer easter egg — canoe dog"
 enc "$A/Video/FUN!!!Canoe-Dog.mp4" "$OUT/video/dog.mp4" 0 3.6 \
     "scale=640:360:flags=lanczos" 27
 
-say "scroll-driven canoe backdrop — 192-frame cycle from Athlete_canoeing_on_calm_water_202609011722.mp4"
+say "scroll-driven canoe backdrop — 88-frame cycle from Canoe.mov"
+# Back to Canoe.mov (2026-09-02), the footage this backdrop ran on until
+# 01.09 17:17. Warmer, hazier, washed sky — a different morning to the crisp
+# blue of Athlete_canoeing_on_calm_water, which replaced it for one evening.
+#
+# The source is matted 2.13:1 inside a 16:9 frame: measured over all 88
+# frames, the bars are 47 px top and bottom and 0 px at the sides; the crop
+# takes 48 to land on an even 480. They are
+# cropped out here rather than shipped, so the canvas gets picture edge to
+# edge — src/pages/index.astro draws it with cover, so the wider plate simply
+# crops a little at the sides instead of banding.
+#
+# TOTAL_FRAMES in src/pages/index.astro must equal the count produced here.
 mkdir -p "$OUT/frames"
-ffmpeg -y -v error -i "Athlete_canoeing_on_calm_water_202609011722.mp4" -vf "scale=1024:576:flags=lanczos" \
+rm -f "$OUT/frames"/frame_*.webp
+ffmpeg -y -v error -i "Canoe.mov" -vf "crop=1024:480:0:48,scale=1024:480:flags=lanczos" \
   -c:v libwebp -quality 80 -compression_level 6 \
   "$OUT/frames/frame_%03d.webp"
-ffmpeg -y -v error -i "Athlete_canoeing_on_calm_water_202609011722.mp4" \
-  -an -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 23 -preset slow -movflags +faststart \
+ffmpeg -y -v error -i "Canoe.mov" -an \
+  -vf "crop=1024:480:0:48" \
+  -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 23 -preset slow -movflags +faststart \
   "$OUT/canoe-stroke.mp4"
 cp "$OUT/canoe-stroke.mp4" "$OUT/video/canoe-stroke.mp4"
 ffmpeg -y -v error -i "$OUT/canoe-stroke.mp4" -frames:v 1 -c:v libwebp -quality 82 \
