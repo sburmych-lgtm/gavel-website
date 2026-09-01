@@ -17,6 +17,12 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-16 (2026-09-01) — open film is now IMG_1866.** Third cut, and the first
+that needs nothing done to it: matte measured at 0 px on all four sides, so it
+is encoded whole at 1280×720. Being a true 16:9 again, the cover band widens
+to 4/5–5/2 and 2560×1080 fills instead of letterboxing. See `WORKLOG.md`
+CP-16.
+
 **CP-15 (2026-09-01) — the open runs edge to edge.** The landscape film is
 cropped to its own picture and fills the window (`cover` between 5/4 and 9/4,
 `contain` outside it so the lockup is never clipped). `scrollbar-gutter:

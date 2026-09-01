@@ -567,3 +567,55 @@ Lockup never clipped: checked at 1920×920, 2560×1080, 1600×900, 1440×900,
 viewport on every one. Landing: `[416, 10, 53.7, 52]` against header
 `[416, 10, 54, 52]` at 1920×920, `[176, 10, 53.7, 52]` against
 `[176, 10, 54, 52]` at 1440×900. Portrait untouched at `[23, 13, 42, 46]`.
+
+---
+
+## CP-16 — third open cut, IMG_1866, nothing to fix in it · 2026-09-01
+
+Branch: `version-2`
+
+**Why**
+
+Client sent a recut with the matte gone. Verified rather than taken on trust:
+measured every column and row of every scene frame — the matte is **0 px on
+all four sides**. Frames 21 and 22 read 25 px and 9 px only because those are
+the dark transition frames and the leftmost columns sit at brightness 2–8,
+against 9–10 on frame 20 and 38 on frame 23. Same edit as IMG_1865, same
+2.83 s, HEVC master at 3.8 Mbit/s, no watermark.
+
+**Done**
+
+- `build-media.sh`: source is `IMG_1866.MOV` and the `crop=1128:720:72:0` CP-15
+  needed is gone — the film is encoded whole at 1280×720. Output 814 KB at
+  2.30 Mbit/s.
+- Lockup re-measured on the last frame: ink box `(380, 198, 520, 394)`, mark
+  crop `528:402:376:194`. `MARK` and the flyer's intrinsic size follow.
+- `BRAND_AT` refitted against the new mark by maximising monogram mask overlap
+  over uniform scale and offset: **IoU 0.696**, `{ x: 0.02079, y: -0.06813,
+  w: 0.94883, h: 1.20590 }`.
+- Cover band widened. The film is a true 16:9 again, so cover crops far less
+  than the 1.567:1 CP-15 cut: the wordmark bottom sits at 0.83 of the frame
+  height and the mark spans 0.29–0.71 of its width, putting the clipping
+  limits at 2.71 and 0.73. Band moved from 5/4–9/4 to **4/5–5/2**, which now
+  fills 2560×1080 (2.37) instead of letterboxing it.
+
+**Verification** — real 15 px scrollbars, water frame held at `ct = 0.32`:
+
+| viewport | fit | extreme-left px | extreme-right px | lockup inside | header shift |
+|---|---|---|---|---|---|
+| 1920×920 | cover | 114, 105, 55 | 113, 212, 103 | yes | 0.00 px |
+| 2560×1080 | cover | 128, 105, 57 | 143, 212, 99 | yes | 0.00 px |
+| 1600×900 | cover | 119, 105, 60 | 116, 212, 125 | yes | 0.00 px |
+| 1440×900 | cover | 108, 78, 43 | 111, 148, 117 | yes | 0.00 px |
+| 1280×800 | cover | 108, 78, 43 | 111, 148, 117 | yes | 0.00 px |
+| 3440×1300 | contain | 0, 0, 0 | 0, 0, 0 | yes | 0.00 px |
+| 1000×800 | cover | 140, 225, 38 | 201, 176, 119 | yes | 0.00 px |
+| 390×844 | fill | 72, 92, 89 | 59, 159, 127 | yes | 0.00 px |
+
+Picture at both physical edges everywhere inside the band. 3440×1300 is 2.65,
+past 5/2, and letterboxes by design — black on black.
+
+Landing: `[416, 10, 53.7, 52]` against header `[416, 10, 54, 52]` at 1920×920,
+`[176, 10, 53.7, 52]` against `[176, 10, 54, 52]` at 1440×900. Flight 799 ms.
+Largest single-frame film-opacity drop through the reveal 0.098. Portrait
+untouched at `[23, 13, 42, 46]`.

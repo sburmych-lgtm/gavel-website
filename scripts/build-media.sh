@@ -160,44 +160,35 @@ ffmpeg -y -v error -i "$OUT/image/logo-gold.png"   -vf "scale=340:-1:flags=lancz
 
 post "$OUT/video/dog.mp4" "$OUT/image/dog-poster.jpg"
 
-say "one-shot open — client film IMG_1865 (water + gold splash + lockup)"
+say "one-shot open — client film IMG_1866 (water + gold splash + lockup)"
 # Inbox drop, not the Assets library. Skip quietly if it is missing so a
 # media rebuild elsewhere does not fail the rest of the pipeline.
 #
-# Replaces IMG_1851 (2026-09-01). Same beat list, stronger execution: the
-# paddle strike throws a ring of LIQUID GOLD out of the water instead of
-# drawing a wireframe outline of the logo on it, and it resolves to a
-# centred, front-on, evenly lit lockup on clean black rather than an
-# off-centre one under a lens flare. HEVC master at 3.8 Mbit/s with no Kling
-# watermark, so no delogo pass. 2.83 s against the old 3.83 s — a full
-# second less before the hero.
-#
-# CROPPED to 1128 wide. The master's first ~0.75 s is a water plate narrower
-# than the frame: measuring every column of every frame, content runs x=70 to
-# x=1202 and everything outside is matte. The page shows this film edge to
-# edge, so that matte would read as a black band down each side. Cut it here
-# instead — 72..1199, two px inside the plate's soft edge. Horizontal only:
-# leaving the full 720 rows lets the browser decide how much to crop for the
-# window it is actually in, rather than baking one choice in.
+# Third cut of this open, and the one that needs nothing done to it.
+# IMG_1851 resolved to an off-centre lockup under a lens flare; IMG_1865
+# brought the liquid-gold paddle strike and a centred front-on lockup but
+# matted its water plate ~66 px in from each side, which had to be cropped
+# out here. IMG_1866 fills the frame from the first frame: measuring every
+# column of every scene frame, the matte is 0 px on all four sides, so this
+# one is encoded whole. HEVC master at 3.8 Mbit/s, no Kling watermark, 2.83 s.
 #
 # The page fades the black over the last 0.50 s and flies the lockup into
 # .hdr-brand. That window opens at frame 70 of 85, by which point the flare
 # has gone and the lockup has stopped moving.
-OPEN_SRC="G:/99_INBOX/Telegram Desktop/IMG_1865.MOV"
+OPEN_SRC="G:/99_INBOX/IMG_1866.MOV"
 if [ -f "$OPEN_SRC" ]; then
   ffmpeg -y -v error -i "$OPEN_SRC" -an \
     -c:v libx264 -profile:v high -pix_fmt yuv420p \
-    -vf "crop=1128:720:72:0" \
     -crf 22 -preset slow -movflags +faststart \
     "$OUT/video/open.mp4"
   ffmpeg -y -v error -ss 0.08 -i "$OUT/video/open.mp4" -frames:v 1 -q:v 3 \
     "$OUT/image/open-poster.jpg"
-  # Ink box of IG + wordmark on the last frame, measured from gold pixels in
-  # the CROPPED frame (313,201,510,387) and given a 4 px margin for the soft
-  # edge. Black keyed out so the flyer can sit over the hero while the film
-  # and veil fade. SiteIntro.astro's MARK rect must match this crop exactly.
+  # Ink box of IG + wordmark on the last frame, measured from gold pixels
+  # (380,198,520,394) and given a 4 px margin for the soft edge. Black keyed
+  # out so the flyer can sit over the hero while the film and veil fade.
+  # SiteIntro.astro's MARK rect must match this crop exactly.
   ffmpeg -y -v error -sseof -0.04 -i "$OUT/video/open.mp4" -frames:v 1 \
-    -vf "crop=518:395:309:197,colorkey=0x000000:0.12:0.22,format=rgba" \
+    -vf "crop=528:402:376:194,colorkey=0x000000:0.12:0.22,format=rgba" \
     -c:v libwebp -quality 86 \
     "$OUT/image/open-mark.webp"
 fi

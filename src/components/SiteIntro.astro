@@ -2,10 +2,9 @@
 /**
  * One-shot open on the first visit of a session.
  *
- * Film is IMG_1865, cropped to its own picture and run edge to edge on
- * black. The last stretch of it the veil
- * fades and the lockup flies into .hdr-brand. Return visits, reduced motion,
- * and no-JS skip it.
+ * Film is IMG_1866, a full 16:9 frame run edge to edge on black. The last
+ * stretch of it the veil fades and the lockup flies into .hdr-brand. Return
+ * visits, reduced motion, and no-JS skip it.
  *
  * The landscape film and the portrait film do not end on the same artwork:
  * the landscape cut resolves to a wide lockup with IGOR GAVRILEYKO set on ONE
@@ -53,8 +52,8 @@ const openMobile = videos.openMobile;
       data-intro-flyer-mark
       src={open.mark}
       alt=""
-      width="603"
-      height="484"
+      width="528"
+      height="402"
       decoding="async"
     />
     <img
@@ -71,12 +70,10 @@ const openMobile = videos.openMobile;
 </div>
 
 <style>
-  /* Pure black, not --abyss. The film's first three quarters of a second are
-     a water plate narrower than the frame, matted to #000 on both sides —
-     about 66 px left and 77 px right of a 1280-wide frame, so ~100 px each
-     side once it is scaled up. Against the site's #060e12 those mattes are
-     the darker colour, and the seam reads as a vertical rule down each side
-     of the picture. Matching the stage to the film's own black closes it. */
+  /* Pure black, not --abyss. The film is black-backed throughout and
+     letterboxes outside the cover band below; against the site's #060e12
+     either one would draw a visible rule where the picture ends. Matching the
+     stage to the film's own black closes it. */
   .intro {
     position: fixed;
     inset: 0;
@@ -107,9 +104,9 @@ const openMobile = videos.openMobile;
     pointer-events: none;
   }
 
-  /* The film is cropped to its own picture, so it can run edge to edge. The
-     element always fills the stage and object-fit decides the rest; contain
-     is the floor, because it never crops the lockup. */
+  /* The film fills the frame edge to edge, so the element always fills the
+     stage and object-fit decides the rest; contain is the floor, because it
+     never crops the lockup. */
   .intro-film {
     display: block;
     width: 100%;
@@ -118,12 +115,12 @@ const openMobile = videos.openMobile;
     object-fit: contain;
   }
 
-  /* Fill the window wherever cover cannot reach the lockup. The wordmark sits
-     at 0.82 of the frame height and the mark at 0.79 of its width, so past
-     9/4 the crop starts eating the wordmark off the bottom and below 5/4 it
-     eats the mark off the side. Outside that band the film letterboxes — on a
-     black stage that reads as the picture being smaller, not as a border. */
-  @media (min-aspect-ratio: 5 / 4) and (max-aspect-ratio: 9 / 4) {
+  /* Fill the window wherever cover cannot reach the lockup. The wordmark
+     bottom sits at 0.83 of the frame height and the mark spans 0.29 to 0.71
+     of its width, which puts the clipping limits at 2.71 and 0.73; 5/2 and
+     4/5 keep a margin inside both. Outside that band the film letterboxes —
+     on a black stage that reads as the picture being smaller, not a border. */
+  @media (min-aspect-ratio: 4 / 5) and (max-aspect-ratio: 5 / 2) {
     .intro-film { object-fit: cover; }
   }
 
@@ -234,10 +231,10 @@ const openMobile = videos.openMobile;
           mark: film.dataset.markMobile || film.dataset.markDesktop || "",
         }
       : {
-          FILM_W: 1128,
+          FILM_W: 1280,
           FILM_H: 720,
-          MARK: { x: 309, y: 197, w: 518, h: 395 },
-          BRAND_AT: { x: 0.01985, y: -0.06534, w: 0.94878, h: 1.20397 } as Rect | null,
+          MARK: { x: 376, y: 194, w: 528, h: 402 },
+          BRAND_AT: { x: 0.02079, y: -0.06813, w: 0.94883, h: 1.20590 } as Rect | null,
           REVEAL_S: 0.50,
           src: film.dataset.srcDesktop || "",
           poster: film.dataset.posterDesktop || "",

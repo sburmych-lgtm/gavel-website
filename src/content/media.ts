@@ -82,11 +82,12 @@ export const videos = {
     width: 720,
     height: 1280,
   },
-  /* One-shot open: IMG_1865 (paddle strike → ring of liquid gold → forge →
-     lockup, 2.83 s). Replaced IMG_1851 on 2026-09-01: same beats, stronger
-     execution, and a full second shorter. The last 0.50 s the page fades the
-     black so the hero shows through, then the lockup flies into .hdr-brand.
-     No audio — decorative, like every loop. */
+  /* One-shot open: IMG_1866 (paddle strike → ring of liquid gold → forge →
+     lockup, 2.83 s). Third cut of this open and the first that needs nothing
+     done to it — IMG_1865 matted its water plate in from both sides and had
+     to be cropped, this one fills the frame from the first frame. The last
+     0.50 s the page fades the black so the hero shows through, then the
+     lockup flies into .hdr-brand. No audio — decorative, like every loop. */
   open: {
     src: "/media/video/open.mp4",
     poster: "/media/image/open-poster.jpg",
