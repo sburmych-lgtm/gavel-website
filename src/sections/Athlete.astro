@@ -64,21 +64,17 @@ const roleFor = (i: number) => (i === 0 ? "active" : i === 1 ? "preview-a" : "pr
       ))}
     </div>
 
-    {/* The three offers. Rows with a hairline and a mono numeral — the same
-        grammar as the Method section, so this reads as part of the system
-        rather than a card grid bolted on. */}
     <p class="a-offer-lead" data-reveal>{athlete.offerLead}</p>
-    <ol class="a-offers">
+    <ul class="a-offers">
       {athlete.offers.map((o) => (
         <li class="a-offer" data-reveal>
-          <span class="num a-offer-n">{o.n}</span>
           <div class="a-offer-body">
             <h3 class="a-offer-t">{o.title}</h3>
             <p class="a-offer-b">{o.body}</p>
           </div>
         </li>
       ))}
-    </ol>
+    </ul>
   </div>
 </section>
 <style>
@@ -254,20 +250,26 @@ const roleFor = (i: number) => (i === 0 ? "active" : i === 1 ? "preview-a" : "pr
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: clamp(1.5rem, 3vw, 2.5rem);
+    gap: clamp(1rem, 2.5vw, 1.75rem);
   }
   .a-offer {
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--line);
+    padding: clamp(1.25rem, 2.5vw, 1.75rem);
+    background: color-mix(in oklab, var(--deep) 55%, transparent);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r);
   }
-  .a-offer-n {
-    display: block;
-    font-size: 1rem;
-    color: var(--gold);
-    margin-bottom: 1rem;
+  .a-offer-t {
+    margin-bottom: 0.625rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--foam);
   }
-  .a-offer-t { margin-bottom: 0.625rem; }
-  .a-offer-b { color: var(--mute); font-size: var(--fs-body); }
+  .a-offer-b {
+    color: var(--mute);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    margin: 0;
+  }
 
   @media (max-width: 900px) {
     .w-stage {
