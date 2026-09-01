@@ -210,7 +210,23 @@ import { hero } from "../content";
     if (!ctx) return;
 
     const TOTAL_FRAMES = 72;
-    const PX_PER_CYCLE = 450; // 450px scroll = 1 full canoe stroke cycle
+    const STROKE_VIEWPORTS = 1.35;
+    const STROKE_VIEWPORTS_MOBILE = 1.8;
+    const calcPxPerCycle = () => window.innerHeight * (window.innerWidth < 768 ? STROKE_VIEWPORTS_MOBILE : STROKE_VIEWPORTS);
+    let pxPerCycle = calcPxPerCycle();
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        pxPerCycle = calcPxPerCycle();
+      }, 150);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("orientationchange", () => {
+      pxPerCycle = calcPxPerCycle();
+    }, { passive: true });
+
     const frames: HTMLImageElement[] = [];
     let loadedCount = 0;
     let currentFrame = -1;
@@ -253,7 +269,7 @@ import { hero } from "../content";
       if (!document.hidden && loadedCount > 0) {
         const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
         // Continuous cycle index
-        const rawIndex = (scrollY / PX_PER_CYCLE) * TOTAL_FRAMES;
+        const rawIndex = (scrollY / pxPerCycle) * TOTAL_FRAMES;
         targetFrame = ((rawIndex % TOTAL_FRAMES) + TOTAL_FRAMES) % TOTAL_FRAMES;
 
         // Smooth shortest-path interpolation across loop seam
