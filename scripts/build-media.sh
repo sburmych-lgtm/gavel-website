@@ -174,12 +174,11 @@ if [ -f "$OPEN_SRC" ]; then
     "$OUT/video/open.mp4"
   ffmpeg -y -v error -ss 0.08 -i "$OUT/video/open.mp4" -frames:v 1 -q:v 3 \
     "$OUT/image/open-poster.jpg"
-  # Ink box of IG + wordmark on the last frame, measured from gold pixels
-  # (293,94,603,484). Black keyed out so the flyer can sit over the hero
-  # while the film and veil fade in the last 0.6 s.
-  ffmpeg -y -v error -sseof -0.04 -i "$OUT/video/open.mp4" -frames:v 1 \
-    -vf "crop=603:484:293:94,colorkey=0x000000:0.12:0.22,format=rgba" \
-    -c:v libwebp -quality 86 \
+  # Ink box of IG + wordmark on the last frame (340, 165, 590, 450).
+  # Black keyed out so the flyer seamlessly matches and flies into the header.
+  ffmpeg -y -v error -ss 3.65 -i "$OUT/video/open.mp4" -frames:v 1 \
+    -vf "crop=590:450:340:165,colorkey=0x000000:0.18:0.25,format=rgba" \
+    -c:v libwebp -quality 90 \
     "$OUT/image/open-mark.webp"
 fi
 
