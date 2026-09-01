@@ -16,6 +16,9 @@ import canoe1 from "../assets/photo/Canoe1.JPG";
 import canoe2 from "../assets/photo/Canoe2.JPG";
 import champion from "../assets/photo/Champion.jpg";
 import certificates from "../assets/photo/Certificates.jpg";
+import certAcademy from "../assets/photo/Certificate_Academy.jpg";
+import trxSeminar from "../assets/photo/TRX_Seminar.jpg";
+import certTrainer from "../assets/photo/Certificate_Trainer.jpg";
 import formatsPortrait from "../assets/photo/formats-portrait.jpg";
 
 export const photos = {
@@ -42,10 +45,27 @@ export const photos = {
   champion: {
     src: champion,
     alt: "Ігор Гаврилейко з медаллю чемпіонату України з веслування на човнах Dragon Boat",
+    title: "Чемпіонат України",
   },
   certificates: {
     src: certificates,
     alt: "Дипломи й сертифікати: персональний тренер тренажерного залу, дієтологія у фітнесі, реабілітаційний тренінг, МФР, TRX",
+    title: "Сертифікати та дипломи",
+  },
+  certAcademy: {
+    src: certAcademy,
+    alt: "Ігор Гаврилейко з сертифікатом Академії Фітнесу України",
+    title: "Академія Фітнесу України",
+  },
+  trxSeminar: {
+    src: trxSeminar,
+    alt: "Семінар з функціонального тренінгу та TRX у залі",
+    title: "Семінар TRX та тренінг",
+  },
+  certTrainer: {
+    src: certTrainer,
+    alt: "Вручення сертифіката персонального тренера тренажерного залу",
+    title: "Персональний тренер",
   },
 } as const;
 

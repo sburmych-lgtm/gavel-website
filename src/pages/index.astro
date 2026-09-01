@@ -634,6 +634,66 @@ import { hero } from "../content";
     });
   })();
 
+  /* --- credentials gallery -------------------------------------------- *
+   * Five qualification documents/photos. Roles swap on grid areas:
+   * 1 active featured frame, 4 preview thumbnails.
+   * ------------------------------------------------------------------- */
+  (() => {
+    const stage = document.querySelector<HTMLElement>("[data-creds-stage]");
+    if (!stage) return;
+
+    const items = [...stage.querySelectorAll<HTMLElement>("[data-creds-item]")];
+    const roles = ["active", "preview-a", "preview-b", "preview-c", "preview-d"] as const;
+
+    const paintChrome = (index: number) => {
+      items.forEach((item, i) => {
+        const on = i === index;
+        const select = item.querySelector<HTMLButtonElement>("[data-creds-select]");
+        if (select) {
+          select.hidden = on;
+          select.tabIndex = on ? -1 : 0;
+        }
+      });
+    };
+
+    const assignRoles = (index: number) => {
+      const order = [index, ...items.map((_, i) => i).filter((i) => i !== index)];
+      order.forEach((itemIndex, rank) => {
+        const item = items[itemIndex];
+        const on = rank === 0;
+        item.classList.toggle("is-active", on);
+        item.dataset.credsRole = roles[rank];
+      });
+      paintChrome(index);
+    };
+
+    let active = items.findIndex((item) => item.classList.contains("is-active"));
+    if (active < 0) active = 0;
+    paintChrome(active);
+
+    const setActive = (index: number) => {
+      if (index === active) return;
+      const swap = () => {
+        assignRoles(index);
+        active = index;
+      };
+      if (!reduced.matches && typeof document.startViewTransition === "function") {
+        document.startViewTransition(swap);
+        return;
+      }
+      swap();
+    };
+
+    stage.addEventListener("click", (e) => {
+      const t = e.target as HTMLElement;
+      const item = t.closest<HTMLElement>("[data-creds-item]");
+      if (!item || !stage.contains(item)) return;
+      const i = items.indexOf(item);
+      if (i < 0) return;
+      setActive(i);
+    });
+  })();
+
   /* --- before / after -------------------------------------------------- *
    * The handle sweeps on its own so the comparison reads without anyone
    * touching it, and stays fully operable by pointer, keyboard and click.
