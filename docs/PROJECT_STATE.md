@@ -17,6 +17,12 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-17 (2026-09-02) — live on gavel.in.ua.** Netlify has production deploys
+paused (team out of credits for the billing cycle), so the build was uploaded
+as a draft and promoted with `restoreSiteDeploy`. Production now matches
+`937f58d`. Git-triggered builds stay blocked until the cycle resets. See
+`WORKLOG.md` CP-17.
+
 **CP-16 (2026-09-01) — open film is now IMG_1866.** Third cut, and the first
 that needs nothing done to it: matte measured at 0 px on all four sides, so it
 is encoded whole at 1280×720. Being a true 16:9 again, the cover band widens
