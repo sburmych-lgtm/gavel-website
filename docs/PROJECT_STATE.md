@@ -15,6 +15,15 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 - **Phase C (B1–B9):** Recompressed water-primary (CRF 31, -an, 1.53MB) + lazy loading backdrops, intro once per session + reduced-motion / save-data skip + z-index 10 skip button, full alt/aria-hidden image coverage, keyboard-accessible Before/After slider with visible focus ring, FAQ smooth expand + 45deg rotate + title punctuation fix, mobile sticky CTA hide on #contact, video toggle aria-pressed + high-contrast scrim shadow, seam band verified (RMSE 0.000/255), JSON-LD verified for LocalBusiness & FAQPage.
 - **Phase D (Proposals A1–A4):** Dropped section counters `NN / 11` & rationed eyebrows (A1), varied header scaffold & centered Credentials H2 (A2), de-numbered Fit pains & reflowed Athlete bonuses into tonal cards (A3), dropped 01/05 counter & video tile number chips (A4).
 
+## Latest change
+
+**CP-12 (2026-09-01) — landscape open now docks like the portrait one.** The
+landscape film ends on the wide one-line lockup, the header carries the compact
+two-line one, so the flight cross-dissolves between them mid-air with the IG
+monograms locked and lands on the header rect exactly. `scrollbar-gutter: stable`
+removes the 7.5 px reflow the scroll lock used to cause on classic-scrollbar
+desktops. See `WORKLOG.md` CP-12.
+
 ## Latest commit SHA
 
 See `git log -1 --format=%H`. Recorded in `WORKLOG.md`.

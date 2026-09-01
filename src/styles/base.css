@@ -11,6 +11,13 @@ html {
   scroll-behavior: smooth;
   /* the fixed header must not cover an anchor target */
   scroll-padding-top: 5.5rem;
+  /* Reserve the classic-scrollbar gutter permanently. The open locks the page
+     with overflow:hidden; without a stable gutter the viewport grows by the
+     scrollbar width for the length of the intro, .shell re-centres, and the
+     header lockup jumps sideways the instant the lock is released — right
+     after the flying mark has docked onto it. Overlay-scrollbar platforms
+     (iOS, Android, macOS by default) reserve nothing and are unaffected. */
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -298,10 +305,17 @@ p { max-width: 68ch; }
 }
 
 /* First-visit open: lock the page and hide the header lockup until the
-   flying mark occupies the same rect. */
+   flying mark occupies the same rect.
+
+   `is-intro-landed` is set the moment the flight ends, not when the intro
+   tears down: the lockup has to be lit under the flyer before the stage
+   fades, otherwise the handoff reads as a blink. Keeping `is-intro` itself
+   until teardown also keeps the backdrop's 192-frame preload — which is
+   gated on `is-intro` clearing — off the main thread while the stage is
+   still animating. */
 html.is-intro,
 html.is-intro body { overflow: hidden; }
-html.is-intro .hdr-brand img { opacity: 0; }
+html.is-intro:not(.is-intro-landed) .hdr-brand img { opacity: 0; }
 
 /* -------------------------------------------------------- reduced motion */
 

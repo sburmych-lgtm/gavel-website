@@ -75,7 +75,8 @@ const schema = buildSchema(siteUrl, ogImage);
       try {
         if (
           !/[?&]skipintro=1(?:&|$)/.test(location.search) &&
-          !sessionStorage.getItem("ig-open-1851-m5") &&
+          /* keep in sync with KEY in SiteIntro.astro */
+          !sessionStorage.getItem("ig-open-1851-m9") &&
           !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
           !(navigator.connection && navigator.connection.saveData === true)
         ) {

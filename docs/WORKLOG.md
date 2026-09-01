@@ -360,3 +360,60 @@ Branch: `version-2`
 - Horizontal overflow: 0 across 320px, 375px, 390px, 768px, 1440px.
 - Review screenshots captured in `review/version-2/`.
 
+
+---
+
+## CP-12 — desktop open: docking parity with the portrait cut · 2026-09-01
+
+Branch: `version-2`
+
+**Problem**
+
+The portrait open docked cleanly; the landscape one arrived crooked and read as
+jerky. Frame-by-frame capture of both (headless Chromium screencast + per-frame
+geometry log) gave three separate causes, none of them the easing:
+
+1. **Different artwork.** `open-mark.webp` (the landscape film's last frame) is
+   the wide lockup with `IGOR GAVRILEYKO` on ONE line, 603×484. The header
+   carries `logo-gold.webp`, the compact two-line lockup, 340×329. Scaling by
+   height matched the height and left the flyer 11 px wider than the target,
+   then hard-cut one composition to the other. `open-mark-mobile.webp` is
+   already the two-line lockup, which is the whole reason portrait looked right.
+2. **Scrollbar reflow.** `html.is-intro { overflow: hidden }` removes the
+   classic scrollbar, so the viewport is 15 px wider for the length of the
+   intro and `.shell` re-centres. Measured: the header lockup jumped **7.50 px**
+   left the instant the lock released — right after the flyer had docked onto
+   it. Overlay-scrollbar platforms reserve nothing, so mobile never saw it.
+3. **Reveal driven by `timeupdate`.** That event fires ~4×/s, so the veil fade
+   could start a quarter second late and get cut to zero by the dock.
+
+**Done**
+
+- `SiteIntro.astro`: the flyer is now a box carrying both lockups. The landscape
+  flight cross-dissolves the film mark into the header's own artwork mid-flight
+  with the two IG monograms locked together (`MONO` / `BRAND.mono` fractions
+  measured off the alpha channels), and ends on the header rect exactly.
+  Verified landing: flyer `[168.5, 10, 53.7, 52]` vs header
+  `[168.5, 10, 53.73, 52]`. Portrait keeps its straight translate + scale.
+- Reveal moved from `timeupdate` to rAF; the fade duration is the film's own
+  remaining time, so it always lands on the last frame.
+- Flight clock scales with the distance the mark is seen to travel
+  (`600–820 ms`, landscape ≈ 750 ms) on `cubic-bezier(0.28, 0, 0.06, 1)` — the
+  fixed 640 ms made the landscape middle whip while both ends sat still.
+- After a morph the flyer rides the stage out at full opacity instead of fading
+  separately: the separate fade dropped the gold to ~45 % for a beat while the
+  black above it was still clearing.
+- `base.css`: `scrollbar-gutter: stable` on `html`. Shift measured again with a
+  real 15 px scrollbar: **0.00 px**.
+- `base.css` / `SiteIntro.astro`: new `is-intro-landed` class lights the header
+  lockup at touchdown while `is-intro` — and with it the backdrop's 192-frame
+  preload — stays parked until teardown.
+- `Base.astro`: the pre-paint guard read `ig-open-1851-m5` while the component
+  wrote `-m8`, so `is-intro` was applied on every load and stripped a tick
+  later. Both now read `ig-open-1851-m9`.
+
+**Verification**
+
+- `npm run build` — exit 0 (facts 26 files, assets 11 derivatives, fonts OK).
+- Screencast of the full open re-captured at 1440×900 and 390×844: landing
+  pixel-exact on desktop, portrait unchanged.

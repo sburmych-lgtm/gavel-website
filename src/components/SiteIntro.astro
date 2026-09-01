@@ -2,12 +2,21 @@
 /**
  * One-shot open on the first visit of a session.
  *
- * Film is IMG_1851, contained 16:9 on black. The last 0.6 s the veil fades
- * and the lockup flies into .hdr-brand. Return visits, reduced motion,
+ * Film is IMG_1851, contained 16:9 on black. The last stretch of it the veil
+ * fades and the lockup flies into .hdr-brand. Return visits, reduced motion,
  * and no-JS skip it.
+ *
+ * The landscape film and the portrait film do not end on the same artwork:
+ * the landscape cut resolves to a wide lockup with IGOR GAVRILEYKO set on ONE
+ * line, while the portrait cut and the header both carry the compact two-line
+ * lockup. No translate/scale turns one into the other, which is why the
+ * landscape flight carries a second layer — the header's own artwork — and
+ * cross-dissolves into it mid-flight with the two monograms locked together.
+ * That flight ends on the exact rect and the exact image the header is about
+ * to show, so the handoff is a swap of identical pixels.
  */
 import { intro } from "../content";
-import { videos } from "../content/media";
+import { videos, logo } from "../content/media";
 
 const open = videos.open;
 const openMobile = videos.openMobile;
@@ -37,16 +46,26 @@ const openMobile = videos.openMobile;
       aria-hidden="true"
     ></video>
   </div>
-  <img
-    class="intro-flyer"
-    data-intro-flyer
-    src={open.mark}
-    alt=""
-    aria-hidden="true"
-    width="603"
-    height="484"
-    decoding="async"
-  />
+  <div class="intro-flyer" data-intro-flyer aria-hidden="true">
+    <img
+      class="intro-flyer-mark"
+      data-intro-flyer-mark
+      src={open.mark}
+      alt=""
+      width="603"
+      height="484"
+      decoding="async"
+    />
+    <img
+      class="intro-flyer-brand"
+      data-intro-flyer-brand
+      src={logo.full.src}
+      alt=""
+      width={logo.full.width}
+      height={logo.full.height}
+      decoding="async"
+    />
+  </div>
   <button type="button" class="intro-skip" data-intro-skip>{intro.skip}</button>
 </div>
 
@@ -91,18 +110,28 @@ const openMobile = videos.openMobile;
     }
   }
 
+  /* The flyer is a box, not an image: it is laid out on the mark's rect in
+     the film and scaled down onto the header rect, and both lockups ride
+     inside it so one transform keeps them registered to each other. */
   .intro-flyer {
     position: fixed;
     left: 0;
     top: 0;
     width: 1px;
-    height: auto;
-    max-width: none;
+    height: 1px;
     opacity: 0;
     pointer-events: none;
     will-change: transform, opacity;
-    transform-origin: 50% 50%;
+    transform-origin: 0 0;
   }
+  .intro-flyer img {
+    position: absolute;
+    display: block;
+    max-width: none;
+    will-change: opacity;
+  }
+  .intro-flyer-mark { left: 0; top: 0; width: 100%; height: 100%; }
+  .intro-flyer-brand { opacity: 0; }
 
   .intro-skip {
     position: absolute;
@@ -125,13 +154,16 @@ const openMobile = videos.openMobile;
 </style>
 
 <script>
-  const KEY = "ig-open-1851-m8";
+  /* keep in sync with the guard in Base.astro */
+  const KEY = "ig-open-1851-m9";
 
   const root = document.documentElement;
   const stage = document.querySelector<HTMLElement>("[data-intro]");
   const veil = document.querySelector<HTMLElement>("[data-intro-veil]");
   const film = document.querySelector<HTMLVideoElement>("[data-intro-film]");
-  const flyer = document.querySelector<HTMLImageElement>("[data-intro-flyer]");
+  const flyer = document.querySelector<HTMLElement>("[data-intro-flyer]");
+  const flyerMark = document.querySelector<HTMLImageElement>("[data-intro-flyer-mark]");
+  const flyerBrand = document.querySelector<HTMLImageElement>("[data-intro-flyer-brand]");
   const skip = document.querySelector<HTMLButtonElement>("[data-intro-skip]");
   const brand = document.querySelector<HTMLElement>("[data-hdr-brand] img");
   const burger = document.querySelector<HTMLElement>("[data-hdr-toggle]");
@@ -147,19 +179,32 @@ const openMobile = videos.openMobile;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const saveData = (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData === true;
 
-  if (!stage || !veil || !film || !flyer || !skip || (!brand && !burger)) {
+  if (!stage || !veil || !film || !flyer || !flyerMark || !flyerBrand || !skip || (!brand && !burger)) {
     root.classList.remove("is-intro");
   } else if (!root.classList.contains("is-intro") || seen() || reduced || saveData) {
     root.classList.remove("is-intro");
   } else {
     root.setAttribute("data-intro-live", "1");
 
+    /* MARK is the lockup's rect inside the film frame. MONO is the IG
+       monogram's rect inside that mark and BRAND.mono the same monogram
+       inside the header artwork — both measured off the alpha channel of the
+       shipped files. Only the landscape cut needs them: the portrait mark and
+       the header lockup are already the same composition, so that flight
+       stays a straight translate + scale. */
     const isPortraitMobile = window.matchMedia("(max-width: 768px), (orientation: portrait)").matches;
+    const BRAND = {
+      W: 340,
+      H: 329,
+      mono: { x: 6 / 340, y: 6 / 329, w: 329 / 340, h: 239 / 329 },
+    };
+    type Rect = { x: number; y: number; w: number; h: number };
     const cfg = isPortraitMobile
       ? {
           FILM_W: 720,
           FILM_H: 1280,
           MARK: { x: 114, y: 362, w: 536, h: 592 },
+          MONO: null as Rect | null,
           REVEAL_S: 0.50,
           src: film.dataset.srcMobile || film.dataset.srcDesktop || "",
           poster: film.dataset.posterMobile || film.dataset.posterDesktop || "",
@@ -169,6 +214,7 @@ const openMobile = videos.openMobile;
           FILM_W: 1280,
           FILM_H: 720,
           MARK: { x: 293, y: 94, w: 603, h: 484 },
+          MONO: { x: 92 / 603, y: 32 / 484, w: 507 / 603, h: 370 / 484 } as Rect | null,
           REVEAL_S: 0.62,
           src: film.dataset.srcDesktop || "",
           poster: film.dataset.posterDesktop || "",
@@ -176,7 +222,7 @@ const openMobile = videos.openMobile;
         };
 
     if (cfg.poster) film.poster = cfg.poster;
-    if (cfg.mark) flyer.src = cfg.mark;
+    if (cfg.mark) flyerMark.src = cfg.mark;
 
     /* Same box as CSS contain: the <video> is sized by the slot, never
        rewritten per frame (iOS stalls if the playing element's box changes). */
@@ -198,18 +244,34 @@ const openMobile = videos.openMobile;
       flyer.style.top = `${box.top}px`;
       flyer.style.width = `${box.width}px`;
       flyer.style.height = `${box.height}px`;
-      flyer.style.transform = "translate(0, 0) scale(1)";
-      flyer.style.transformOrigin = "50% 50%";
+      flyer.style.transform = "none";
     };
+
+    /* Lay the header artwork inside the flyer so its monogram sits exactly on
+       the film mark's monogram. Returns that box in flyer-local pixels. */
+    const placeBrand = (mono: Rect, box: { width: number; height: number }) => {
+      const w = (mono.w * box.width) / BRAND.mono.w;
+      const h = w * (BRAND.H / BRAND.W);
+      const left = (mono.x + mono.w / 2) * box.width - (BRAND.mono.x + BRAND.mono.w / 2) * w;
+      const top = (mono.y + mono.h / 2) * box.height - (BRAND.mono.y + BRAND.mono.h / 2) * h;
+      flyerBrand.style.left = `${left}px`;
+      flyerBrand.style.top = `${top}px`;
+      flyerBrand.style.width = `${w}px`;
+      flyerBrand.style.height = `${h}px`;
+      return { left, top, width: w, height: h };
+    };
+
+    let watchId = 0;
 
     const finish = () => {
       remember();
-      root.classList.remove("is-intro");
+      root.classList.remove("is-intro", "is-intro-landed");
       root.removeAttribute("data-intro-live");
       stage.hidden = true;
       flyer.style.opacity = "0";
       try { film.pause(); } catch { /* ignore */ }
       film.removeAttribute("src");
+      cancelAnimationFrame(watchId);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("keydown", onKey);
       window.removeEventListener("wheel", onNudge);
@@ -229,16 +291,22 @@ const openMobile = videos.openMobile;
         { duration, easing: "linear", fill: "forwards" },
       );
 
-    const startReveal = () => {
+    /* Driven off rAF rather than `timeupdate`: that event fires about four
+       times a second, so the reveal could start a quarter of a second late
+       and the veil would still be at 40% when the film ended and the dock cut
+       it to zero. `remaining` is the film's own time left, so the fade always
+       lands on the last frame however late this is called. */
+    const startReveal = (remaining: number) => {
       if (revealing || docking) return;
       revealing = true;
+      const ms = Math.max(180, Math.round(remaining * 1000));
       placeFlyer(flyerBox());
       flyer.animate(
         [{ opacity: 0 }, { opacity: 1 }],
-        { duration: 240, easing: "linear", fill: "forwards" },
+        { duration: Math.min(240, ms), easing: "linear", fill: "forwards" },
       );
-      fadeOut(film, cfg.REVEAL_S * 1000);
-      fadeOut(veil, cfg.REVEAL_S * 1000);
+      fadeOut(film, ms);
+      fadeOut(veil, ms);
       fadeOut(skip, 220);
       skip.style.pointerEvents = "none";
     };
@@ -250,7 +318,8 @@ const openMobile = videos.openMobile;
       skip.style.opacity = "0";
       skip.style.pointerEvents = "none";
       try { film.pause(); } catch { /* ignore */ }
-      const animEls = [film, veil, flyer, skip];
+      cancelAnimationFrame(watchId);
+      const animEls = [film, veil, flyer, flyerMark, flyerBrand, skip];
       for (const el of animEls) {
         for (const a of el.getAnimations()) a.cancel();
       }
@@ -265,30 +334,93 @@ const openMobile = videos.openMobile;
       if (!targetEl) { abort(); return; }
       const to = targetEl.getBoundingClientRect();
       if (from.width < 8 || to.height < 8) { abort(); return; }
-      const s = to.height / from.height;
-      const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
-      const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+
+      const mono = cfg.MONO;
+      const morph = Boolean(mono && brand && flyerBrand.complete && flyerBrand.naturalWidth > 0);
+
+      let tx: number;
+      let ty: number;
+      let s: number;
+      if (morph) {
+        /* Land the header's own artwork on the header's own rect, so the
+           final swap is one image for the identical image. */
+        const b = placeBrand(mono as Rect, from);
+        s = to.width / b.width;
+        tx = to.left - from.left - s * b.left;
+        ty = to.top - from.top - s * b.top;
+      } else {
+        s = to.height / from.height;
+        tx = to.left + to.width / 2 - from.left - (s * from.width) / 2;
+        ty = to.top + to.height / 2 - from.top - (s * from.height) / 2;
+      }
+
+      /* One curve, two screen sizes: a fixed 640 ms made the landscape flight
+         cover half again the distance on the same clock, so its middle
+         whipped while both ends sat still. Scale the clock with the distance
+         the mark is seen to travel — the transform origin is the corner, so
+         its translation alone understates that by more than half. */
+      const dist = Math.hypot(
+        tx + (s - 1) * (from.width / 2),
+        ty + (s - 1) * (from.height / 2),
+      );
+      const duration = Math.min(820, Math.max(600, Math.round(dist * 1.25)));
+      const easing = "cubic-bezier(0.28, 0, 0.06, 1)";
 
       const fly = flyer.animate(
         [
-          { transform: "translate(0, 0) scale(1)", opacity: 1 },
-          { transform: `translate(${dx}px, ${dy}px) scale(${s})`, opacity: 1 },
+          { transform: "none" },
+          { transform: `translate(${tx}px, ${ty}px) scale(${s})` },
         ],
-        { duration: 640, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" },
+        { duration, easing, fill: "forwards" },
       );
 
-      const settle = () => {
-        root.classList.remove("is-intro");
-        const fade = flyer.animate(
-          [{ opacity: 1 }, { opacity: 0 }],
-          { duration: 160, easing: "linear", fill: "forwards" },
+      if (morph) {
+        /* The two windows overlap: a symmetric cross-fade drops both lockups
+           to partial opacity at the same instant and the black reads through
+           the middle of the swap. */
+        flyerBrand.animate(
+          [
+            { opacity: 0, offset: 0 },
+            { opacity: 0, offset: 0.14 },
+            { opacity: 1, offset: 0.42 },
+            { opacity: 1, offset: 1 },
+          ],
+          { duration, easing: "linear", fill: "forwards" },
         );
+        flyerMark.animate(
+          [
+            { opacity: 1, offset: 0 },
+            { opacity: 1, offset: 0.30 },
+            { opacity: 0, offset: 0.58 },
+            { opacity: 0, offset: 1 },
+          ],
+          { duration, easing: "linear", fill: "forwards" },
+        );
+      }
+
+      const settle = () => {
+        /* Light the real lockup under the flyer before anything fades. The
+           page stays locked — and the backdrop's frame preload stays parked —
+           until finish(). */
+        root.classList.add("is-intro-landed");
+        /* After a morph the flyer and the header lockup are the same image on
+           the same rect, so the flyer rides the stage out at full opacity and
+           the gold never dips: fading it separately left the mark at 45% for
+           a beat while the black above it was still clearing. */
+        const fade = morph
+          ? null
+          : flyer.animate(
+              [{ opacity: 1 }, { opacity: 0 }],
+              { duration: 160, easing: "linear", fill: "forwards" },
+            );
         const gone = stage.animate(
           [{ opacity: 1 }, { opacity: 0 }],
           { duration: 240, easing: "ease-in", fill: "forwards" },
         );
-        Promise.all([fade.finished.catch(() => {}), gone.finished.catch(() => {})])
-          .then(finish);
+        Promise.all([
+          fade ? fade.finished.catch(() => {}) : Promise.resolve(),
+          gone.finished.catch(() => {}),
+        ]).then(finish);
       };
       fly.finished.then(settle).catch(settle);
     };
@@ -345,12 +477,19 @@ const openMobile = videos.openMobile;
       window.setTimeout(tryPlay, 250);
       window.setTimeout(tryPlay, 900);
 
-      film.addEventListener("timeupdate", () => {
-        if (revealing || docking) return;
-        if (film.duration && film.currentTime >= film.duration - cfg.REVEAL_S) {
-          startReveal();
-        }
-      });
+      const watch = () => {
+        watchId = requestAnimationFrame(watch);
+        if (docking) return;
+        const d = film.duration;
+        if (!d || !isFinite(d)) return;
+        const remaining = d - film.currentTime;
+        if (!revealing && remaining <= cfg.REVEAL_S) startReveal(remaining);
+        /* One frame of slack: `ended` can trail the last painted frame, and
+           that gap showed as a hold before the flight left. */
+        if (remaining <= 0.04) dock();
+      };
+      watchId = requestAnimationFrame(watch);
+
       film.addEventListener("ended", dock, { once: true });
       film.addEventListener("error", () => {
         if (!docking) abort();
