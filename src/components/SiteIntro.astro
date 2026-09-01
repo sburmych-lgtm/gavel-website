@@ -291,11 +291,12 @@ const openMobile = videos.openMobile;
         { duration, easing: "linear", fill: "forwards" },
       );
 
-    /* Driven off rAF rather than `timeupdate`: that event fires about four
-       times a second, so the reveal could start a quarter of a second late
-       and the veil would still be at 40% when the film ended and the dock cut
-       it to zero. `remaining` is the film's own time left, so the fade always
-       lands on the last frame however late this is called. */
+    /* Driven off rAF, with `timeupdate` kept as a floor under it: that event
+       alone fires about four times a second, so the reveal could start a
+       quarter of a second late and the veil would still be at 40% when the
+       film ended and the dock cut it to zero. `remaining` is the film's own
+       time left, so the fade always lands on the last frame however late this
+       is called. */
     const startReveal = (remaining: number) => {
       if (revealing || docking) return;
       revealing = true;
@@ -477,8 +478,7 @@ const openMobile = videos.openMobile;
       window.setTimeout(tryPlay, 250);
       window.setTimeout(tryPlay, 900);
 
-      const watch = () => {
-        watchId = requestAnimationFrame(watch);
+      const tick = () => {
         if (docking) return;
         const d = film.duration;
         if (!d || !isFinite(d)) return;
@@ -488,7 +488,16 @@ const openMobile = videos.openMobile;
            that gap showed as a hold before the flight left. */
         if (remaining <= 0.04) dock();
       };
+      const watch = () => {
+        watchId = requestAnimationFrame(watch);
+        tick();
+      };
       watchId = requestAnimationFrame(watch);
+      /* rAF is the accurate driver; `timeupdate` is the floor under it. A tab
+         the compositor has parked — occluded window, background tab — stops
+         serving frames while the media element keeps running, and without
+         this the reveal would simply never be reached. */
+      film.addEventListener("timeupdate", tick);
 
       film.addEventListener("ended", dock, { once: true });
       film.addEventListener("error", () => {
