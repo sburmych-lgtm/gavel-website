@@ -90,9 +90,9 @@ ffmpeg -y -v error -i "$A/Edits/Page_5_edit.jpg" -q:v 3 \
   "$OUT/image/formats-portrait.jpg"
 cp "$OUT/image/formats-portrait.jpg" src/assets/photo/formats-portrait.jpg
 
-say "water primary — Page_8_editvideo1 (H.264 already; keep picture, trim audio)"
+say "water primary — Page_8_editvideo1 (recompressed at CRF 31, -an)"
 ffmpeg -y -v error -i "$A/Edits/Page_8_editvideo1.mp4" \
-  -c:v copy -c:a aac -b:a 96k -ac 2 -movflags +faststart \
+  -an -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 31 -preset slow -movflags +faststart \
   "$OUT/video/water-primary.mp4"
 
 say "water upper — Page_8_editvideo3"
