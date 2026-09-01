@@ -70,20 +70,26 @@ const openMobile = videos.openMobile;
 </div>
 
 <style>
+  /* Pure black, not --abyss. The film's first three quarters of a second are
+     a water plate narrower than the frame, matted to #000 on both sides —
+     about 66 px left and 77 px right of a 1280-wide frame, so ~100 px each
+     side once it is scaled up. Against the site's #060e12 those mattes are
+     the darker colour, and the seam reads as a vertical rule down each side
+     of the picture. Matching the stage to the film's own black closes it. */
   .intro {
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
     overflow: hidden;
     pointer-events: auto;
-    background: var(--abyss);
+    background: #000;
   }
   :global(html.is-intro) .intro[hidden] { display: block !important; }
 
   .intro-veil {
     position: absolute;
     inset: 0;
-    background: var(--abyss);
+    background: #000;
     pointer-events: none;
   }
 

@@ -315,6 +315,12 @@ p { max-width: 68ch; }
    still animating. */
 html.is-intro,
 html.is-intro body { overflow: hidden; }
+/* The stage is position:fixed, but Chrome still clips it to the root
+   scroller, so it stops at the gutter scrollbar-gutter:stable reserves and
+   the page ground showed as a 15px band down the right edge for the whole
+   intro. Paint the canvas the film's own black instead; body keeps --abyss,
+   so nothing changes once the intro tears down. */
+html.is-intro { background: #000; }
 html.is-intro:not(.is-intro-landed) .hdr-brand img { opacity: 0; }
 
 /* -------------------------------------------------------- reduced motion */

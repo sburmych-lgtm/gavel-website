@@ -17,6 +17,12 @@ Production `main` is untouched. Preview deployed to Vercel (noindex preview).
 
 ## Latest change
 
+**CP-14 (2026-09-01) — dark seams down the sides of the open closed.** The
+film mattes its water plate to `#000` while the stage was `--abyss`, and
+`scrollbar-gutter: stable` left the reserved gutter showing the page ground
+down the right edge. Stage, veil and canvas are the film's black for the
+length of the intro. See `WORKLOG.md` CP-14.
+
 **CP-13 (2026-09-01) — new open film on the landscape cut.** `IMG_1865`
 replaces `IMG_1851`: liquid-gold splash out of the water, centred front-on
 lockup on clean black, 2.83 s instead of 3.83 s. The mid-flight morph stays —

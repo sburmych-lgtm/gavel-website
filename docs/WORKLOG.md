@@ -465,3 +465,40 @@ Portrait is untouched and still plays the IMG_1851 cut.
 - Portrait unchanged: flyer `[23, 13, 42, 46]`, header `[20, 13, 48, 46]`,
   film still 2.667 s.
 - `check-assets` 12 derivatives, `check-facts` 26 files, `check-fonts` ok.
+
+---
+
+## CP-14 — close the two dark seams down the sides of the open · 2026-09-01
+
+Branch: `version-2`
+
+**Problem**
+
+Owner reported vertical bands down both sides at the start of the intro.
+Two separate causes, measured on the encoded film and on a screenshot of the
+running page:
+
+1. The film's first ~0.75 s is a water plate narrower than the frame, matted
+   to pure `#000` — 66 px left and 77 px right of a 1280-wide frame, so about
+   100 px a side once scaled up. The stage under it was `--abyss` `#060e12`,
+   which is *lighter*, so each matte edge drew a hard vertical rule.
+2. `scrollbar-gutter: stable` (CP-12) reserves a 15 px gutter. The stage is
+   `position: fixed`, but Chrome still clips it to the root scroller, so it
+   stopped short of that gutter and the page ground showed as a 15 px band
+   down the right edge — for the whole intro, not just the water.
+
+**Done**
+
+- `.intro` and `.intro-veil` backgrounds `var(--abyss)` → `#000`, matching the
+  film's own matte.
+- `html.is-intro { background: #000 }` so the reserved gutter paints black
+  too. `body` keeps `--abyss`, so nothing changes once the intro tears down.
+
+**Verification**
+
+Screenshot at `ct = 0.32` s, 1600×900, scanned at y = 120 / 405 / 760:
+`--abyss`-coloured columns **none** on any row, both extreme columns
+`0,0,0`. Across the left matte edge the ramp is 0,0,0 → 3,8,9 → 21,25,26 →
+35,39,41 — the plate's own soft edge, no step. Landing unaffected: brand
+layer `[168.5, 10, 53.7, 52]` against header `[168.5, 10, 53.73, 52]`;
+portrait still `[23, 13, 42, 46]`.
