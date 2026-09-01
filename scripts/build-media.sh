@@ -58,12 +58,12 @@ say "footer easter egg — canoe dog"
 enc "$A/Video/FUN!!!Canoe-Dog.mp4" "$OUT/video/dog.mp4" 0 3.6 \
     "scale=640:360:flags=lanczos" 27
 
-say "scroll-driven canoe backdrop — 120-frame cycle from Loop_canoe.mov"
+say "scroll-driven canoe backdrop — 192-frame cycle from Man_paddling_canoe.mp4"
 mkdir -p "$OUT/frames"
-ffmpeg -y -v error -i "Loop_canoe.mov" -vf "scale=1024:576:flags=lanczos" \
-  -c:v libwebp -quality 82 -compression_level 6 \
+ffmpeg -y -v error -i "Man_paddling_canoe.mp4" -vf "scale=1024:576:flags=lanczos" \
+  -c:v libwebp -quality 80 -compression_level 6 \
   "$OUT/frames/frame_%03d.webp"
-ffmpeg -y -v error -i "Loop_canoe.mov" \
+ffmpeg -y -v error -i "Man_paddling_canoe.mp4" \
   -an -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 23 -preset slow -movflags +faststart \
   "$OUT/canoe-stroke.mp4"
 cp "$OUT/canoe-stroke.mp4" "$OUT/video/canoe-stroke.mp4"
