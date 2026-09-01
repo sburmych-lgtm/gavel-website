@@ -211,23 +211,50 @@ import { hero } from "../content";
 
     const TOTAL_FRAMES = 72;
     const LERP = 0.18;
+    const MAX_DPR = 2;
     const STROKE_VIEWPORTS = 1.35;
     const STROKE_VIEWPORTS_MOBILE = 1.8;
     const calcPxPerCycle = () => window.innerHeight * (window.innerWidth < 768 ? STROKE_VIEWPORTS_MOBILE : STROKE_VIEWPORTS);
     let pxPerCycle = calcPxPerCycle();
     let dirty = true;
 
+    function sizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      const w = Math.round(window.innerWidth * dpr);
+      const h = Math.round(window.innerHeight * dpr);
+      if (canvas.width === w && canvas.height === h) return;
+      canvas.width = w;
+      canvas.height = h;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      dirty = true;
+    }
+
+    function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement) {
+      const cw = ctx.canvas.width, ch = ctx.canvas.height;
+      const ir = img.naturalWidth / img.naturalHeight;
+      const cr = cw / ch;
+      let dw: number, dh: number;
+      if (cr > ir) { dw = cw; dh = cw / ir; }
+      else { dh = ch; dw = ch * ir; }
+      ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    }
+
+    sizeCanvas();
+
     let resizeTimer = 0;
     const onResize = () => {
       clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(() => {
         pxPerCycle = calcPxPerCycle();
+        sizeCanvas();
         dirty = true;
       }, 150);
     };
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("orientationchange", () => {
       pxPerCycle = calcPxPerCycle();
+      sizeCanvas();
       dirty = true;
     }, { passive: true });
     window.addEventListener("scroll", () => {
@@ -240,6 +267,15 @@ import { hero } from "../content";
     let smoothFrame = 0;
     let rafId = 0;
 
+    const hidePoster = () => {
+      if (poster && !poster.hasAttribute("data-hidden")) {
+        poster.setAttribute("data-hidden", "");
+        poster.addEventListener("transitionend", () => {
+          poster.style.display = "none";
+        }, { once: true });
+      }
+    };
+
     // Do not contend with the intro film for bandwidth or decode on phones.
     const preloadFrames = () => {
       for (let i = 1; i <= TOTAL_FRAMES; i++) {
@@ -251,8 +287,10 @@ import { hero } from "../content";
           dirty = true;
           if (loadedCount === 1) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            if (poster) poster.style.display = "none";
+            drawCover(ctx, img);
+          }
+          if (loadedCount >= 8) {
+            hidePoster();
           }
         };
         frames.push(img);
@@ -311,14 +349,14 @@ import { hero } from "../content";
         if (a?.complete && a.naturalWidth > 0) {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           ctx.globalAlpha = 1;
-          ctx.drawImage(a, 0, 0, canvas.width, canvas.height);
+          drawCover(ctx, a);
           if (t > 0.01 && b?.complete && b.naturalWidth > 0) {
             ctx.globalAlpha = t;
-            ctx.drawImage(b, 0, 0, canvas.width, canvas.height);
+            drawCover(ctx, b);
             ctx.globalAlpha = 1;
           }
-          if (poster && poster.style.display !== "none") {
-            poster.style.display = "none";
+          if (loadedCount >= 8) {
+            hidePoster();
           }
         }
       }
@@ -901,13 +939,4 @@ import { hero } from "../content";
           const copied = copyNow(text);
           if (copied) {
             if (status) status.textContent = contact.copied;
-            if (fallback) fallback.hidden = true;
-          } else {
-            if (status) status.textContent = contact.copyFailed;
-            if (fallback) { fallback.hidden = false; fallback.value = text; }
-          }
-        }
-      });
-    });
-  })();
-</script>
+            if

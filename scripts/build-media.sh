@@ -58,7 +58,13 @@ say "footer easter egg — canoe dog"
 enc "$A/Video/FUN!!!Canoe-Dog.mp4" "$OUT/video/dog.mp4" 0 3.6 \
     "scale=640:360:flags=lanczos" 27
 
-say "scroll-driven canoe backdrop — Canoe.mov in repo root"
+say "scroll-driven canoe backdrop — 72-frame cycle from Canoe.mov"
+mkdir -p "$OUT/frames"
+# 72 кадри з 90 наявних: цикл гребка виміряно як frames 1..72 (шов 1.02× —
+# перевірено RMSE-аналізом, не змінювати межі без повторного вимірювання)
+ffmpeg -y -v error -i "Canoe.mov" -vf "select='lt(n\,72)',scale=1024:576:flags=lanczos" \
+  -vsync 0 -c:v libwebp -quality 84 -compression_level 6 \
+  "$OUT/frames/frame_%03d.webp"
 ffmpeg -y -v error -i "Canoe.mov" -vframes 86 \
   -an -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 23 -preset slow -movflags +faststart \
   "$OUT/canoe-stroke.mp4"
