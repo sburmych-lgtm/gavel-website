@@ -200,6 +200,7 @@ import { hero } from "../content";
     const mediaContainer = backdrop?.querySelector<HTMLElement>("[data-backdrop-media]");
     const canvas = mediaContainer?.querySelector<HTMLCanvasElement>(".backdrop-canvas");
     const poster = mediaContainer?.querySelector<HTMLElement>(".backdrop-poster");
+    const gradeEl = backdrop.querySelector<HTMLElement>(".backdrop-grade");
     if (!backdrop || !mediaContainer || !canvas) return;
 
     if (reduced.matches || (navigator as unknown as { connection?: { saveData?: boolean } }).connection?.saveData === true) {
@@ -217,6 +218,7 @@ import { hero } from "../content";
     const calcPxPerCycle = () => window.innerHeight * (window.innerWidth < 768 ? STROKE_VIEWPORTS_MOBILE : STROKE_VIEWPORTS);
     let pxPerCycle = calcPxPerCycle();
     let dirty = true;
+    let lastGrade = -1;
 
     function sizeCanvas() {
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
@@ -336,6 +338,16 @@ import { hero } from "../content";
           px += (tx - px) * 0.06;
           py += (ty - py) * 0.06;
           canvas.style.transform = `translate3d(${px.toFixed(2)}px, ${py.toFixed(2)}px, 0)`;
+        }
+
+        if (gradeEl) {
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const progress = docHeight > 0 ? Math.min(1, Math.max(0, scrollY / docHeight)) : 0;
+          const targetGrade = progress * 0.85;
+          if (Math.abs(targetGrade - lastGrade) >= 0.01) {
+            gradeEl.style.opacity = targetGrade.toFixed(3);
+            lastGrade = targetGrade;
+          }
         }
 
         smoothFrame = ((smoothFrame + diff * LERP) + TOTAL_FRAMES) % TOTAL_FRAMES;
