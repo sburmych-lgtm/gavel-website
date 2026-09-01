@@ -440,8 +440,17 @@ import { hero } from "../content";
       if (!btn || !label) return;
       btn.hidden = false;
       btn.addEventListener("click", () => {
-        if (v.paused) { delete v.dataset.paused; v.play().catch(() => {}); label.textContent = "Пауза"; }
-        else { v.pause(); v.dataset.paused = "1"; label.textContent = "Грати"; }
+        if (v.paused) {
+          delete v.dataset.paused;
+          v.play().catch(() => {});
+          label.textContent = "Пауза";
+          btn.setAttribute("aria-pressed", "false");
+        } else {
+          v.pause();
+          v.dataset.paused = "1";
+          label.textContent = "Грати";
+          btn.setAttribute("aria-pressed", "true");
+        }
       });
     });
 
@@ -483,7 +492,9 @@ import { hero } from "../content";
       const btn = v.closest(".av")?.querySelector<HTMLButtonElement>("[data-av-pause]");
       const label = btn?.querySelector<HTMLElement>("[data-av-label]");
       if (!btn || !label) return;
-      label.textContent = v.paused && v.dataset.paused ? "Грати" : "Пауза";
+      const isPaused = Boolean(v.paused && v.dataset.paused);
+      label.textContent = isPaused ? "Грати" : "Пауза";
+      btn.setAttribute("aria-pressed", String(isPaused));
     };
 
     const paintChrome = (index: number) => {

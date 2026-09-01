@@ -76,7 +76,7 @@ const showPauseBtn = pauseControl || (showPause && !sound);
 
   <div class="av-ctrls">
     {showPauseBtn ? (
-      <button type="button" class="av-pause" data-av-pause hidden>
+      <button type="button" class="av-pause" data-av-pause aria-pressed="false" hidden>
         <span data-av-label>Пауза</span>
         <span class="sr-only">— {label}</span>
       </button>
@@ -119,9 +119,10 @@ const showPauseBtn = pauseControl || (showPause && !sound);
     min-height: 44px;
     min-width: 44px;
     padding: 0.5rem 0.9rem;
-    background: color-mix(in oklab, var(--abyss) 74%, transparent);
-    backdrop-filter: blur(6px);
-    border: 1px solid var(--line);
+    background: color-mix(in oklab, var(--abyss) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border: 1px solid color-mix(in oklab, var(--foam) 22%, var(--line));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
     border-radius: var(--r);
     color: var(--foam);
     font-family: var(--font-mono);
@@ -129,15 +130,15 @@ const showPauseBtn = pauseControl || (showPause && !sound);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: border-color var(--t-fast) var(--ease);
+    transition: border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
   }
   .av-pause:hover { border-color: var(--caustic); }
 
-  .av-sound { display: inline-flex; align-items: center; gap: 0.4rem; }
-  /* on = gold, so the state is readable at a glance and not only from the word */
-  .av-sound[aria-pressed="true"] {
+  .av-pause[aria-pressed="true"] {
     border-color: var(--gold);
     color: var(--gold);
   }
+
+  .av-sound { display: inline-flex; align-items: center; gap: 0.4rem; }
   .av-ic { font-size: 0.85rem; line-height: 1; }
 </style>
