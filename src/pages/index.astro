@@ -211,9 +211,9 @@ import { hero } from "../content";
     if (!ctx) return;
 
     const TOTAL_FRAMES = 192;
-    const LERP = 0.32;
+    const LERP = 0.18;
     const MAX_DPR = 2;
-    const PX_PER_CYCLE = 650;
+    let pxPerCycle = 1800;
     let dirty = true;
     let lastGrade = -1;
     let currentFrame = -1;
@@ -222,6 +222,8 @@ import { hero } from "../content";
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       const w = Math.round(window.innerWidth * dpr);
       const h = Math.round(window.innerHeight * dpr);
+      const strokeVp = window.innerWidth < 768 ? 2.4 : 2.0;
+      pxPerCycle = Math.max(1500, Math.round(window.innerHeight * strokeVp));
       if (canvas.width === w && canvas.height === h) return;
       canvas.width = w;
       canvas.height = h;
@@ -314,7 +316,7 @@ import { hero } from "../content";
       }
       if (!document.hidden && loadedCount > 0) {
         const scrollY = window.pageYOffset || window.scrollY || document.documentElement.scrollTop || 0;
-        const targetProgress = scrollY / PX_PER_CYCLE;
+        const targetProgress = scrollY / pxPerCycle;
         const progressDiff = targetProgress - smoothProgress;
 
         const movingParallax = finePointer.matches && !reduced.matches && (Math.abs(tx - px) > 0.01 || Math.abs(ty - py) > 0.01);
